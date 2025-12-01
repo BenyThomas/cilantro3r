@@ -54,7 +54,7 @@ Create **Protocol Mappers** on the `cilantro` client (or on the `staff` client s
 
 ## Token consumption in Cilantro
 
-- When `keycloak.enabled=true`, Cilantro validates JWTs using the Keycloak issuer (`application-keycloak.properties`).
+- When `keycloak.enabled=true`, Cilantro validates JWTs using the Keycloak issuer (`application-keycloak.properties`). Override the defaults via the following environment variables so the app talks to the correct realm/client (for example `http://172.21.2.32:9443/realms/internal`): `KEYCLOAK_ISSUER_URI`, `KEYCLOAK_CLIENT_ID`, and `KEYCLOAK_CLIENT_SECRET`.
 - Authorities are assembled from `realm_access.roles` and `resource_access.cilantro.roles` and normalized to `ROLE_*` by `KeycloakUserAuthoritiesConverter`.
 - Staff metadata can be extracted from the JWT with `KeycloakUserDetailsExtractor.fromJwt(jwt)` for downstream services or auditing.
 - Sessions are stateless; APIs expect the `Authorization: Bearer <token>` header. Browser logins use OAuth2 login backed by the same client configuration.
