@@ -9,7 +9,7 @@ import com.config.SYSENV;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import javax.jms.DeliveryMode;
+import jakarta.jms.DeliveryMode;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.RedeliveryPolicy;

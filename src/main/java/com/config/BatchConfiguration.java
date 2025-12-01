@@ -7,18 +7,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.database.*;
 import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
+import org.springframework.batch.item.database.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -30,12 +33,6 @@ import java.util.Objects;
 @Configuration
 @EnableBatchProcessing
 public class BatchConfiguration {
-
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
-
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
 
     @Autowired
     private DataSource dataSource;
@@ -149,18 +146,18 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Job job(JobCompletionNotificationListener listener) throws Exception {
-        return jobBuilderFactory.get("job")
+    public Job job(JobRepository jobRepository, JobCompletionNotificationListener listener, Step start) {
+        return new JobBuilder("job", jobRepository)
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
-                .start(start())
+                .start(start)
                 .build();
     }
 
     @Bean
-    public Step start() throws Exception {
-        return stepBuilderFactory.get("start")
-                .<PensionTransaction, PensionTransaction> chunk(5000)
+    public Step start(JobRepository jobRepository, PlatformTransactionManager transactionManager) throws Exception {
+        return new StepBuilder("start", jobRepository)
+                .<PensionTransaction, PensionTransaction>chunk(5000, transactionManager)
                 .reader(reader(null))
                 .processor(processor())
                 .writer(writer())
