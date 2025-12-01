@@ -147,7 +147,13 @@ public class User_M {
     public List<Map<String, Object>> getUserRole(String username) {
         List<Map<String, Object>> result = null;
         try {
-            result = this.jdbcTemplate.queryForList("SELECT a.id userID,b.role_id roleID,a.branch_no,c.name roleName from users a INNER JOIN user_roles b on b.user_id=a.id INNER JOIN roles c on c.id=b.role_id where a.username=? and a.status='ACTIVE'", username);
+            result = this.jdbcTemplate.queryForList(
+                    "SELECT a.id userID,b.role_id roleID,a.branch_no,c.name roleName "
+                            + "FROM users a "
+                            + "INNER JOIN user_roles b on b.user_id=a.id "
+                            + "INNER JOIN roles c on c.id=b.role_id "
+                            + "WHERE lower(a.username)=lower(?) and a.status='ACTIVE'",
+                    username);
         } catch (Exception e) {
             LOGGER.info("EXCEPTION: {}", e.getMessage());
         }
