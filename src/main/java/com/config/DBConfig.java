@@ -81,7 +81,7 @@ public class DBConfig {
         return dataSource;
     }
 
-    @Bean(name = "txManagerMaster")
+    @Bean(name = {"txManagerMaster", "transactionManager"})
     public PlatformTransactionManager platformTransactionManager() {
 
         JpaTransactionManager transactionManager
