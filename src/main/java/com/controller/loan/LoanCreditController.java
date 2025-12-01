@@ -12,7 +12,6 @@ import com.repository.loan.LoanCreditRepository;
 import com.service.HttpClientService;
 import com.service.XMLParserService;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
@@ -463,7 +462,7 @@ public class LoanCreditController {
                     // build details from loans[]
                     StringBuilder details = new StringBuilder("Repayment processed:<br/>");
                     if (root.has("loans") && root.get("loans").isArray()) {
-                        for (var n : root.get("loans")) {
+                        for (JsonNode n : root.get("loans")) {
                             String type = textOf(n.get("type"));
                             String amount = textOf(n.get("amount"));
                             String repaymentRef = textOf(n.get("repaymentRef"));

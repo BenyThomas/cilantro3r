@@ -60,9 +60,9 @@ import philae.ach.TaTransfer;
 import philae.api.*;
 
 import jakarta.annotation.Nonnull;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.io.IOException;
 import java.math.BigDecimal;

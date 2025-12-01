@@ -67,8 +67,6 @@ import org.springframework.web.multipart.MultipartFile;
 import philae.api.BnUser;
 import philae.api.UsRole;
 
-import static com.sun.xml.bind.v2.util.EditDistance.editDistance;
-
 /**
  * @author Dell
  */
