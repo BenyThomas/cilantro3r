@@ -70,7 +70,7 @@ public class StawiBondNotificationClient {
             return new StawiBondLookupResponse("Error","Lookup call returned non-OK status: " +resp.getStatusCode(),"96",null);
         } catch (HttpStatusCodeException e) {
             log.error("Lookup failed: HTTP {} - body: {}", e.getStatusCode(), e.getResponseBodyAsString(), e);
-            return new StawiBondLookupResponse("ERROR",e.getMessage(),e.getStatusCode().name(), null);
+            return new StawiBondLookupResponse("ERROR",e.getMessage(),e.getStatusCode().toString(), null);
         } catch (Exception e) {
             log.error("Lookup failed: {}", e.getMessage(), e);
             return new StawiBondLookupResponse("ERROR","Unknown error","96",null);

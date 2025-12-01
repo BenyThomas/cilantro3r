@@ -24,7 +24,6 @@ import jakarta.xml.bind.annotation.XmlType;
     "points",})
 @Getter
 @Setter
-@ToString
 public class Currency {
 
     @JacksonXmlProperty(localName = "code")

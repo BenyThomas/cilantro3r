@@ -25,7 +25,7 @@
         <maven.test.skip>true</maven.test.skip>
         <sonar.skip>true</sonar.skip>
         <sonar.projectKey>Ibank</sonar.projectKey>
-        <sonar.host.url>http://projects.tcbbank.co.tz:8445</sonar.host.url>
+        <sonar.host.url>http://cilantrouat.tcbbank.co.tz:8445</sonar.host.url>
         <sonar.login>sqp_9c6c6f8cbfd058ef18f3ca3c7993e0bde5b2ff23</sonar.login>
     </properties>
     <dependencies>
@@ -46,6 +46,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.42</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -432,9 +433,17 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.36</version>
+                        </path>
+                    </annotationProcessorPaths>
                     <release>${java.version}</release>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>

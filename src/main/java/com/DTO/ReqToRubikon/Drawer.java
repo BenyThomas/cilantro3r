@@ -26,7 +26,6 @@ import jakarta.xml.bind.annotation.XmlType;
     "status"})
 @Getter
 @Setter
-@ToString
 public class Drawer {
 
    @JacksonXmlProperty(localName = "currencies")

@@ -1,14 +1,9 @@
 package com.config;
 
 import com.entities.PensionTransaction;
-import com.entities.QueryBatchResponse;
-import com.entities.Txn;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.helper.DateUtil;
 import com.repository.EftRepo;
-import com.service.HttpClientService;
-import com.service.XMLParserService;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +12,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.Nonnull;
-import javax.xml.stream.XMLStreamReader;
+
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class BatchItemWriteListener implements ItemWriteListener<PensionTransaction> {
@@ -32,16 +26,9 @@ public class BatchItemWriteListener implements ItemWriteListener<PensionTransact
     @Autowired
     SYSENV sysenv;
 
-    @Autowired
-    ObjectMapper jacksonMapper;
-
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(EftRepo.class);
 
-    BigDecimal totalAmount = BigDecimal.ZERO;
 
-    String batchRef = "";
-
-    @Override
     public void beforeWrite(List<? extends PensionTransaction> list) {
         System.out.println("ItemWriteListener - beforeWrite");
         String batchRef = "";
@@ -67,7 +54,6 @@ public class BatchItemWriteListener implements ItemWriteListener<PensionTransact
                 "", null);
     }
 
-    @Override
     public void afterWrite(List<? extends PensionTransaction> list) {
         System.out.println("ItemWriteListener - afterWrite");
 //        totalAmount = new BigDecimal(0);
@@ -149,7 +135,7 @@ public class BatchItemWriteListener implements ItemWriteListener<PensionTransact
 //        }
     }
 
-    @Override
+
     public void onWriteError(Exception e, @Nonnull List<? extends PensionTransaction> list) {
         System.out.println("ItemWriteListener - onWriteError");
         e.printStackTrace();

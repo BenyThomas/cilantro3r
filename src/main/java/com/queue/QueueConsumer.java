@@ -11,8 +11,6 @@ import com.DTO.IBANK.BatchPaymentReq;
 import com.DTO.IBANK.PaymentCallbackResp;
 import com.DTO.IBANK.PaymentReq;
 import com.DTO.Teller.RTGSTransferForm;
-import com.DTO.mx.MxMessageRequest;
-import com.DTO.mx.Txn;
 import com.DTO.pension.PensionPayrollToCoreBanking;
 import com.DTO.pension.PsssfBatchBeneficiary;
 import com.DTO.pension.PsssfBatchRequest;
