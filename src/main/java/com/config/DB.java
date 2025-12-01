@@ -270,7 +270,7 @@ public class DB extends HikariConfig {
     }
 
     @Bean(name = "cmDataDbConnection")
-    public JdbcTemplate channelManagerDataConnection(@Qualifier("channelManagerDataConnection") HikariDataSource ds2) {
+    public JdbcTemplate cmDataDbConnection(@Qualifier("channelManagerDataConnection") HikariDataSource ds2) {
         return new JdbcTemplate(ds2);
     }
     @Bean(name = "gwAirtelVikobaDBConnection")
