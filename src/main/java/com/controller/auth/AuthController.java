@@ -12,6 +12,7 @@ import com.security.JwtUtils;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,7 @@ import java.util.*;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
+@ConditionalOnProperty(name = "keycloak.enabled", havingValue = "false", matchIfMissing = true)
 public class AuthController {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
