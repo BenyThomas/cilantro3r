@@ -1,0 +1,117 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+</div>
+<div class="panel panel-default panel-fill">
+    <div class="panel-heading" style="background-color: #04ab18 ! important; ">
+        <h3 class="panel-title" style="color: #ffffff !important;"><strong>Update Card With PAN:
+            <td th:text="${cardPan}">pan</td> AND REFERENCE: <td th:text="${cardReference}">reference</td>
+        </strong></h3>
+    </div>
+    <div class="panel-body">
+        <div class="row" id="content"></div>
+        <div class="row">
+            <div id="successFlag"></div>
+        </div>
+        <div class="row" hidden="" id="preloader2">
+            <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+        </div>
+        <div class="container container-fluid">
+            <div class="row" id="messageData">
+                <div class="row">
+                    <form id="form">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="actionTrigger" style="margin-left: 1% ! important;">Choose Action<i lass="text-danger">*</i></label>
+                                <select class="form-control select2" id="actionTrigger" name="actionTrigger">
+                                    <option disabled selected value="">Choose...</option>
+                                    <option value="updateBranch">Update Collecting Branch</option>
+                                    <option value="updatePhone">Update Customer Contact
+                                    <option value="rejectCard">Reject Card</option>
+                                    <option th:if="${cardPan} == 96" value="changePan">Change Card Pan</option>
+                                </select>
+                            </div>
+                            <input type="hidden" id="cardPan" name="cardPan" class="form-control" th:value="${cardPan}">
+                            <input type="hidden" id="cardReference" name="cardReference" class="form-control" th:value="${cardReference}">
+                        </div>
+                        <div class="row updateBranchD" style="display:none;">
+                            <div class="form-group col-md-6" >
+                                <label for="branchCode" style="margin-left: 1% ! important;">Choose Branch<i class="text-danger">*</i></label>
+                                <select class="form-control select2" id="branchCode" name="branchCode">
+                                    <option disabled selected value="">Select Branch</option>
+                                    <option th:each="bran: ${branches}" th:text="${bran.name}" th:value="${bran.code}"> Branch</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row updateBranchD" style="display:none;">
+                            <div class="form-group col-md-4" >
+                                <a class="btn btn-primary" id="submitChangeBranchBtn" onclick="updateCardCollectingBranch()" >Update Branch</a>
+                            </div>
+                        </div>
+                        <div class="row updatePhoneD" style="display:none;">
+                            <div class="form-group col-md-6" >
+                                <label for="customerPhoneVal" style="margin-left: 1% ! important;">Customer Phone<i class="text-danger">*</i></label>
+                                <input autocomplete="off" class="form-control form-control-sm updatePhoneD" id="customerPhoneVal" name="customerPhoneVal" placeholder="255******" type="text" style="display:none;">
+                            </div>
+                        </div>
+                        <div class="row updatePhoneD" style="display:none;">
+                            <div class="form-group col-md-4" >
+                                <a class="btn btn-primary" id="submitPhone" onclick="updateCustomerPhone()" >Update Phone</a>
+                            </div>
+                        </div>
+                        <div class="row rejectCardD" style="display:none;">
+                            <div class="form-group col-md-10 " >
+                                <label for="cardRejectingReason" style="margin-left: 1% ! important;">Reject Card<i class="text-danger">*</i></label>
+                                <textarea autocomplete="off" class="form-control form-control-sm" id="cardRejectingReason" name="cardRejectingReason" placeholder="Why?" style="font-size: 10px !important;" ></textarea>
+                            </div>
+                        </div>
+                        <div class="row rejectCardD" style="display:none;">
+                            <div class="form-group col-md-4">
+                                <a class="btn btn-primary" id="rejectCardBtn" onclick="rejectCard()" >Update</a>
+                            </div>
+                        </div>
+                        <div class="row changePanD" style="display:none;">
+                            <div class="form-group col-md-10 " >
+                                <label for="changePan" style="margin-left: 1% ! important;">Change PAN<i class="text-danger">*</i></label>
+                                <input autocomplete="off" class="form-control form-control-sm changePanD" id="changePan" name="changePan" type="text" style="display:none;">
+                            </div>
+                        </div>
+                        <div class="row changePanD" style="display:none;">
+                            <div class="form-group col-md-4">
+                                <a class="btn btn-primary" id="changePanBtn" onclick="changePan()" >Update</a>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default col-md-2 pull-right" data-dismiss="modal" id="closeModal" type="button">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/scripts/ebanking.js}"></script>
+</div>
+<div class="row" hidden="" id="preloader333">
+    <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+</div>
+<!--</div>-->
+<script>
+    $(document).ready(function () {
+        $("#successFlag").hide();
+        $('#myModal').data('modal', null);
+    });
+</script>

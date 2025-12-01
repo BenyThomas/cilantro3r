@@ -1,0 +1,235 @@
+
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/main_layout}">
+    <head>
+        <title layout:title-pattern="Cilantro ~ Balances">Account Balance</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div layout:fragment="pageStyle" th:remove="tag">
+        <style>
+            #loading {
+                background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 92%;
+                width: 100%;
+                z-index: 9999999;
+            }
+            ;
+            #rtgsTxnOnWorkFlow{
+                table-layout: fixed !important;
+                word-wrap:break-word;
+            }
+        </style>
+        <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+        <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+        <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+
+
+    </div>
+</head>
+<body>
+    <div class="row" layout:fragment="contents">
+        <div class="panel panel-default panel-fill" id="tabContentsss"><div class="panel-heading"> <h4 class="panel-title" >MNO BALANCE</h4></div>
+            <div class="panel-body">
+                <div class="row">
+                    <form role="form" method="get" action="fireMnoBalanceJasperPost">
+                        <div class="row">
+                            <div class="form-group col-md-3">
+                                <!--<label>Report Type</label>-->
+                                <div class="input-group">
+                                    <select class="form-control" id="exportType"  name="exportType">
+                                        <option value="null">Select Export Type...</option> 
+                                        <option value="excel" selected="">Excel</option>            
+                                        <option value="pdf" selected="">PDF</option>            
+                                    </select>                           
+                                </div>
+                            </div>                          
+                            <div class="form-group col-md-3">
+                                <!--<label>From Date</label>-->
+                                <div class="input-group">
+                                    <input name="txnDate" th:value="${startDate}" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose" data-date-format="yyyy-mm-dd" type="text" placeholder="From date: yyyy-mm-dd" autocomplete="off"/>
+                                    <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                                </div><!-- input-group -->
+                            </div>
+                        </div>
+                        <div class="row">                          
+                            <div class="form-group col-md-3">
+                                <div class="form-group col-md-3 text-right m-b-0" style="margin: 2%;">
+                                    <button  type="button" class="btn btn-info" onclick="viewSummary()">Preview Report</button>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <div class="form-group col-md-3 text-right m-b-0" style="margin: 2%;">
+                                    <button  type="submit" class="btn btn-info" >Download Report</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-3">
+                                <div class="form-group col-md-3 text-right m-b-0" style="margin: 2%;">
+                                    <button  type="button" class="btn btn-success" onclick="SysncCBSBalance()">Download CBS Balance</button>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <div class="form-group col-md-3 text-right m-b-0" style="margin: 2%;">
+                                    <button  type="button" class="btn btn-warning" onclick="SysncMNOBalance()">Download MNO Balance</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div id="successFlag">
+                </div>
+                <div  id="loading" hidden=""> </div>
+                <div id="preview"></div>
+            </div>
+        </div>
+    </div>
+    <div layout:fragment="pageScript" th:remove="tag">
+
+        <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+        <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+        <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+
+        <!-- App Js -->
+        <script th:src="@{/assets/js/jquery.app.js}"></script>
+        <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+        <script th:src="@{/assets/scripts/teller.js}"></script>
+        <script th:src="@{/assets/scripts/eft.js}"></script>
+        <script>
+            $(document).ready(function () {
+                jQuery('#fromTime').timepicker({
+                    showMeridian: false
+                });
+                jQuery('#toTime').timepicker({
+                    showMeridian: false
+                });
+                jQuery('#datepicker-autoclose').datepicker({
+                    autoclose: true,
+                    todayHighlight: true
+                });
+                jQuery('#datepicker-autoclose2').datepicker({
+                    autoclose: true,
+                    todayHighlight: true
+                });
+                $("#loading").hide();
+                $("#select2").select2();
+
+
+            }
+            );
+            function viewSummary() {
+                // get the form values
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var formdata = new FormData();
+                formdata.append('exportType', $("#exportType").val());
+                formdata.append('txnType', $("#txnType").val());
+                formdata.append('txnDate', $("#datepicker-autoclose").val());
+
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formdata,
+                    type: "POST",
+                    url: "/fireMnoBalanceJasper",
+//                    xhrFields: {
+//                        responseType: 'blob'
+//                    },
+
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $(".btnDisabled").prop('disabled', true);
+                        $('#loading1').show();
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        $("#preview").html(response);
+                        $('#loading1').hide();
+                    },
+                    error: function (e) {
+                        console.log(e); $('#loading1').hide();
+                    }
+                });
+
+            }
+
+            function SysncCBSBalance() {
+                // get the form values
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var formdata = new FormData();
+                formdata.append('exportType', $("#exportType").val());
+                formdata.append('txnType', $("#txnType").val());
+                formdata.append('txnDate', $("#datepicker-autoclose").val());
+
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formdata,
+                    type: "POST",
+                    url: "/fireMnoBalanceAjax",
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $(".btnDisabled").prop('disabled', true);
+                        $('#loading1').show();
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        alert(response.status); $('#loading1').hide();
+                    },
+                    error: function (e) {
+                        console.log(e); $('#loading1').hide();
+                    }
+                });
+
+            }
+
+            function SysncMNOBalance() {
+                // get the form values
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var formdata = new FormData();
+                formdata.append('exportType', $("#exportType").val());
+                formdata.append('txnType', $("#txnType").val());
+                formdata.append('txnDate', $("#datepicker-autoclose").val());
+
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formdata,
+                    type: "POST",
+                    url: "/fireMnoBalanceMNOAjax",
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $(".btnDisabled").prop('disabled', true);
+                        //$('#loading1').show();
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        alert(response.status); $('#loading1').hide();
+                    },
+                    error: function (e) {
+                        console.log(e); $('#loading1').hide();
+                    }
+                });
+
+            }
+        </script>
+
+    </div>
+
+</body>
+</html>
+
+
+

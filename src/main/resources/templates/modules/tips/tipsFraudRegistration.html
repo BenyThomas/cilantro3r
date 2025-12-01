@@ -1,0 +1,257 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+
+    </style>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}">
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentsss">
+        <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+
+            <div hidden="" id="loading"></div>
+
+            <div class="row">
+                <div class="panel-body">
+                    <div class="row" id="preloader2" style="display: none;">
+                        <img alt="please wait" src="/assets/images/please_wait.gif">
+                    </div>
+                    <!--- success start--->
+                    <div class="col-md-12" id="successFlag"></div>
+                    <!------ End ------->
+
+                    <div class="row align-items-center">
+                        <div class="col-md-4 col-lg-4">
+                            <div>
+                                <select class="form-control" id="actionDecider" name="actionDecider">
+                                    <option disabled selected value="">CHOOSE ACTION...</option>
+                                    <option id="addDiv" value="addDiv">Register Fraud</option>
+                                    <option id="searcDiv" value="searcDiv">Search Frauds</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <!--- FORM START ----->
+                    <div class="row" id="another-element" style="display: none;">
+                        <form id="register-fraud-form">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="fsp" style="margin-left: 1% ! important;">FSP<i
+                                            class="text-danger">*</i></label>
+                                    <select class="form-control" id="fsp" name="fsp" style="width: 550px">
+                                        <option selected value="Tanzania-Commercial-Bank">Tanzania Commercial Bank
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label for="fullName" style="margin-left: 1% ! important;">Full Name<i
+                                            class="text-danger">*</i></label>
+                                    <input class="form-control" id="fullName" name="fullName" placeholder="Full Name"
+                                           type="text">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="identityType" style="margin-left: 1% ! important;">Identity Type<i
+                                            class="text-danger">*</i></label>
+                                    <input class="form-control" id="identityType" name="identityType" placeholder="Identity Type"
+                                           type="text">
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label for="identityValue" style="margin-left: 1% ! important;">Identity Value<i
+                                            class="text-danger">*</i></label>
+                                    <input class="form-control" id="identityValue" name="identityValue" placeholder="Identity Type"
+                                           type="text">
+                                </div>
+
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="identifierType" style="margin-left: 1% ! important;">Identifier Type<i
+                                            class="text-danger">*</i></label>
+                                    <input class="form-control" id="identifierType" name="identifierType" placeholder="Identifier Type"
+                                           type="text">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="identifierValue" style="margin-left: 1% ! important;">Identifier Value<i
+                                            class="text-danger">*</i></label>
+                                    <input class="form-control" id="identifierValue" name="identifierValue" placeholder="Identifier Value"
+                                           type="text">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for="reasons" style="margin-left: 1% ! important;">Reasons<i
+                                            class="text-danger">*</i></label>
+                                    <input class="form-control" id="reasons" name="reasons" placeholder="Reasons"
+                                           type="text">
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-3">
+                                    <div class="form-group col-md-3 text-right m-b-0" style="margin: 10%;">
+                                        <button class="btn btn-info" onclick="registerFraud()" type="button">Save
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                    <!----- FORM END ------->
+
+                    <!--- SEARCH START ----->
+                    <div class="row" id="search-element" style="display: none;">
+                        <form id="search-form">
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label style="margin-left:1px; importrant;">FSP</label>
+                                    <select class="form-control" id="currentFsp" name="currentFsp" style="width: 550px">
+                                        <option selected value="Tanzania-Commercial-Bank">Tanzania Commercial Bank
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label style="margin-left:1px; importrant;">From Date</label>
+                                    <div class="input-group">
+                                        <input autocomplete="off"
+                                               class="form-control form-control-inline input-txndatemedium default-date-picker"
+                                               data-date-format="yyyy-mm-dd"
+                                               id="datepicker-autoclose" name="fromDate"
+                                               placeholder="From date: yyyy-mm-dd"
+                                               th:value="${startDate}" type="text"/>
+                                        <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                                    </div><!-- input-group -->
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label style="margin-left:1px; importrant;">To Date</label>
+                                    <div class="input-group">
+                                        <input autocomplete="off"
+                                               class="form-control form-control-inline input-txndatemedium default-date-picker"
+                                               data-date-format="yyyy-mm-dd"
+                                               id="datepicker-autoclose2" name="toDate"
+                                               placeholder="To date: yyyy-mm-dd"
+                                               th:value="${endDate}" type="text"/>
+                                        <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                                    </div><!-- input-group -->
+                                </div>
+
+                            </div>
+                            <div class="form-group col-md-3">
+                                <div class="form-group col-md-3 text-right m-b-0" style="margin: 2%;">
+                                    <button class="btn btn-info" id="searchTipsFraud" type="button">Search</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                    <!----- SEARCH END ------->
+                    <div class="col-sm-12">
+                        <table class="table table-striped table-bordered" id="fsp-frauds-table" style="display:none;">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>FSP</th>
+                                <th>Full Name</th>
+                                <th>Identity Type</th>
+                                <th>Identity Value</th>
+                                <th>Identifier Type</th>
+                                <th>Identifier Value</th>
+                                <th>Reasons</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div layout:fragment="pageScript" th:remove="tag">
+        <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+        <!-- init -->
+        <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+        <!-- App Js -->
+        <script th:src="@{/assets/js/jquery.app.js}"></script>
+        <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+        <script th:src="@{/assets/scripts/tips.js}"></script>
+        <script>
+           $('#actionDecider').change(function () {
+            var triggeredAction = $(this).val();
+                if(triggeredAction === 'addDiv'){
+                   $('#another-element').toggle('slide');
+                   $('#search-element').hide();
+                }else{
+                    $('#another-element').hide();
+                    $('#search-element').toggle('slide');
+                }
+           });
+
+            /**SEARCH FRAUD*/
+            $("#searchTipsFraud").click(function(){
+              // get the form values
+                            var token = $("meta[name='_csrf']").attr("content");
+                            var header = $("meta[name='_csrf_header']").attr("content");
+                            var formdata = new FormData($('#search-form')[0]);
+
+                            $.ajax({
+                               processData: false,
+                               contentType: false,
+                               data: formdata,
+                               type: "POST",
+                               url: "/getTCBTipsFraudsAjax",
+                               beforeSend: function (request) {
+                                    request.setRequestHeader(header, token);
+                               },
+                                success: function (response) {
+
+                                         },
+                              error: function (e) {
+                                            console.log(e);
+                                          }
+                            });
+            });
+
+
+        </script>
+    </div>

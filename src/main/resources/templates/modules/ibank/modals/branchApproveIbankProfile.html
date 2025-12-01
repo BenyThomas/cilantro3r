@@ -1,0 +1,160 @@
+<div layout:fragment="pageStyle" th:remove="tag" xmlns:layout="http://www.w3.org/1999/xhtml">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+</div>
+<div class="panel panel-default panel-fill">
+    <div class="panel-heading" style="background-color: #04ab18 ! important; "> <h3 class="panel-title" style="color: #ffffff !important;" th:text="${pageTitle}"></h3>
+    </div>
+    <div class="panel-body">
+        <div class="row" id="content"></div>
+        <div class="row">
+            <div id="successFlag"></div>
+        </div>
+        <div class="row" id="preloader2" hidden=""> 
+            <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+        </div>
+        <div class="row" id="messageData">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="panel-heading"> <h4 class="panel-title">CLIENT DETAILS</h4></div>
+                    <table class="display nowrap table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Rim NO</th>
+                                <th>Client Name</th>
+                                <th>Tracking Reference</th>
+                                <th>Category</td>
+                                <th>Mandate</th>
+                            </tr>
+                        </thead>
+                        <tr th:each="p:${profile}">
+                            <td th:text="${p.rim_no}"></td>
+                            <td th:text="${p.name}"></td>
+                            <td th:text="${p.reference}"></td>
+                            <td th:text="${p.mandate}"></td>
+                            <td th:text="${p.mandate}"></td>
+
+                        </tr>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="panel-heading"> <h4 class="panel-title">LIST OF ACCOUNTS</h4></div>
+                    <table class="display nowrap table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Account No</th>
+                                <th>Old Account</th>
+                                <th>Account Name</th>
+                                <th>Account Type</th>
+                            </tr>
+                        </thead>
+                        <tr th:each="a:${accounts}">
+                            <td th:text="${a.account_no}"></td>
+                            <td th:text="${a.old_account_no}"></td>
+                            <td th:text="${a.account_name}"></td>
+                            <td th:text="${a.account_type}"></td>
+                        </tr>
+                    </table> 
+                </div>
+                <div class="row">
+                    <div class="panel-heading"> <h4 class="panel-title">LIST OF SIGNATORIES</h4></div>
+                    <table class="display nowrap table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Signatory RiM</th>
+                                <th>Full Name</th>
+                                <th>Iban Username</th>
+                                <th>Email</th>
+                                <th>phone</th>
+                            </tr>
+                        </thead>
+                        <tr th:each="s:${signatories}">
+                            <td th:text="${s.cust_rim_no}"></td>
+                            <td th:text="${s.fullname}"></td>
+                            <td th:text="${s.username}"></td>
+                            <td th:text="${s.email_address}"></td>
+                            <td th:text="${s.phone}"></td> 
+                        </tr>
+                    </table> 
+                </div>
+                <hr/>
+                <div class="row">
+                    <div class="panel-heading"> <h4 class="panel-title">SIGNATORIES ROLES</h4></div>
+                    <table class="display nowrap table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Signatory Name</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tr th:each="rr:${rroles}">
+                            <td th:text="${rr.signatoryName}"></td>
+                            <td th:text="${rr.name}"></td>
+                        </tr>
+                    </table> 
+                </div>
+                <hr/>
+                <div class="row">
+                    <div class="panel-heading"> <h4 class="panel-title">SIGNATORIES ACCOUNT ACCESS</h4></div>
+                    <table class="display nowrap table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Signatory Name</th>
+                                <th>Account No.</th>
+                                <th>Transfer Access</th>
+                                <th>View Access</th>
+                                <th>Transfer Limit</th>
+                            </tr>
+                        </thead>
+                        <tr th:each="ac:${accountAccess}">
+                            <td th:text="${ac.fullname}"></td>
+                            <td th:text="${ac.account_no}"></td>
+                            <td th:text="${ac.transfer_access}"></td>
+                            <td th:text="${ac.view_access}"></td>
+                            <td th:text="${ac.account_limit}"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <iframe class="col-md-6"  th:src="@{'/previewIbProfileDocument?reference='+${reference}}" width="500" height="650" frameborder="1" scrolling="yes"/>
+        </div>
+        <div class="modal-footer">
+            <button id="authorize" th:onclick="approveIBProfileAtBranchLevel([[${reference}]])" class="btn btn-primary pull-right col-md-3">Approve</button>
+<!--            <button id="cancel" th:onclick="reverseTransaction([[${reference}]])" class="btn btn-danger pull-right col-md-3">Cancel/Discard Payment</button>-->
+            <button type="button" class="btn btn-default" id="closeModal" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag" xmlns:layout="http://www.w3.org/1999/xhtml" >
+    <script th:src="@{/assets/scripts/teller.js}"></script>
+</div>
+<div class="row" id="preloader333" hidden=""> 
+    <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+</div>
+<!--</div>-->
+<script>
+    $(document).ready(function () {
+        $("#successFlag").hide();
+        $('#myModal').data('modal', null);
+        var wrapper = $("#ammendmendsForm");
+        var add_button = $("#return");
+        $(add_button).click(function (e) {
+            $(wrapper).show();
+            $("#messageData").hide();
+            $('#authorize').attr('disabled', 'disabled');
+            $('#cancelPayments').attr('disabled', 'disabled');
+            $('#return').attr('disabled', 'disabled');
+            $('#closeModal').attr('disabled', 'disabled');
+//            $(wrapper).append('<textarea type="text" name="comments" class="form-control form-control-sm"  placeholder="Please provides reasons for why returning for ammendment"></textarea>'); //add input box
+        });
+    });
+</script>

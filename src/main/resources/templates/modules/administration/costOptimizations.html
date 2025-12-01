@@ -1,0 +1,514 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentCostOptimization">
+        <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <div class="input-group">
+                        <button type="button" class="btn btn-primary" th:onclick="addCostParameter()">Add Cost Parameter</button>
+                    </div><!-- input-group -->
+                </div>
+                <div class="form-group col-md-3">
+                    <div class="input-group">
+                        <button type="button" class="btn btn-primary" th:onclick="addCostOptimization()">Add Cost Optimization</button>
+                    </div><!-- input-group -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <div class="input-group">
+                        <input id="fromDate" name="fromDate" class="form-control form-control-inline input-medium default-date-picker" data-date-format="yyyy-mm-dd" type="text" placeholder="From Date" autocomplete="off"/>
+                        <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                    </div><!-- input-group -->
+                </div>
+                <div class="form-group col-md-3">
+                    <div class="input-group">
+                        <input id="toDate" name="toDate" class="form-control form-control-inline input-medium default-date-picker" data-date-format="yyyy-mm-dd" type="text" placeholder="To Date" autocomplete="off"/>
+                        <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                    </div><!-- input-group -->
+                </div>
+                <div class="form-group col-md-3" style="margin-top: auto; margin-bottom: auto;">
+                    <button type="button" class="btn btn-primary btn-filter-cost-optimizations">Search</button>
+                </div>
+            </div>
+            <div class="row">
+                <form role="form">
+                    <div class="form-group col-md-3">
+                        <div class="input-group">
+                            <select class="form-control col-sm-12 select2" id="branch" name="branch" style="font-size: 10px !important;">
+                                <option value="">Select Branch...</option>
+                                <option th:each="branch: ${branches}" th:value="${branch.code}" th:text="${branch.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="successFlag">
+            </div>
+            <div id="loading" hidden=""></div>
+            <div class="row">
+                <table id="costOptimizations" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important;">
+                    <thead>
+                    <tr>
+                        <th>S/N</th>
+                        <th>Branch</th>
+                        <th>Service</th>
+                        <th>Cost</th>
+                        <th>Created By</th>
+                        <th>Spending Date</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+    <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+
+    <script type="text/javascript" th:inline="javascript">
+        let userRoles = /*[[${roleId}]]*/;
+        let branchCode = /*[[${branchCode}]]*/;
+        let branches = /*[[${branches}]]*/;
+        let parameters = /*[[${parameters}]]*/;
+        $(document).ready(function () {
+            $("#fromDate").datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#toDate").datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#datepicker-autoclose").datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#loading").hide();
+            $(".select2").select2();
+            $(".btn-filter-cost-optimizations").click(function () {
+                $('#costOptimizations').DataTable().ajax.reload();
+            });
+            if (branchCode !== null && branchCode !== undefined) {
+                $('#branch').val(branchCode).trigger('change');
+            }
+            $("#branch").on('change', function () {
+                $('#costOptimizations').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $("#costOptimizations").DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "desc"],
+                ajax: {
+                    'url': '/fireGetCostOptimizationsAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    },
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "branch": $("select[name='branch']").val(),
+                            "fromDate": $("input[name='fromDate']").val(),
+                            "toDate": $("input[name='toDate']").val()
+                        });
+                    }
+                },
+                "columns": [
+                    {"data": "id"},
+                    {"data": "branch"},
+                    {"data": "service"},
+                    {"data": "cost"},
+                    {"data": "created_by"},
+                    {"data": "created_date",
+                        "render": function (data, type, row, meta) {
+                            let date = new Date(row.created_date);
+                            return date.toLocaleString();
+                        }
+                    },
+                    {"data": "id",
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            var a = `<button type="button" class="btn btn-primary" onclick='showCostOptimizationValue(
+                            "${row.id}","${row.cost}","${row.service}")'>Edit</button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary" onclick='removeCostOptimization("${row.id}")'>Remove</button>
+                            &nbsp;`;
+                            return a;
+                        }
+                    }
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+                buttons: [
+                    {
+                        extend: "copy",
+                        title: 'COST OPTIMIZATIONS',
+                        className: "btn-sm",
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    }, {
+                        extend: "csv",
+                        title: 'COST OPTIMIZATIONS',
+                        className: "btn-sm",
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    }, {
+                        extend: "excel",
+                        title: 'COST OPTIMIZATIONS',
+                        className: "btn-sm",
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    }, {
+                        extend: "pdf",
+                        title: 'COST OPTIMIZATIONS',
+                        className: "btn-sm",
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    }, {
+                        extend: "print",
+                        title: 'COST OPTIMIZATIONS',
+                        className: "btn-sm",
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    }
+                ],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='branch']").val() == '') {
+                        return false;
+                    }
+                },
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        });
+
+        function reloadDatatable() {
+            $('#costOptimizations').DataTable().ajax.reload();
+        }
+
+        function addCostParameter() {
+            $("#myModal").modal("show");
+            var htmlData = '<div class="row">';
+            htmlData += '<div class="panel panel-default panel-fill">';
+            htmlData += '<div class="panel-heading"><h4 class="panel-title">ADD COST PARAMETER</h4></div>';
+            htmlData += '<div class="panel-body">';
+            htmlData += '<div class="col-md-12">';
+            htmlData += '<form class="form-horizontal" role="form" id="add_cost_parameter" method="POST">';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Parameter Name</label>';
+            htmlData += '<input type="text" id="parameter" name="parameter" class="form-control form-control-sm" value=""';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;" placeholder="Parameter">';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row text-center">';
+            htmlData += '<button type="button" class="btn btn-primary" onclick="addCostOptimizationParameter()">';
+            htmlData += 'Save';
+            htmlData += '</button>';
+            htmlData += '</div>';
+            htmlData += '</form>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            $("#areaValue").html(htmlData);
+        }
+
+        function showCostOptimizationValue(id, cost, service) {
+            $("#myModal").modal("show");
+            var htmlData = '<div class="row">';
+            htmlData += '<div class="panel panel-default panel-fill">';
+            htmlData += '<div class="panel-heading"><h4 class="panel-title">EDIT COST OPTIMIZATION VALUE</h4></div>';
+            htmlData += '<div class="panel-body">';
+            htmlData += '<div class="col-md-12">';
+            htmlData += '<form class="form-horizontal" role="form" method="POST">';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Branch</label>';
+            htmlData += '<select class="form-control form-control-sm col-sm-12 select2" id="modalBranch" name="modalBranch"';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;">';
+            htmlData += '<option value="">-- Select Branch --</option>'; // default
+            branches.forEach(b => {
+                htmlData += `<option value="${b.code}">${b.name}</option>`;
+            });
+            htmlData += '</select>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Parameter</label>';
+            htmlData += '<select class="form-control form-control-sm col-sm-12 select2" id="parameter" name="parameter"';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;">';
+            htmlData += '<option value="">-- Select Parameter --</option>'; // default
+            parameters.forEach(p => {
+                htmlData += `<option value="${p.id}">${p.service}</option>`;
+            });
+            htmlData += '</select>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Cost</label>';
+            htmlData += '<input type="text" id="cost" name="cost" class="form-control form-control-sm" value=""';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;" placeholder="Cost (TZS)">';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row text-center">';
+            htmlData += '<button type="button" class="btn btn-primary" onclick="editCostOptimizationValue('+id+')">';
+            htmlData += 'Save';
+            htmlData += '</button>';
+            htmlData += '</div>';
+            htmlData += '</form>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            $("#areaValue").html(htmlData);
+            if (branchCode !== null && branchCode !== undefined) {
+                $('#modalBranch').val(branchCode).trigger('change');
+            }
+            $("#cost").val(cost);
+            var option = $('select[name="parameter"] option').filter(function() { return $(this).text() === service; });
+
+            if (option.length) {
+                $('select[name="parameter"]').val(option.val()).trigger('change');
+            }
+        }
+
+        function addCostOptimizationParameter() {
+            $("#loading").show();
+            var parameter = $("#parameter").val();
+            $.ajax({
+                url: "/fireAddCostOptimization",
+                data: {parameter: parameter},
+                type: 'POST',
+                success: function (response) {
+                    $("#loading").hide();
+                    $("#myModal").modal("hide");
+                    if (response.validated && response.json != null) {
+                        if (response.json.responseCode == "0") {
+                            swal("Success!", response.json.message, "success");
+                        } else {
+                            swal("Error!", response.json.message, "error");
+                        }
+                    } else {
+                        swal("Error!", response.json.errorMessages, "error");
+                    }
+                }
+            });
+        }
+
+        function addCostOptimization() {
+            $("#myModal").modal("show");
+            var htmlData = '<div class="row">';
+            htmlData += '<div class="panel panel-default panel-fill">';
+            htmlData += '<div class="panel-heading"><h4 class="panel-title">ADD COST OPTIMIZATION VALUE</h4></div>';
+            htmlData += '<div class="panel-body">';
+            htmlData += '<div class="col-md-12">';
+            htmlData += '<form class="form-horizontal" role="form" method="POST">';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Branch</label>';
+            htmlData += '<select class="form-control form-control-sm col-sm-12 select2" id="modalBranch" name="modalBranch"';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;">';
+            htmlData += '<option value="">-- Select Branch --</option>'; // default
+            branches.forEach(b => {
+                htmlData += `<option value="${b.code}">${b.name}</option>`;
+            });
+            htmlData += '</select>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Parameter</label>';
+            htmlData += '<select class="form-control form-control-sm col-sm-12 select2" id="parameter" name="parameter"';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;">';
+            htmlData += '<option value="">-- Select Parameter --</option>'; // default
+            parameters.forEach(p => {
+                htmlData += `<option value="${p.id}">${p.service}</option>`;
+            });
+            htmlData += '</select>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Cost</label>';
+            htmlData += '<input type="text" id="cost" name="cost" class="form-control form-control-sm" value=""';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;" placeholder="Cost (TZS)">';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Date</label>';
+            htmlData += '<input type="date" id="createDt" name="createDt" class="form-control form-control-sm" value=""';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;" placeholder="Create Date">';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row text-center">';
+            htmlData += '<button type="button" class="btn btn-primary" onclick="addCostOptimizationValue()">';
+            htmlData += 'Save';
+            htmlData += '</button>';
+            htmlData += '</div>';
+            htmlData += '</form>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            $("#areaValue").html(htmlData);
+            if (branchCode !== null && branchCode !== undefined) {
+                $('#modalBranch').val(branchCode).trigger('change');
+            }
+            let today = new Date().toISOString().split("T")[0];
+            $("#createDt").attr("max", today);
+        }
+
+        function addCostOptimizationValue() {
+            $("#loading").show();
+            var branch = $("#modalBranch").val();
+            var parameter = $("#parameter").val();
+            var createDt = $("#createDt").val();
+            var cost = $("#cost").val();
+            $.ajax({
+                url: "/fireSubmitCostOptimizationForm",
+                data: {branchCode: branch, serviceId: parameter, cost: cost, createdDate: createDt},
+                type: 'POST',
+                success: function (response) {
+                    $("#loading").hide();
+                    $("#myModal").modal("hide");
+                    if (response.validated && response.json != null) {
+                        if (response.json.responseCode == "0") {
+                            swal("Success!", response.json.message, "success");
+                        } else {
+                            swal("Error!", response.json.message, "error");
+                        }
+                    } else {
+                        swal("Error!", response.json.errorMessages, "error");
+                    }
+                }
+            });
+        }
+
+        function editCostOptimizationValue(id) {
+            $("#loading").show();
+            var branch = $("#modalBranch").val();
+            var parameter = $("#parameter").val();
+            var cost = $("#cost").val();
+            $.ajax({
+                url: "/fireEditCostOptimizationForm",
+                data: {id: id, branchCode: branch, serviceId: parameter, cost: cost},
+                type: 'POST',
+                success: function (response) {
+                    $("#loading").hide();
+                    $("#myModal").modal("hide");
+                    if (response.validated && response.json != null) {
+                        if (response.json.responseCode == "0") {
+                            swal("Success!", response.json.message, "success");
+                            reloadDatatable();
+                        } else {
+                            swal("Error!", response.json.message, "error");
+                        }
+                    } else {
+                        swal("Error!", response.json.errorMessages, "error");
+                    }
+                }
+            });
+        }
+
+        function removeCostOptimization(id) {
+            $("#loading").show();
+            $.ajax({
+                url: "/fireRemoveCostOptimization",
+                data: {id: id},
+                type: 'POST',
+                success: function (response) {
+                    $("#loading").hide();
+                    $("#myModal").modal("hide");
+                    if (response.responseCode == "0") {
+                        swal("Success!", response.message, "success");
+                        reloadDatatable();
+                    } else {
+                        swal("Error!", response.message, "error");
+                    }
+                }
+            });
+        }
+    </script>
+</div>

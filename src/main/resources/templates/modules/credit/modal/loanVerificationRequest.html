@@ -1,0 +1,109 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+</div>
+<div class="panel panel-default panel-fill">
+    <div class="panel-heading" style="background-color: #04ab18 ! important; "> <h3 class="panel-title" style="color: #ffffff !important;" th:text="${pageTitle}">FORM</h3>
+    </div>
+    <div class="panel-body">
+        <div class="row" id="content"></div>
+        <div class="row">
+            <div id="successFlag"></div>
+        </div>
+        <div class="row" id="messageData">
+            <form id="verifyLoan" role="form" enctype="multipart/form-data">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="accNumber"  style="margin-left: 1% ! important;">Account Number</label>
+                        <input type="text" id="accNumber" name="accNumber" class="form-control" placeholder="Account Number">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <div class="form-group col-md-3 text-right m-b-0" style="margin-top: 25px;">
+                            <button class="btn btn-primary btn-xs" style="font-size: 9px !important;"  onclick="getAccountDetails()" type="button">Query Account Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="pensionerName"  style="margin-left: 1% ! important;">Pensionser Name</label>
+                        <input type="text" id="pensionerName" name="pensionerName" class="form-control" placeholder="Pensioner  Name" th:value="${pensionerName}" readonly>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label for="rubikonActNM"  style="margin-left: 1% ! important;">Pensioner Rubikon Name</label>
+                        <input type="text" id="rubikonActNM" name="rubikonActNM" class="form-control" placeholder="Pensioner Rubikon  Name" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="loanAmount"  style="margin-left: 1% ! important;">Loan Amount</label>
+                        <input type="text" id="loanAmount" name="loanAmount" class="form-control comma-number" placeholder="Loan Amount">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="monthlyInst"  style="margin-left: 1% ! important;">Monthly Installment</label>
+                        <input type="text" id="monthlyInst" name="monthlyInst" class="form-control comma-number">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="period"  style="margin-left: 1% ! important;">Period</label>
+                        <input type="number" id="period" name="period" class="form-control" min="1">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="pensionerID"  style="margin-left: 1% ! important;">Pensioner ID</label><br>
+                        <input type="text" id="pensionerID" name="pensionerID" class="form-control" th:value="${pensionerID}" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="branchCode"  style="margin-left: 1% ! important;">Branch</label>
+                        <select class="form-control form-select select2" id="branchCode" name="branchCode">
+                            <option value="" selected disabled>CHOOSE BRANCH...</option>
+                            <option th:each="branch:${branches}"  th:text="${branch.name}" th:value="${branch.code}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="bankType"  style="margin-left: 1% ! important;">Bank Type</label>
+                        <select class="form-control form-select" id="bankType" name="bankType">
+                             <option value="" selected disabled>CHOOSE BANK</option>
+                            <option value="TAPBTZTZ" selected>TANZANIA COMMERCIAL BANK</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="changeBankAccDoc"  style="margin-left: 1% ! important;">Change Bank Account Document </label>
+                        <input type="file" id="changeBankAccDoc" name="changeBankAccDoc" class="form-control" >
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="clearanceDoc"  style="margin-left: 1% ! important;">Clearance Doc </label>
+                        <input type="file" id="clearanceDoc" name="clearanceDoc" class="form-control" >
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="narration"  style="margin-left: 1% ! important;">Narrations</label><br>
+                        <textarea id="narration" class="form-control" name="narration"  rows="2" cols="60"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="modal-footer">
+                <button id="loanVerficationReq" th:onclick='verifyPensionerLoan()' class="btn btn-primary pull-right col-md-2 mr-2">Initiate Loan Verification</button>
+                <button type="button" class="btn btn-default mx-3" id="closeModal" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    <div layout:fragment="pageScript" th:remove="tag">
+        <script th:src="@{/assets/scripts/loanCredit.js}"></script>
+    </div>
+

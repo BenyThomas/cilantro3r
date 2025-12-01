@@ -1,0 +1,241 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/plugins/select2/css/select2.min.css}" type="text/css"/>
+    <!--    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div id="reconData" layout:fragment="contents">
+            <div class="panel panel-default panel-fill">
+                <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+                <div class="panel-body">
+                    <div class="row" id="preloader2">
+                        <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+                    </div>
+                    <!--- success start--->
+                    <div class="col-md-12" id="successFlag"></div>
+                    <!------ End ------->
+                    <br>
+                    <!--- FORM START ----->
+                    <div class="row" id="another-element">
+                        <form id="form2" role="form">
+                            <div class="row">
+                                <div class="form-row" >
+                                    <div class="form-group col-md-4" >
+                                        <label style="margin-left:1px; importrant;">Bank Type</label>
+                                        <select class="form-control select2" id="bankName" name="bankName" selected="selected"
+                                                style="width: 550px">
+                                            <option  selected value="ALL">ALL</option>
+                                            <option th:each="bank : ${banks}" th:value="${bank.swift_code}" th:text="${bank.name}">kds</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <label style="margin-left: 1% ! important;">From Date <i class="text-danger">*</i></label>
+                                        <div class="input-group">
+                                            <input autocomplete="off"
+                                                   class="form-control form-control-inline input-txndatemedium default-date-picker"
+                                                   data-date-format="yyyy-mm-dd"
+                                                   id="datepicker-autoclose" name="fromDate"
+                                                   placeholder="From date: yyyy-mm-dd"
+                                                   th:value="${fromDate}" type="text"/>
+                                            <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                                        </div><!-- input-group -->
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label style="margin-left: 1% ! important;">To Date<i class="text-danger">*</i></label>
+                                        <div class="input-group">
+                                            <input autocomplete="off"
+                                                   class="form-control form-control-inline input-txndatemedium default-date-picker"
+                                                   data-date-format="yyyy-mm-dd"
+                                                   id="datepicker-autoclose2" name="toDate"
+                                                   placeholder="To date: yyyy-mm-dd"
+                                                   th:value="${toDate}" type="text"/>
+                                            <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                                        </div><!-- input-group -->
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <div class="form-group col-md-3 text-right m-b-0" style="margin-top: 25px; ">
+                                            <button type="button" class="btn btn-primary" id="searchBtn" style="background-color: #769b77!important">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+                        </form>
+                    </div>
+
+                    <table id="summaryDataTebo" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important; display:none;">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>REFERENCE</th>
+                            <th>SENDER ACCT</th>
+                            <th>SENDER BIC</th>
+                            <th>SENDER NAME</th>
+                            <th>BENEFICIARY ACCT</th>
+                            <th>AMOUNT</th>
+                            <th>CURRENCY</th>
+                            <th>BENEFICIARY NAME</th>
+                            <th>BENEFICIARY BIC</th>
+                            <th>COMMENT</th>
+                            <th>MESSAGE</th>
+                            <th>DIRECTION</th>
+                            <th>BRANCH APPROVED BY</th>
+                            <th>BRANCH APPROVED DATE</th>
+                            <th>HQ APPROVED BY</th>
+                            <th>HQ APPROVED DATE</th>
+                            <th>RETURNED DATE</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/clockpicker/js/bootstrap-clockpicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/loan.js}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#preloader2").hide();
+               $(".select2").select2({width:'100%',});
+               jQuery('#fromTime').timepicker({
+                    showMeridian: false
+                });
+                jQuery('#toTime').timepicker({
+                    showMeridian: false
+                });
+                jQuery('#datepicker-autoclose').datepicker({
+                    autoclose: true,
+                    todayHighlight: true
+                });
+                jQuery('#datepicker-autoclose2').datepicker({
+                    autoclose: true,
+                    todayHighlight: true
+                });
+
+
+            $('#searchBtn').click(function(){
+                $('#successFlag').hide();
+                    var formData = new FormData($('#form2')[0]);
+                    var token = $("meta[name='_csrf']").attr("content");
+                    var header = $("meta[name='_csrf_header']").attr("content");
+                  var count = 0;
+                    $.ajax({
+                        processData: false,
+                        contentType: false,
+                        data: formData,
+                        type: "POST",
+                        'url': '/returnedTransactionsFromOtherBanksAjax',
+                        beforeSend: function (request) {
+                            request.setRequestHeader(header, token);
+                            $("#preloader2").show();
+                        },
+
+                        success: function (response) {
+                                $("#preloader2").hide();
+                                $("#summaryDataTebo").show();
+                                var table = $('#summaryDataTebo').DataTable({
+                                    dom: 'Blfrtip',
+                                    "info": true,
+                                    "bDestroy": true,
+                                    lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                                    scrollX: true,
+                                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                    "data": response.result,
+                                    columns: [
+                                         {"data": "count",
+                                          "render":function(data, type,row,meta){
+                                                return count +=1;
+                                          }
+                                          },
+                                          {"data": "reference"},
+                                          {"data": "sourceAcct"},
+                                          {"data": "senderBIC"},
+                                          {"data": "sender_name"},
+                                          {"data": "destinationAcct"},
+                                          {"data": "amount",
+                                           "render": function numberWithCommas(amount) {
+                                            return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                          }
+                                          },
+                                          {"data": "currency"},
+                                          {"data": "beneficiaryName"},
+                                          {"data": "beneficiaryBIC"},
+                                          {"data": "comments"},
+                                          {"data": "message"},
+                                          {"data": "direction"},
+                                           {"data": "branch_approved_by"},
+                                           {"data": "branch_approved_dt"},
+                                           {"data": "hq_approved_by"},
+                                           {"data": "hq_approved_dt"},
+                                           {"data": "returnedDate"},
+                                    ]
+                                    });
+                                table.buttons().container().appendTo('#summaryDataTebo .col-md-6:eq(0)');
+                        },
+                        error: function (e) {
+                            $("#preloader2").hide();
+                            console.log(e);
+                        }
+                    }); //end ajax
+
+            }); //end click function
+
+        }); //END DOCUMENT READY
+
+  </script>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,363 @@
+<div layout:fragment="pageStyle" th:remove="tag" xmlns:layout="http://www.w3.org/1999/xhtml"
+     xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentAgentsKyc">
+        <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <form role="form">
+                    <div class="form-group col-md-2">
+                        <div class="input-group">
+                            <select class="form-control col-sm-12 select2" id="branch" name="branch" style="font-size: 10px !important;">
+                                <option value="">Select Branch...</option>
+                                <option th:each="branch: ${branches}" th:value="${branch.code}" th:text="${branch.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <div class="input-group">
+                            <select class="form-control col-sm-12 select2" id="is_enabled" name="is_enabled" style="font-size: 10px !important;">
+                                <option value="">Is Enabled</option>
+                                <option value="1">YES</option>
+                                <option value="0">NO</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <div class="input-group">
+                            <select class="form-control col-sm-12 select2" id="is_agent" name="is_agent" onchange="toggleCategory(this.value)" style="font-size: 10px !important;">
+                                <option value="">Is AGENT?</option>
+                                <option value="1">YES</option>
+                                <option value="0">NO</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="categoryDiv" class="form-group col-md-3" style="display: none;">
+                        <div class="input-group">
+                            <select class="form-control col-sm-12 select2" id="category" name="category" style="font-size: 10px !important;">
+                                <option value=""></option>
+                                <option value="0">TCB Wakala</option>
+                                <option value="1">Mainstream</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="successFlag">
+            </div>
+            <div id="loading" hidden=""></div>
+            <div class="row">
+                <table id="agentsKyc" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important;">
+                    <thead>
+                        <tr>
+                            <th>S/N</th>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Account no.</th>
+                            <th>Enabled</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Device ID</th>
+                            <th>First Login</th>
+                            <th>User Type</th>
+                            <th>Branch</th>
+                            <th>Status</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+    <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/kyc.js}"></script>
+
+    <script type="text/javascript" th:inline="javascript">
+        let userRoles = /*[[${roleId}]]*/;
+        let branches = /*[[${branches}]]*/;
+        $(document).ready(function () {
+            jQuery('#fromTime').timepicker({
+                showMeridian: false
+            });
+            jQuery('#toTime').timepicker({
+                showMeridian: false
+            });
+            jQuery('#datepicker-autoclose').datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#loading").hide();
+            $(".select2").select2();
+            $("#branch").on('change', function () {
+                $('#agentsKyc').DataTable().ajax.reload();
+            });
+            $("#is_enabled").on('change', function () {
+                $('#agentsKyc').DataTable().ajax.reload();
+            });
+            $("#is_agent").on('change', function () {
+                $('#agentsKyc').DataTable().ajax.reload();
+            });
+            $("#category").on('change', function () {
+                $('#agentsKyc').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $('#agentsKyc').DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "desc"],
+                ajax: {
+                    'url': '/getMobileAgentsAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    },
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "branch": $("select[name='branch']").val(),
+                            "is_enabled": $("select[name='is_enabled']").val(),
+                            "is_agent": $("select[name='is_agent']").val(),
+                            "category": $("select[name='category']").val(),
+                        });
+                    }
+                },
+                "columns": [
+                    {"data": "id"},
+                    {"data": "username"},
+                    {
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            return row.firstname + " " + row.middlename + " " + row.lastname;
+                        }
+                    },
+                    {"data": "account"},
+                    {"data": "enabled"},
+                    {"data": "phone"},
+                    {"data": "email"},
+                    {"data": "device_id"},
+                    {"data": "first_login"},
+                    {"data": "user_type"},
+                    {
+                        "data": "branch_code",
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            return row.name + "(" + row.branch_code + ")";
+                        }
+                    },
+                    {"data": "rec_status"},
+                    {"data": 'id',
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            var a = '';
+                            if (userRoles.includes("21") || userRoles.includes("27") || userRoles.includes("44")) {
+                                a = '<button type="button" class="btn btn-primary" onclick="enableAgent('+row.id+','+row.branch_code+')">Enable</button>';
+                                a += '&nbsp;&nbsp;<button type="button" class="btn btn-danger" onclick="disableAgent('+row.id+','+row.branch_code+')">Disable</button>';
+                                a += '&nbsp;&nbsp;<button type="button" class="btn btn-primary" onclick="updateAgentDevice('+row.id+')">Update Device</button>';
+                                a += `&nbsp;&nbsp;<button type="button" class="btn btn-primary" onclick='updateAgentBranch(${row.id},${JSON.stringify(branches)})'>Update Branch</button>`;
+                                a += '&nbsp;&nbsp;<button type="button" class="btn btn-primary" onclick="openAgentRoleDialog(\'' + row.id + '\')"><i class="fa fa-edit"></i>Role</button>';
+                            }
+                            return a;
+                        }
+                    }
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+                buttons: [{
+                        extend: "copy",
+                        title: 'AGENTS ON WORKFLOW',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'AGENTS ON WORKFLOW',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'AGENTS ON WORKFLOW',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'AGENTS ON WORKFLOW',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'AGENTS ON WORKFLOW',
+                        className: "btn-sm"
+                    }
+                ],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='mno']").val() == '') {
+                        return false;
+                    }
+                },
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+            }
+        );
+
+        function reloadDatatable() {
+            $('#agentsKyc').DataTable().ajax.reload();
+        }
+
+        function toggleCategory(selectedValue) {
+            // Show the specific div based on the selected value
+            if (selectedValue === '1') {
+                $('#categoryDiv').show();
+            } else {
+                $('#categoryDiv').hide();
+            }
+        }
+
+        function openAgentRoleDialog(id) {
+            var htmlData = '<div class="row"><div class="panel panel-default">';
+            htmlData += '<div class="panel-heading"><h4 class="panel-title">EDIT AGENT ROLE</h4></div>';
+            htmlData += '<div class="panel-body">';
+            htmlData += '<form role="form" onsubmit="editAgentRole(event, ' + id + ');">';
+            htmlData += '<div class="form-group">';
+            htmlData += '<div class="row"><div class="col-md-9 text-center">';
+            htmlData += '<label for="version">Agent Roles</label>';
+            htmlData += '<select class="form-control" id="agentRole" required>';
+            htmlData += '<option selected>Choose...</option>';
+            htmlData += '</select>';
+            htmlData += '</div></div></div>';
+            htmlData += '<div class="form-group">';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-9 text-center">';
+            htmlData += '<button type="submit" class="btn btn-primary">Submit</button>';
+            htmlData += '</div></div></div>';
+            htmlData += '</form>';
+            htmlData += '</div></div></div>';
+            $(".modal-dialog").addClass("modal-lg");
+            $("#myModal").modal("show");
+            $("#areaValue").html(htmlData);
+            $.ajax({
+                url: "/api/loadAgentRoles",
+                type: 'GET',
+                success: function (res) {
+                    $.each(res, function(index, item) {
+                        $('#agentRole').append($('<option>', {
+                            value: item.id,
+                            text: item.name
+                        }));
+                    });
+                }
+            });
+        }
+
+        function editAgentRole(event, id) {
+            event.preventDefault();
+            $("#loading").show();
+            var formData = new FormData();
+            formData.set("id", id);
+            var roleId = $("#agentRole").val();
+            formData.set("roleId", roleId);
+            if (roleId) {
+                $('#successFlag').hide();
+                $.ajax({
+                    url: "/api/editAgentRole",
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        $('.error').html('');
+                        $('#loading').hide();
+                        $("#myModal").modal("hide");
+                        $('#successFlag').show();
+                        if (res.success == true) {
+                            $("#successFlag").html('<div class="alert alert-success" role="alert" id="successAlert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"> </button><strong>Agent role updated successfully!</strong></div>');
+                        } else {
+                            $("#successFlag").html('<div class="alert alert-danger" role="alert" id="errorAlert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"> </button><strong>'+res.message+'</strong></div>');
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $('#loading').hide();
+                        $("#myModal").modal("hide");
+                        $('#successFlag').show();
+                        $("#successFlag").html('<div class="alert alert-danger" role="alert" id="errorAlert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"> </button><strong>'+thrownError+'</strong></div>');
+                    }
+                });
+            } else {
+                $('#successFlag').show();
+                $("#successFlag").html('<div class="alert alert-danger" role="alert" id="errorAlert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"> </button><strong>No role selected!</strong></div>');
+            }
+        }
+    </script>
+</div>

@@ -1,0 +1,92 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <!-- DataTables -->
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css" />
+    <!-- Responsive datatable examples -->
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Multi Item Selection examples -->
+    <!--<link th:href="@{/assets/plugins/datatables/select.bootstrap.min.css}" rel="stylesheet" type="text/css" />-->
+</div>
+<div class="panel panel-default panel-fill" id="tabContentsss"><div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="row" style="margin-left: 85% ! important;"><button id="initiateRefundRetry" class="btn btn-primary pull-right" style="background-color: #146f0e !important;border: 1px solid #146f0e !important;">Confirm Recon</button></div>
+            <br/>
+            <div class="form-group col-md-9">
+                <table class="table table-bordered m-0" lign="center" border="0.5" cellpadding="5" cellspacing="4" style="border-collapse: collapse; width: 100%; font-size: 10px !important;">
+                    <thead>
+                        <tr>
+                            <th>DESCRIPTION</th>
+                            <th colspan="3">CORE BANKING</th>
+                            <th colspan="3">THIRT PARTY  SIDE</th>
+                            <th colspan="3">DIFFERENCE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th>Txns</th>
+                            <th>Volume</th>
+                            <th>Fee</th>
+                            <th>Txns</th>
+                            <th>Volume</th>
+                            <th>Fee</th>
+                            <th>Txns</th>
+                            <th>Volume</th>
+                            <th>Fee</th>
+                        </tr>
+                        <tr th:each="txns,i: ${reconDatas}">
+                            <td th:text="${txns.description}"></td>
+                            <td th:text="${txns.cbstxnsCount}"></td>
+                            <td th:text="${#numbers.formatDecimal(txns.cbstxnsVolume, 0, 'COMMA', 2, 'POINT')}"></td>
+                            <td th:text="${#numbers.formatDecimal(txns.cbsCharge, 0, 'COMMA', 2, 'POINT')}"></td>
+                            <td th:text="${txns.thirdPartytxnsCount}"></td>
+                            <td th:text="${#numbers.formatDecimal(txns.thirdPartytxnsVolume, 0, 'COMMA', 2, 'POINT')}"></td>
+                            <td th:text="${#numbers.formatDecimal(txns.thirdpartyCharge, 0, 'COMMA', 2, 'POINT')}"></td>
+                            <td th:text="${txns.difftxnCount}"></td>
+                            <td th:text="${#numbers.formatDecimal(txns.difftxnVolume, 0, 'COMMA', 2, 'POINT')}"></td>
+                            <td th:text="${#numbers.formatDecimal(txns.diffchargeVolume, 0, 'COMMA', 2, 'POINT')}"></td>
+
+                        </tr>
+                        <tr>
+                            <th th:text="${'TOTAL'}"></th>
+                            <td><b th:text="${#aggregates.sum(reconDatas.![cbstxnsCount])}"></b></td>
+                            <td><b th:text="${#aggregates.sum(reconDatas.![cbstxnsVolume])}"></b></td>
+                            <td><b th:text="${#aggregates.sum(reconDatas.![cbsCharge])}"></b></td>
+                            <td><b th:text="${#aggregates.sum(reconDatas.![thirdPartytxnsCount])}"></b></td>
+                            <td><b th:text="${#aggregates.sum(reconDatas.![thirdPartytxnsVolume])}"></b></td>
+                            <td><b th:text="${#aggregates.sum(reconDatas.![thirdpartyCharge])}"></b></td>
+                            <td><b th:text="${#aggregates.sum(reconDatas.![difftxnCount])}"></b></td>
+                            <td><b th:text="${#aggregates.sum(reconDatas.![difftxnVolume])}"></b></td>
+                            <td><b th:text="${#aggregates.sum(reconDatas.![diffchargeVolume])}"></b></td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-group col-md-3">
+                <table class="table table-bordered m-0" lign="center" border="0.5" cellpadding="5" cellspacing="4" style="border-collapse: collapse; width: 100%; font-size: 10px !important;">
+                    <thead>
+                        <tr>
+                            <th colspan="3">EXCEPTION <br/></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>Exception</th>
+                            <th>Txns</th>
+                            <th>Volumes</th>
+                        </tr>
+                        <tr th:each="texception,i: ${exceptions}">
+                            <td th:text="${texception.exception_name}"></td>
+                            <td th:text="${texception.exceptionTxnsCount}"></td>
+                            <td th:text="${#numbers.formatDecimal(texception.exceptionTxnsVolume, 0, 'COMMA', 2, 'POINT')}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--</form>-->
+        </div>
+    </div>
+</div>

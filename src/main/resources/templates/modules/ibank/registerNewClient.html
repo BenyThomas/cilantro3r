@@ -1,0 +1,468 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/select2/css/select2.min.css}" rel="stylesheet" type="text/css"/>
+</div>
+<div id="loading" hidden=""></div>
+
+<div hidden="" class="row" id="newClientForm">
+    <div id="note" class="col-md-12"><p style="color:red !important;">*Please Make sure that the customer address are
+        well set on rubikon.<Strong style="background-color: yellow"> Management will not tolerate any mismatch in
+            Customer KYC</strong>. Make sure that address1 to address4 are well set on required standards on Rubikon.
+        All the details will be used during cross-border transaction its important that all records are set during
+        registration.*</p></div>
+<!--    <div class="col-md-12" id="successFlag"></div>-->
+    <div class="col-md-12" id="rtgsTransferFormDiv">
+        <div id="errorMessage">
+            <div hidden="" id="erroMessage">
+                <div class="alert alert-danger " role="alert">
+                    <strong>No record found!</strong> Please check if the RIM number is correct
+                </div>
+            </div>
+        </div>
+        <form class="form-horizontal" role="form" id="createIbankProfile">
+            <input hidden="" name="accountCurrency" id="accountCurrency">
+            <table class="table table-striped table-bordered" style="width: 100%; font-size: 8.5px !important;">
+                <tbody>
+                <tr>
+                    <td>Account Number</td>
+                    <td><input type="text" name="accountNo" class="form-control form-control-sm" autocomplete="off"
+                               style="font-size: 10px !important;" placeholder="account number" id="senderAccount">
+                        <button type="button" class="btn btn-primary btn-submit" style="font-size: 9px !important;"
+                                onclick="getCustomerDetails()">Query Details
+                        </button>
+                    </td>
+                    <td>Customer Name</td>
+                    <td><input type="text" readonly="" id="customerName" name="customerName"
+                               class="form-control form-control-sm" autocomplete="off"
+                               style="font-size: 10px !important;" placeholder="Customer Name"></td>
+
+                    <td>Customer Id</td>
+                    <td><input type="text" readonly="" id="customerId" name="customerId"
+                               class="form-control form-control-sm" autocomplete="off"
+                               style="font-size: 10px !important;" placeholder="Customer Id"></td>
+
+                    <td>Customer Rim</td>
+                    <td><input type="text" readonly="" id="customerRim" name="customerRim"
+                               class="form-control form-control-sm" autocomplete="off"
+                               style="font-size: 10px !important;" placeholder="Customer RIM"></td>
+                </tr>
+                <tr>
+                    <td>Customer shortName</td>
+                    <td><input type="text" readonly="" id="custShortName" name="custShortName"
+                               class="form-control form-control-sm" autocomplete="off"
+                               style="font-size: 10px !important;" placeholder="Customer ShortName"></td>
+                    <td>Customer Category</td>
+                    <td><input type="text" readonly="" id="custCategory" name="custCategory"
+                               class="form-control form-control-sm" autocomplete="off"
+                               style="font-size: 10px !important;" placeholder="customer Category"></td>
+
+                    <td>Address 1</td>
+                    <td><input type="text" readonly="" id="address1" name="address1"
+                               class="form-control form-control-sm" autocomplete="off"
+                               style="font-size: 10px !important;" placeholder="Address 1"></td>
+                    <td>Address 2</h5></td>
+                    <td><input type="text" readonly="" id="address2" name="address2"
+                               class="form-control form-control-sm" autocomplete="off"
+                               style="font-size: 10px !important;" placeholder="Address 2"></td>
+                </tr>
+                <tr>
+                    <td>Address 3</td>
+                    <td><input type="text" readonly="" id="address3" name="address3"
+                               class="form-control form-control-sm" autocomplete="off"
+                               style="font-size: 10px !important;" placeholder="Address 3"></td>
+                    <td>Address 4</td>
+                    <td><input type="text" readonly="" id="address4" name="address4"
+                               class="form-control form-control-sm" autocomplete="off"
+                               style="font-size: 10px !important;" placeholder="Address 4"></td>
+
+                    <td>City</td>
+                    <td><input type="text" readonly="" id="city" name="city" class="form-control form-control-sm"
+                               autocomplete="off" style="font-size: 10px !important;" placeholder="City"></td>
+                    <td>State</td>
+                    <td><input type="text" readonly="" id="state" name="state" class="form-control form-control-sm"
+                               autocomplete="off" style="font-size: 10px !important;" placeholder="State"></td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td><input type="text" id="email" name="email" class="form-control form-control-sm"
+                               autocomplete="off" style="font-size: 10px !important;" placeholder="Email Address"></td>
+                    <td>branch id</td>
+                    <td><input type="text" readonly="" id="branchId" name="branchId"
+                               class="form-control form-control-sm" autocomplete="off"
+                               style="font-size: 10px !important;" placeholder="Branch id"></td>
+                    <td colspan="1">Recruiting Branch</td>
+                    <td colspan="3">
+                        <select class="form-control col-sm-12 select2" id="recruitingBrach" name="recruitingBrach"
+                                style="font-size: 10px; width: 352px !important;">
+                            <option value="">Select Branch</option>
+                            <option th:each="branch: ${branches}" th:value="${branch.code}" th:text="${branch.name}">
+                        </select>
+                    </td>
+<!--                    <td>Recruited by</td>-->
+<!--                    <td><input type="text" id="pfNo" name="pfNo" class="form-control form-control-sm" autocomplete="off"-->
+<!--                               style="font-size: 10px !important;" placeholder="Enter Employee pfNo"></td>-->
+                </tr>
+                <tr>
+                    <td>Filled Form</td>
+                    <td colspan="3"><input type="file" id="ibform" name="ibform" class="form-control form-control-sm"
+                               autocomplete="off" style="font-size: 10px !important;" placeholder="Supporting Document">
+                    </td>
+                    <!--                        <td>Form Received date</td>-->
+                    <!--                        <td><input type="text"  id="receivedDate" name="receivedDate" class="form-control form-control-sm" autocomplete="off" style="font-size: 10px !important;" placeholder="Received Date"></td>-->
+<!--                    <td>Comments</td>-->
+<!--                    <td><textarea type="text" id="comments" name="comments" class="form-control form-control-sm"-->
+<!--                                  autocomplete="off" style="font-size: 10px !important;"-->
+<!--                                  placeholder="Comments"></textarea></td>-->
+                    <td>Mandate</td>
+                    <td colspan="3">
+                        <select class="form-control col-sm-12 select2" id="mandate" name="mandate"
+                                style="font-size: 10px;width: 352px !important;">
+                            <option value="">Select Mandate</option>
+                            <option value="000">Sole proprietor</option>
+                            <option value="001">Any to Sign</option>
+                            <option value="002">Two to Sign</option>
+                            <option value="003">Three to Sign</option>
+                            <option value="004">Four to Sign</option>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="row">
+                <button type="button" class="btn btn-primary create-ib-client-profile" onclick="addNewClientProfile()">
+                    Save Customer Profile
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+<div class="row" id="separator" hidden="">
+    <hr/>
+</div>
+
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentsss">
+        <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4> <a
+                style="background-color: #750a0a !important; border: 1px solid #b1e501 !important;margin-top: -22px !important;"
+                class="btn btn-primary pull-right" id="addNewClient">New Client</a></div>
+        <div class="panel-body">
+            <div id="successFlag">
+            </div>
+            <div class="col-md-12" id="alertFlag"></div>
+            <div class="row">
+                <table id="profilesInitiated" class="display nowrap table table-striped table-bordered"
+                       style="width: 100%; font-size: 7.5px !important;">
+                    <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Account</th>
+                        <th>Name</th>
+                        <th>Rim No</th>
+                        <th>Category</th>
+                        <th>Address</th>
+                        <th>Branch</th>
+                        <th>City</th>
+                        <th>Created by</th>
+                        <th>Created Date</th>
+                        <th>Status</th>
+                        <th style="width: 512px !important;">ACTION</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!--</form>-->
+            </div>
+        </div>
+    </div>
+</div>
+<!--<div class="form-group col-md-9">-->
+<div class="row"></div>
+<div class="row">
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+
+    <!--init-->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!--App Js-->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
+    <script th:src="@{/assets/scripts/ibank.js}"></script>
+    <script>
+        $(document).ready(function () {
+            //ADD NEW CLIENT TOGGLE MENU
+            $('#addNewClient').click(function () {
+                $('#newClientForm').toggle('slide');
+            });
+
+            $('.select2').select2();
+            $("#loading").hide();
+//          rtgsTransferForm
+
+//add the number of files to be attached
+            var max_fields = 4;
+            var wrapper = $("#supportingDocument");
+            var add_button = $("#addField");
+
+            var x = 1;
+            $(add_button).click(function (e) {
+                e.preventDefault();
+                if (x < max_fields) {
+                    x++;
+                    $(wrapper).append('<input type="file" name="supportingDoc" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Supporting Document">'); //add input box
+                } else {
+                    alert('You Reached the limits');
+                }
+            });
+
+            $(wrapper).on("click", ".delete", function (e) {
+                e.preventDefault();
+                $(this).parent('div').remove();
+                x--;
+            });
+            //ON SELECTING DESTINATION BANK CHECK IF ITS INTERNATIONAL AND ADD AN INPUT FIELD FOR INTERMEDIARY BANK
+            $('#intermediary').html("");
+            $("#destinationBank").on('change', function () {
+                var benBic = $("select[name='beneficiaryBIC']").val();
+                var identifier = benBic.split('==');
+                if (identifier[1] === 'INTERNATIONAL') {
+                    /*
+                     * ADD AN INPUT FOR INTERMEDIARY SWIFT CODE
+                     */
+                    $('#intermediary').append('<input type="text" id="intermediaryBank" name="intermediaryBank" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Intermediary Bank Swift Code (IF APPLICABLE)">');
+
+                }
+            });
+            $("#mno").on('change', function () {
+                $('#profilesInitiated').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $('#profilesInitiated').DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "desc"],
+                ajax: {
+                    'url': '/getIBProfilesInitiated',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    }
+//                    "data": function (d) {
+//                        return $.extend({}, d, {
+//                            "mno": $("select[name='mno']").val()
+//                        });
+//                    }
+                },
+                "columns": [
+                    {"data": "reference"},
+                    {"data": "account"},
+                    {"data": "name"},
+                    {"data": "rim_no"},
+                    {"data": "category"},
+                    {"data": "address1"},
+                    {"data": "branch"},
+                    {"data": 'city'},
+                    {"data": "created_by"},
+                    {
+                       "data": 'create_dt', "render": function (data, type, row, meta) {
+                            var today = new Date(row.create_dt);
+                            return today.toLocaleString();
+                        }
+                    },
+                    {
+                        "data": 'status',
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "5%",
+                        "render": function (data, type, row, meta) {
+                            var a = '';
+                            if (row.status === "I") {
+                                a = "INITIATED"
+                            }
+                            if (row.status === "P") {
+                                a = "PENDING"
+                            }
+                            if (row.status === "PHQ") {
+                                a = "PENDING HQ"
+                            }
+                            if (row.status === "C") {
+                                a = "COMPLETED"
+                            }
+                            return a;
+                        }
+                    },
+
+                    {
+                        "data": 'reference',
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            var a = '';
+//                     authorizePayment.png      a = '<a type="button" href="/downloadSupportingDoc?reference=' + row.reference + '"><button type="button"><img src="/assets/images/supportingDoc.png" style="width:20px;" title="Download Supporting Document"></button></a>
+                            a = '<div><button  style="background-color: black !important;border-color: black; color: white !important; font-size: 11px !important;" type="button" onclick="addClientAccount(\'' + row.reference + '\',\'' + row.name.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g,'') + '\')">Accounts </button>';
+                            // if (row.category !== "PER") {}
+                                a += '<button style="background-color: green !important;border-color: green; color: white !important; font-size: 11px !important;"  type="button" onclick="addSginatories(\'' + row.reference + '\',\'' + row.name.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g,'') + '\',\'' + row.category + '\')"> Signatories </button>';
+
+                            // a += '<button style="background-color: #6a7308  !important;border-color: #6a7308; color: white !important; font-size: 11px !important;"  type="button" onclick="addMandate(\'' + row.reference + '\',\'' + row.name + '\',\'' + row.category + '\')">Submit<div>';
+                            a += '<button style="background-color: #6a7308 !important; border-color: #6a7308; color: white !important; font-size: 11px !important;"  type="button" onclick="viewPendingIBProfileOnInitiatorWorkFlow(\''+ row.reference + '\',\''+row.name.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g,'')+ '\')"> Submit </button>';
+
+                            return a;
+                        }
+                    }
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+//                fixedColumns: true,
+                buttons: [{
+                    extend: "copy",
+                    title: 'Authorize RTGS Remittance Transactions',
+                    className: "btn-sm"
+                }, {
+                    extend: "csv",
+                    title: 'Authorize RTGS Remittance  Transactions',
+                    className: "btn-sm"
+                }, {
+                    extend: "excel",
+                    title: 'Authorize RTGS Remittance  Transactions',
+                    className: "btn-sm"
+                }, {
+                    extend: "pdf",
+                    title: 'Authorize RTGS Remittance  Transactions',
+                    className: "btn-sm"
+                }, {
+                    extend: "print",
+                    title: 'Authorize RTGS Remittance  Transactions',
+                    className: "btn-sm"
+                }],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='mno']").val() == '') {
+                        return false;
+                    }
+                }
+            });
+
+        });
+
+        function getCustomerDetails() {
+            console.log("sender account pressed!!!");
+            $("#loading").show();
+            var accountNo = $("input[name='accountNo']").val();
+            $.ajax({
+                url: "/queryCustomerDetails",
+                type: 'GET',
+                data: {accountNo: accountNo, code: "searchAccount"},
+                dataType: "json",
+                success: function (res) {
+                    $("#loading").hide();
+                    if (res.length === 0) {
+                        $("#erroMessage").show();
+                        $("#actNM").val('');
+                        $("#customerName").val('');
+                        $("#customerId").val('');
+                        $("#customerRim").val('');
+                        $("#custShortName").val('');
+                        $("#custCategory").val('');
+                        $("#address1").val('');
+                        $("#address2").val('');
+                        $("#address3").val('');
+                        $("#address4").val('');
+                        $("#city").val('');
+                        $("#branchId").val('');
+                        $("#branchCode").val('');
+                        $("#state").val('');
+                    } else {
+                        $("#erroMessage").hide();
+                        $("#actNM").val(res[0].CUST_NM);
+                        $("#availableBalance").text('Available Blance: ' + addCommas(res[0].CLEARED_BAL));
+                        $("#customerName").val(res[0].CUST_NM);
+                        $("#customerId").val(res[0].CUST_ID);
+                        $("#customerRim").val(res[0].CUST_NO);
+                        $("#custShortName").val(res[0].CUST_SHORT_NM);
+                        $("#custCategory").val(res[0].CUST_CAT);
+                        $("#address1").val(res[0].ADDR_LINE_1);
+                        $("#address2").val(res[0].ADDR_LINE_2);
+                        $("#address3").val(res[0].ADDR_LINE_3);
+                        $("#address4").val(res[0].ADDR_LINE_4);
+                        $("#city").val(res[0].CITY);
+//                    $("#email").val("not set");
+                        $("#branchId").val(res[0].MAIN_BRANCH_ID);
+                        $("#branchCode").val(res[0].MAIN_BRANCH_ID);
+                        $("#state").val(res[0].STATE);
+                        console.log(res)
+                    }
+                },
+                error: function (res) {
+                    $("#loading").hide();
+                    $('#senderAccount').after('<h4 class="error" style="color:red     font-size: 8px !important;"> Error: Please Try Again. Please contact IT Helpdesk / Database Administrator: RUBIKON NOT FOUND</h4>');
+                    console.log(res);
+                }
+            })
+        }
+
+        function addCommas(nStr) {
+            nStr += '';
+            x = nStr.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            }
+            return x1 + x2;
+        }
+    </script>
+</div>

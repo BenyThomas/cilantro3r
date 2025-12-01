@@ -1,0 +1,165 @@
+
+
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+</div>
+<div class="panel panel-default panel-fill">
+    <div class="panel-heading" style="background-color: #04ab18 ! important; "> <h3 class="panel-title" style="color: #ffffff !important;"><strong th:text="${pageTitle}"></strong></h3>
+    </div>
+    <div class="panel-body">
+        <div class="row" id="content"></div>
+        <div class="row" id="preloader2" hidden="">
+            <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+        </div>
+        <div class="row">
+            <div id="successFlag"></div>
+        </div>
+        <div class="row" >
+            <iframe class="col-md-12" th:each="doc:${supportingDocs}" th:src="@{'/previewCardRequestSupportingDocument?reference='+${doc.reference}+'&id='+${doc.id}}" width="700" height="200" frameborder="1" scrolling="yes"/>
+        </div>
+        <div class="row" id="amendVisaCard" >
+            <form id="form222">
+                <div class="row" id="senderAccountError" style="display:none; margin-top:10% | important;">
+                    <div class="form-group col-md-12">
+                        <h5 class="alert alert-danger" style="font-size: 10px !important;"> Error: Please Try Again. Please contact IT Helpdesk / Database Administrator: RUBIKON NOT FOUND</h5>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="customerName" style="margin-left: 1% ! important;">Customer Name<i class="text-danger">*</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="customerName" name="customerName" placeholder="Customer Name" readonly="" style="font-size: 10px !important;" type="text" th:value="${card[0].customer_name}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="customerId" style="margin-left: 1% ! important;">Customer Id<i class="text-danger">*</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="customerId" name="customerId" placeholder="Customer Id" readonly="" style="font-size: 10px !important;" type="text" th:value="${card[0].custid}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="customerRim" style="margin-left: 1% ! important;">Customer Rim<i class="text-danger">*</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="customerRim" name="customerRim" placeholder="Customer RIM" readonly="" style="font-size: 10px !important;" type="text" th:value="${card[0].customer_rim_no}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="custShortName" style="margin-left: 1% ! important;">Customer shortName<i class="text-danger">*</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="custShortName" name="custShortName" placeholder="Customer ShortName" readonly="" style="font-size: 10px !important;" type="text" th:value="${card[0].customer_shortName}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="address1" style="margin-left: 1% ! important;">Customer Category<i class="text-danger">*</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="custCategory" name="custCategory" placeholder="customer Category" readonly="" style="font-size: 10px !important;" type="text" th:value="${card[0].customer_category}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="address1" style="margin-left: 1% ! important;">Address 1<i class="text-danger">*</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="address1" name="address1" placeholder="Address 1" readonly="" style="font-size: 10px !important;" type="text" th:value="${card[0].address1}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="address2" style="margin-left: 1% ! important;">Address 2<i class="text-danger">*</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="address2" name="address2" placeholder="Address 2" readonly="" style="font-size: 10px !important;" type="text" th:value="${card[0].address2}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="address3" style="margin-left: 1% ! important;">Address 3<i class="text-danger">*</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="address3" name="address3" placeholder="Address 3" readonly="" style="font-size: 10px !important;" type="text" th:value="${card[0].address3}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="address4" style="margin-left: 1% ! important;">Address 4<i class="text-danger">*</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="address4" name="address4" placeholder="Address 4" readonly="" style="font-size: 10px !important;" type="text" th:value="${card[0].address4}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="phone" style="margin-left: 1% ! important;">Phone<i class="text-danger">*(Number should start with 255)</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="phone" name="phoneNumber" placeholder="255..." style="font-size: 10px !important;" type="text" th:value="${card[0].phone}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="recruitingBrach" style="margin-left: 1% ! important;">Where To Pick Card?<i class="text-danger">*</i></label>
+                        <select class="form-control col-sm-12 select2" id="recruitingBrach" name="recruitingBrach" style="font-size: 10px !important;">
+                            <option th:value="${session.branchCode}">Our Branch</option>
+                            <option th:each="branch: ${branches}" th:text="${branch.name}" th:value="${branch.code}" th:selected="${branch.code == card[0].collecting_branch}">
+                        </select>
+                    </div>
+<!--                    <div class="form-group col-md-3">-->
+<!--                        <label for="city" style="margin-left: 1% ! important;">City<i class="text-danger">*</i></label>-->
+<!--                        <input autocomplete="off" class="form-control form-control-sm" id="city" name="city" placeholder="City" readonly="" style="font-size: 10px !important;" type="text">-->
+<!--                    </div>-->
+<!--                    <div class="form-group col-md-3">-->
+<!--                        <label for="state" style="margin-left: 1% ! important;">State<i class="text-danger">*</i></label>-->
+<!--                        <input autocomplete="off" class="form-control form-control-sm" id="state" name="state" placeholder="State" readonly="" style="font-size: 10px !important;" type="text">-->
+<!--                    </div>-->
+                </div>
+                <div class="form-row">
+
+<!--                    <div class="form-group col-md-3">-->
+<!--                        <label for="branchId" style="margin-left: 1% ! important;">branch id<i class="text-danger">*</i></label>-->
+<!--                        <input autocomplete="off" class="form-control form-control-sm" id="branchId" name="branchId" placeholder="Branch id" readonly="" style="font-size: 10px !important;" type="text">-->
+<!--                    </div>                    -->
+                    <div class="form-group col-md-3">
+                        <label for="reference" style="margin-left: 1% ! important;">Card Reference<i class="text-danger">*</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="reference" name="reference" placeholder="Branch id" readonly="" style="font-size: 10px !important;" type="text" th:value="${card[0].reference}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="senderAccount" style="margin-left: 1% ! important;">Account Number<i class="text-danger">*</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="senderAccount" name="accountNo" placeholder="Customer Account" type="text" readonly="" th:value="${card[0].account_no}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="phone" style="margin-left: 1% ! important;">Filled Form<i class="text-danger">*</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="cardForm" name="cardForm" placeholder="Supporting Document" style="font-size: 10px !important;" type="file">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="customerEmail" style="margin-left: 1% ! important;">Email <i class="text-danger">*</i></label>
+                        <input autocomplete="off" class="form-control form-control-sm" id="customerEmail" name="customerEmail" placeholder="Email" style="font-size: 10px !important;" type="email" th:value="${card[0].email}">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-3">
+                        <div class="form-group col-md-3 text-right m-b-0" style="margin: 10%;">
+                            <button class="btn btn-primary update-ib-client-profile" onclick="updateVisaCardReq()"  type="button">Update card</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" id="closeModal" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/scripts/teller.js}"></script>
+</div>
+<div class="row" id="preloader333" hidden="">
+    <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+</div>
+<!--</div>-->
+<script>
+    $(document).ready(function () {
+<!--        $("#successFlag").hide();-->
+        $('#myModal').data('modal', null);
+        var wrapper = $("#ammendmendsForm");
+        var add_button = $("#returnForAmmendment");
+        $(add_button).click(function (e) {
+            $(wrapper).show();
+            $("#messageData").hide();
+            $('#authorizeIBDPyaments').attr('disabled', 'disabled');
+            $('#cancelPayments').attr('disabled', 'disabled');
+            $('#returnForAmmendment').attr('disabled', 'disabled');
+            $('#closeModal').attr('disabled', 'disabled');
+//            $(wrapper).append('<textarea type="text" name="comments" class="form-control form-control-sm"  placeholder="Please provides reasons for why returning for ammendment"></textarea>'); //add input box
+        });
+
+          $('.select2').select2({
+            height:'80%',
+            width:'100%'
+            });
+    });
+</script>

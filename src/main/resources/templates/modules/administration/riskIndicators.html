@@ -1,0 +1,551 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentRiskIndicators">
+        <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <div class="input-group">
+                        <button type="button" class="btn btn-primary" th:onclick="addRiskIndicator()">Add Risk Indicator</button>
+                    </div><!-- input-group -->
+                </div>
+                <div class="form-group col-md-3">
+                    <div class="input-group">
+                        <button type="button" class="btn btn-primary" th:onclick="addKeyRiskIndicator()">Add Risk Indicator Value</button>
+                    </div><!-- input-group -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <div class="input-group">
+                        <input id="fromDate" name="fromDate" class="form-control form-control-inline input-medium default-date-picker" data-date-format="yyyy-mm-dd" type="text" placeholder="From Date" autocomplete="off"/>
+                        <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                    </div><!-- input-group -->
+                </div>
+                <div class="form-group col-md-3">
+                    <div class="input-group">
+                        <input id="toDate" name="toDate" class="form-control form-control-inline input-medium default-date-picker" data-date-format="yyyy-mm-dd" type="text" placeholder="To Date" autocomplete="off"/>
+                        <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                    </div><!-- input-group -->
+                </div>
+                <div class="form-group col-md-3" style="margin-top: auto; margin-bottom: auto;">
+                    <button type="button" class="btn btn-primary btn-filter-risk-indicators">Search</button>
+                </div>
+            </div>
+            <div class="row">
+                <form role="form">
+                    <div class="form-group col-md-3">
+                        <div class="input-group">
+                            <select class="form-control col-sm-12 select2" id="branch" name="branch" style="font-size: 10px !important;">
+                                <option value="">Select Branch...</option>
+                                <option th:each="branch: ${branches}" th:value="${branch.code}" th:text="${branch.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="successFlag">
+            </div>
+            <div id="loading" hidden=""></div>
+            <div class="row">
+                <table id="riskIndicators" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important;">
+                    <thead>
+                    <tr>
+                        <th>S/N</th>
+                        <th>Branch</th>
+                        <th>Indicator</th>
+                        <th>Description</th>
+                        <th>Value</th>
+                        <th>Created By</th>
+                        <th>Created Date</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+    <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+
+    <script type="text/javascript" th:inline="javascript">
+        let userRoles = /*[[${roleId}]]*/;
+        let branchCode = /*[[${branchCode}]]*/;
+        let branches = /*[[${branches}]]*/;
+        let indicators = /*[[${indicators}]]*/;
+        $(document).ready(function () {
+            $("#fromDate").datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#toDate").datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#datepicker-autoclose").datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#loading").hide();
+            $(".select2").select2();
+            $(".btn-filter-risk-indicators").click(function () {
+                $('#riskIndicators').DataTable().ajax.reload();
+            });
+            if (branchCode !== null && branchCode !== undefined) {
+                $('#branch').val(branchCode).trigger('change');
+            }
+            $("#branch").on('change', function () {
+                $('#riskIndicators').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $("#riskIndicators").DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "desc"],
+                ajax: {
+                    'url': '/fireGetRiskIndicatorsAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    },
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "branch": $("select[name='branch']").val(),
+                            "fromDate": $("input[name='fromDate']").val(),
+                            "toDate": $("input[name='toDate']").val()
+                        });
+                    }
+                },
+                "columns": [
+                    {"data": "id"},
+                    {"data": "branch"},
+                    {"data": "indicator"},
+                    {"data": "description"},
+                    {"data": "value"},
+                    {"data": "created_by"},
+                    {"data": "created_date",
+                        "render": function (data, type, row, meta) {
+                            let date = new Date(row.created_date);
+                            return date.toLocaleString();
+                        }
+                    },
+                    {"data": "id",
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            var a = `<button type="button" class="btn btn-primary" onclick='showRiskIndicatorValue(
+                            "${row.id}","${row.indicator}","${row.description}","${row.value}")'>Edit</button>
+                            &nbsp;
+                            <button type="button" class="btn btn-primary" onclick='removeRiskIndicator("${row.id}")'>Remove</button>
+                            &nbsp;`;
+                            return a;
+                        }
+                    }
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+                buttons: [
+                    {
+                        extend: "copy",
+                        title: 'RISK INDICATORS',
+                        className: "btn-sm",
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    }, {
+                        extend: "csv",
+                        title: 'RISK INDICATORS',
+                        className: "btn-sm",
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    }, {
+                        extend: "excel",
+                        title: 'RISK INDICATORS',
+                        className: "btn-sm",
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    }, {
+                        extend: "pdf",
+                        title: 'RISK INDICATORS',
+                        className: "btn-sm",
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    }, {
+                        extend: "print",
+                        title: 'RISK INDICATORS',
+                        className: "btn-sm",
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    }
+                ],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='branch']").val() == '') {
+                        return false;
+                    }
+                },
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        });
+
+        function reloadDatatable() {
+            $('#riskIndicators').DataTable().ajax.reload();
+        }
+
+        function addRiskIndicator() {
+            $("#myModal").modal("show");
+            var htmlData = '<div class="row">';
+            htmlData += '<div class="panel panel-default panel-fill">';
+            htmlData += '<div class="panel-heading"><h4 class="panel-title">ADD RISK INDICATOR</h4></div>';
+            htmlData += '<div class="panel-body">';
+            htmlData += '<div class="col-md-12">';
+            htmlData += '<form class="form-horizontal" role="form" id="add_key_risk_indicator" method="POST">';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Indicator Name</label>';
+            htmlData += '<input type="text" id="name" name="name" class="form-control form-control-sm" value=""';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;" placeholder="Indicator">';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Description</label>';
+            htmlData += '<textarea id="description" name="description" class="form-control form-control-sm" rows="4" cols="50"';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;" placeholder="Indicator description"/>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row text-center">';
+            htmlData += '<button type="button" class="btn btn-primary" onclick="addRiskIndicatorParameter()">';
+            htmlData += 'Save';
+            htmlData += '</button>';
+            htmlData += '</div>';
+            htmlData += '</form>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            $("#areaValue").html(htmlData);
+        }
+
+        function addRiskIndicatorParameter() {
+            $("#loading").show();
+            var name = $("#name").val();
+            var description = $("#description").val();
+            $.ajax({
+                url: "/fireAddRiskIndicator",
+                data: {service: name, description: description},
+                type: 'POST',
+                success: function (response) {
+                    $("#loading").hide();
+                    $("#myModal").modal("hide");
+                    if (response.validated && response.json != null) {
+                        if (response.json.responseCode == "0") {
+                            swal("Success!", response.json.message, "success");
+                        } else {
+                            swal("Error!", response.json.message, "error");
+                        }
+                    } else {
+                        swal("Error!", response.json.errorMessages, "error");
+                    }
+                }
+            });
+        }
+
+        function addKeyRiskIndicator() {
+            $("#myModal").modal("show");
+            var htmlData = '<div class="row">';
+            htmlData += '<div class="panel panel-default panel-fill">';
+            htmlData += '<div class="panel-heading"><h4 class="panel-title">ADD RISK INDICATOR VALUE</h4></div>';
+            htmlData += '<div class="panel-body">';
+            htmlData += '<div class="col-md-12">';
+            htmlData += '<form class="form-horizontal" role="form" method="POST">';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Branch</label>';
+            htmlData += '<select class="form-control form-control-sm col-sm-12 select2" id="modalBranch" name="modalBranch"';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;">';
+            htmlData += '<option value="">-- Select Branch --</option>'; // default
+            branches.forEach(b => {
+                htmlData += `<option value="${b.code}">${b.name}</option>`;
+            });
+            htmlData += '</select>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Indicator</label>';
+            htmlData += '<select class="form-control form-control-sm col-sm-12 select2" id="indicator" name="indicator"';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;">';
+            htmlData += '<option value="">-- Select Indicator --</option>'; // default
+            indicators.forEach(i => {
+                htmlData += `<option value="${i.id}">${i.indicator}</option>`;
+            });
+            htmlData += '</select>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Value type</label>';
+            htmlData += '<select class="form-control form-control-sm col-sm-12 select2" id="valueType" name="valueType"';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;">';
+            htmlData += '<option value="">-- Select value type --</option>'; // default
+            htmlData += '<option value="number">Number</option>';
+            htmlData += '<option value="text">Text</option>';
+            htmlData += '<option value="time">Time</option>';
+            htmlData += '</select>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Value</label>';
+            htmlData += '<input type="text" id="value" name="value" class="form-control form-control-sm" value=""';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;">';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Date</label>';
+            htmlData += '<input type="date" id="createDt" name="createDt" class="form-control form-control-sm" value=""';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;" placeholder="Create Date">';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row text-center">';
+            htmlData += '<button type="button" class="btn btn-primary" onclick="addRiskIndicatorValue()">';
+            htmlData += 'Save';
+            htmlData += '</button>';
+            htmlData += '</div>';
+            htmlData += '</form>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            $("#areaValue").html(htmlData);
+            if (branchCode !== null && branchCode !== undefined) {
+                $('#modalBranch').val(branchCode).trigger('change');
+            }
+            let today = new Date().toISOString().split("T")[0];
+            $("#createDt").attr("max", today);
+        }
+
+        function addRiskIndicatorValue() {
+            $("#loading").show();
+            var branch = $("#modalBranch").val();
+            var indicator = $("#indicator").val();
+            var valueType = $("#valueType").val();
+            var value = $("#value").val();
+            var createDt = $("#createDt").val();
+            $.ajax({
+                url: "/fireSubmitRiskIndicatorForm",
+                data: {branchCode: branch, indicatorId: indicator, valueType: valueType, value: value, createdDate: createDt},
+                type: 'POST',
+                success: function (response) {
+                    $("#loading").hide();
+                    $("#myModal").modal("hide");
+                    if (response.validated && response.json != null) {
+                        if (response.json.responseCode == "0") {
+                            swal("Success!", response.json.message, "success");
+                        } else {
+                            swal("Error!", response.json.message, "error");
+                        }
+                    } else {
+                        swal("Error!", response.json.errorMessages, "error");
+                    }
+                }
+            });
+        }
+
+        function showRiskIndicatorValue(id, indicator, description, value) {
+            $("#myModal").modal("show");
+            var htmlData = '<div class="row">';
+            htmlData += '<div class="panel panel-default panel-fill">';
+            htmlData += '<div class="panel-heading"><h4 class="panel-title">EDIT RISK INDICATOR VALUE</h4></div>';
+            htmlData += '<div class="panel-body">';
+            htmlData += '<div class="col-md-12">';
+            htmlData += '<form class="form-horizontal" role="form" method="POST">';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Branch</label>';
+            htmlData += '<select class="form-control form-control-sm col-sm-12 select2" id="modalBranch" name="modalBranch"';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;">';
+            htmlData += '<option value="">-- Select Branch --</option>'; // default
+            branches.forEach(b => {
+                htmlData += `<option value="${b.code}">${b.name}</option>`;
+            });
+            htmlData += '</select>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Indicator</label>';
+            htmlData += '<select class="form-control form-control-sm col-sm-12 select2" id="indicator" name="indicator"';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;">';
+            htmlData += '<option value="">-- Select Indicator --</option>'; // default
+            indicators.forEach(i => {
+                htmlData += `<option value="${i.id}">${i.indicator}</option>`;
+            });
+            htmlData += '</select>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Value type</label>';
+            htmlData += '<select class="form-control form-control-sm col-sm-12 select2" id="valueType" name="valueType"';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;">';
+            htmlData += '<option value="">-- Select value type --</option>'; // default
+            htmlData += '<option value="number">Number</option>';
+            htmlData += '<option value="text">Text</option>';
+            htmlData += '<option value="time">Time</option>';
+            htmlData += '</select>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row">';
+            htmlData += '<div class="col-md-4">';
+            htmlData += '<label>Value</label>';
+            htmlData += '<input type="text" id="value" name="value" class="form-control form-control-sm" value=""';
+            htmlData += ' autocomplete="off" style="font-size: 10px !important;">';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '<div class="row text-center">';
+            htmlData += '<button type="button" class="btn btn-primary" onclick="editRiskIndicatorValue('+id+')">';
+            htmlData += 'Save';
+            htmlData += '</button>';
+            htmlData += '</div>';
+            htmlData += '</form>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            htmlData += '</div>';
+            $("#areaValue").html(htmlData);
+            if (branchCode !== null && branchCode !== undefined) {
+                $('#modalBranch').val(branchCode).trigger('change');
+            }
+            $("#value").val(value);
+            $("#valueType").val("text");
+            var option = $('select[name="indicator"] option').filter(function() { return $(this).text() === indicator; });
+
+            if (option.length) {
+                $('select[name="indicator"]').val(option.val()).trigger('change');
+            }
+        }
+
+        function editRiskIndicatorValue(id) {
+            $("#loading").show();
+            var branch = $("#modalBranch").val();
+            var indicator = $("#indicator").val();
+            var valueType = $("#valueType").val();
+            var value = $("#value").val();
+            $.ajax({
+                url: "/fireEditRiskIndicatorForm",
+                data: {id: id, branchCode: branch, indicatorId: indicator, valueType: valueType, value: value},
+                type: 'POST',
+                success: function (response) {
+                    $("#loading").hide();
+                    $("#myModal").modal("hide");
+                    if (response.validated && response.json != null) {
+                        if (response.json.responseCode == "0") {
+                            swal("Success!", response.json.message, "success");
+                            reloadDatatable();
+                        } else {
+                            swal("Error!", response.json.message, "error");
+                        }
+                    } else {
+                        swal("Error!", response.json.errorMessages, "error");
+                    }
+                }
+            });
+        }
+
+        function removeRiskIndicator(id) {
+            $("#loading").show();
+            $.ajax({
+                url: "/fireRemoveRiskIndicator",
+                data: {id: id},
+                type: 'POST',
+                success: function (response) {
+                    $("#loading").hide();
+                    $("#myModal").modal("hide");
+                    if (response.responseCode == "0") {
+                        swal("Success!", response.message, "success");
+                        reloadDatatable();
+                    } else {
+                        swal("Error!", response.message, "error");
+                    }
+                }
+            });
+        }
+    </script>
+</div>

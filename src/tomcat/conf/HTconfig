@@ -1,0 +1,45 @@
+#--------------------------------------------------------------
+#configuration file of 2 way tcp connector
+#both side must open socket to listen data
+#--------------------------------------------------------------
+
+# host port, local port
+hport=8000
+#peer port, remote port
+pport=9882
+#pear ip, remote ip
+pip=10.225.198.11
+#pip=172.20.5.141
+#user, pass of local system, use for authentication
+huser=tpbbank
+hpass=tpbbank
+
+#user, pass of remote system, use for authentication
+puser=tpbbank
+ppass=tpbbank
+
+#when set to 1, every non encrypted data send from remote system (USSDGW) #will be reject,
+#when set to 0, all data received from remote will be accepted whether # or not its encrypted
+#default value is 0
+allMsgEcrypted=0
+
+#key file used for encrypted data
+#if used, all data send to remote system will be encrypted
+#but if you comment this param, data will not encrypted
+#default value is not use this param
+#the patch can be absolute or relative
+#keyFile=../etc/keys/ussdapp.seckey
+
+# idle time for connection from remote system,
+# after received data from remote, connecion become IDLE state
+# if this IDLE state continue lasting than idle time, connection will #be close
+# if data received when idle time not reach, timer will reset to 0 and #process repeated again
+# Next data send from remote system will be tranfer via newly created #connection
+# unit: second.
+# idle = 0 <=> not idle (default).
+# highly recommended parameter, for intermittent connectivity
+idleTime=15
+
+# use for HA purpose only, VAS site dont need to care about this
+# default value: 0 mean not support HA.
+bkConId=0

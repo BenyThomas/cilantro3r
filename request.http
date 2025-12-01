@@ -1,0 +1,18 @@
+POST http://{{host}}:{{port}}/api/linkCard
+Content-Type: application/json
+
+{
+  "lastName": "Mkanye",
+  "cif": "28256",
+  "firstName": "Tuntu",
+  "nationalId": "0019200191992012",
+  "accountType": "10",
+  "msisdn": "0764678934",
+  "branchCode": "173",
+  "username": "Beny",
+  "accountNumber": "2711221539",
+  "cardNumber": "4021410210000046",
+  "channelId": "58167700",
+  "customerName": "Tuntu Mkanye"
+}
+

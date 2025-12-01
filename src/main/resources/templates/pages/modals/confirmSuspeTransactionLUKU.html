@@ -1,0 +1,66 @@
+<div class="panel panel-default panel-fill" >
+    <!--<div id="retryTransactions">-->
+    <div class="panel-heading"> <h3 class="panel-title" style="color: #ffffff !important;">CONFIRMING TRANSACTION FROM SUSPENSE AND LUKU FILES</h3>
+    </div>
+    <div class="panel-body" >
+        <h2>SUSPENSE ACCOUNT SIDE</h2>
+        <table  class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Txn Date</th>
+                    <th>Reference</th>
+                    <th>Source Acct</th>
+                    <th>Destination Acct</th>
+                    <th>Amount</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cbstxns:${cbsTxns}">
+                    <td th:text="${cbstxns.txndate}"></td>
+                    <td th:text="${cbstxns.txnid}"></td>
+                    <td th:utext="${cbstxns.sourceaccount}"></td>
+                    <td th:text="${cbstxns.destinationaccount}"></td>
+                    <td th:text="${#numbers.formatDecimal(cbstxns.amount, 0, 'COMMA', 2, 'POINT')}"></td>
+                    <td th:utext="${cbstxns.description}"></td>
+                    <td th:utext="${cbstxns.txn_status}"></td>
+
+                </tr>
+            </tbody>
+        </table>
+        <h2>LUKU FILE   SIDE</h2>
+        <table  class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Txn Date</th>
+                    <th>Bank Reference</th>
+                    <th>MNO Receipt</th>
+                    <th>Source Acct</th>
+                    <th>token</th>
+                    <th>amount</th>
+                    <th>Status</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="ttxns:${thirdPartTxn}">
+                    <td th:text="${ttxns.txndate}"></td>
+                    <td th:text="${ttxns.txnid}"></td>
+                    <td th:text="${ttxns.receiptNo}"></td>
+                    <td th:text="${ttxns.sourceAccount}"></td>
+                    <td th:utext="${ttxns.terminal}"></td>
+                    <td th:text="${#numbers.formatDecimal(ttxns.amount, 0, 'COMMA', 2, 'POINT')}"></td>
+                    <td th:utext="${ttxns.mnoTxns_status}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default " data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+<div class="row" id="preloader333" hidden=""> 
+    <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+</div>
+<!--</div>-->

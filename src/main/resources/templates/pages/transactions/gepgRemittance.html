@@ -1,0 +1,183 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+</div>
+<div class="panel panel-default panel-fill" id="tabContentsss"><div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+    <div class="panel-body">
+        <div class="row" id="selectTxnsType">
+            <form role="form">
+                <div class="form-group col-md-3">
+                    <select class="form-control" id="mno" selected="selected" name="mno" style="width: 550px">
+                        <option  value="">Select Txn Type...</option>
+                        <option value="003">GePG</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div id="successFlag">
+        </div>
+        <div class="row" id="loading"> 
+            <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+        </div>
+
+        <div class="row">
+            <div id="gepgAccounts">
+                <div class="form-group col-md-12" >
+                    <button id="previewGePGBalances" class="btn btn-primary pull-right col-md-2" style="    background-color: #0a5b94  !important;border: 1px solid #ffffff  !important;    border-radius: 41px !important;">Preview Balance</button>
+                </div>
+                <table id="gegpgRemittanceBOT" class="table table-striped table-bordered"  style="width: 100%; font-size: 8.5px !important;">
+                    <thead>
+                        <tr>
+                            <th>S/N</th>
+                            <th>PARTNER NAME</th>
+                            <th>SP CODE</th>
+                            <th>TPB ACCT No</th>
+                            <th>BOT ACCT NO</th>
+                            <th><input type="button" class="btn btn-primary" onclick='selectAll()' value="Tick All"/> &nbsp;<input type="button" onclick='UnSelectAll()' class="btn btn-primary" value="UnTick"/></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div id="gepgAccountsBalances" hidden="">
+                <div>
+                    <div class=" col-md-6">
+                        Narration: <input type="text" class="form-control" id="customNarration" name="customNarration"  placeholder="Narration to appear on swift message"/>
+                    </div><div class="form-group col-md-6">
+                        <button id="initiateGepgRemittance" class="btn btn-primary pull-right" style="    background-color: #0a5b94  !important;border: 1px solid #ffffff  !important;">Initiate Remittance</button>
+                    </div>
+                </div>
+
+                <table id="GepgRubikonAccountBalances" class="table table-striped table-bordered"  style="width: 100%; font-size: 8.5px !important;">
+                    <thead>
+                        <tr>
+                            <th>S/N</th>
+                            <th>ACCOUNT NUMBER</th>
+                            <th>CURRENCY</th>
+                            <th>ACCOUNT NAME</th>
+                            <th>AMOUNT</th>
+                            <th><input type="button" class="btn btn-primary" onclick='selectAll()' value="Tick All"/> &nbsp;<input type="button" onclick='UnSelectAll()' class="btn btn-primary" value="UnTick"/></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/reconDashboard.js}"></script>
+    <script th:src="@{/assets/scripts/transactions.js}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#loading").hide();
+            $("#select2").select2();
+            $("#mno").on('change', function () {
+                $('#gegpgRemittanceBOT').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $('#gegpgRemittanceBOT').DataTable({
+                dom: 'Blfrtip',
+                "pageLength":1000,
+                lengthChange: true,
+                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000, 2000, 5000, 10000, 25000],
+                responsive: true,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [2, "desc"],
+                ajax: {
+                    'url': '/getGepgAcountsAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    },
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "mno": $("select[name='mno']").val()
+                        });
+                    }
+                },
+                "columns": [
+                    {"data": 'acct_no'},
+                    {"data": "partner_name"},
+                    {"data": "partner_code"},
+                    {"data": 'acct_no'},
+                    {"data": "bot_acct"},
+                    {"data": 'acct_no',
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            var a = '<button ><input type="checkbox" style="margin-top:10%" id="' + row.acct_no + '==' + row.partner_code + '==' + row.bot_acct + '==' + row.bot_acct + '==' + row.bot_acct + '==' + row.bot_acct + '==' + row.bot_acct + '" name="txndetails" /><input hidden="" name="txnid" value="' + row.acct_no + '"></button>';
+                            return a;
+                        }}
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1]
+                    }
+                ], buttons: [{
+                        extend: "copy",
+                        title: 'GePG Remittance Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'GePG Remittance Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'GePG Remittance Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'GePG Remittance Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'GePG Remittance Transactions',
+                        className: "btn-sm"
+                    }],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='mno']").val() == '') {
+                        return false;
+                    }
+                }
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        });
+        function reloadDatatable() {
+            $('#gegpgRemittanceBOT').DataTable().ajax.reload();
+        }
+    </script>
+</div>

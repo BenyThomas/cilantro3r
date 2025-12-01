@@ -1,0 +1,143 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContents"><div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <div id="successFlag">
+            </div>
+            <div  id="loading" hidden=""> </div>
+            <div class="row">
+                <table id="dataTable2" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 7.5px !important;">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>GL ACCOUNT</th>
+                        <th>DESCRIPTION</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!--</form>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/transactions.js}"></script>
+
+    <script>
+                $(document).ready(function () {
+
+                    $("#loading").hide();
+                    $('#preloader').hide();
+                    $('#preloader2').hide();
+                    var token = $("meta[name='_csrf']").attr("content");
+                    var header = $("meta[name='_csrf_header']").attr("content");
+                    var i = 0;
+                    var table = $('#dataTable2').DataTable({
+                        dom: 'Blfrtip',
+                        lengthChange: true,
+                        lengthMenu: [10, 25, 50, 100, 200, 300, 500],
+                        responsive: true,
+                        serverMethod: 'post',
+                        ajax: {
+                            'url': '/getBankGlsAjax',
+                            'beforeSend': function (request) {
+                                request.setRequestHeader(header, token);
+                            }
+                        },
+                        "columns": [
+                            {"data": 'data',
+                                "render": function (data) {
+                                    i = i + 1;
+                                    return i;
+                                }},
+                            {data: 'GL_ACCT_NO'},
+                            {data: 'ACCT_DESC'}
+                          
+                        ], aoColumnDefs: [
+                            {
+                                bSortable: false,
+                                aTargets: [-1]
+                            }
+                        ], buttons: [{
+                                extend: "copy",
+                                title: 'gls',
+                                className: "btn-sm"
+                            }, {
+                                extend: "csv",
+                                title: 'gls',
+                                className: "btn-sm"
+                            }, {
+                                extend: "excel",
+                                title: 'gls',
+                                className: "btn-sm"
+                            }, {
+                                extend: "pdf",
+                                title: 'gls',
+                                className: "btn-sm"
+                            }, {
+                                extend: "print",
+                                title: 'gls',
+                                className: "btn-sm"
+                            }]
+                    });
+                    table.on('order.dt search.dt', function () {
+                        table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                            cell.innerHTML = i + 1;
+                        });
+                    }).draw();
+                });
+                function reloadDatatable() {
+                    $('#dataTable').DataTable().ajax.reload();
+                }
+            </script>
+</div>
+</body>
+</html>
+
+

@@ -1,0 +1,221 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+  <style>
+      #loading {
+          background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 92%;
+          width: 100%;
+          z-index: 9999999;
+      };
+      .flex-row {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+      }
+  </style>
+  <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+  <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+</div>
+<div class="row">
+  <div class="panel panel-default panel-fill">
+    <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+    <div class="panel-body">
+      <form role="form">
+        <div class="row">
+          <div class="form-group col-md-3">
+            <div class="input-group">
+              <input id="fromDate" name="fromDate" class="form-control form-control-inline input-txndatemedium default-date-picker" data-date-format="yyyy-mm-dd" type="text" placeholder="From Date" autocomplete="off"/>
+              <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+            </div><!-- input-group -->
+          </div>
+          <div class="form-group col-md-3">
+            <div class="input-group">
+              <input id="toDate" name="toDate" class="form-control form-control-inline input-txndatemedium default-date-picker" data-date-format="yyyy-mm-dd" type="text" placeholder="To Date" autocomplete="off"/>
+              <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+            </div><!-- input-group -->
+          </div>
+          <div class="form-group col-md-3" style="margin-top: auto; margin-bottom: auto;">
+            <button type="button" class="btn btn-primary searchBatch">Search</button>
+          </div>
+        </div>
+      </form>
+      <div id="successFlag">
+      </div>
+      <div id="loading" hidden=""></div>
+      <div class="row">
+        <div class="col" style="margin-bottom: 8px;">
+          <button class="btn btn-primary text-end get-update-btn">Get updates</button>
+        </div>
+      </div>
+      <div class="row">
+        <table id="batchReferences" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important;">
+          <thead>
+          <tr>
+            <th>S/N</th>
+            <th>Reference</th>
+            <th>Txn Count</th>
+            <th>Total Amount</th>
+            <th>Start Record ID</th>
+            <th>End Record ID</th>
+            <th>Created</th>
+            <th>Success count</th>
+            <th>Failure count</th>
+            <th>Updated</th>
+            <th>ACTION</th>
+          </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+  <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+  <!-- init -->
+  <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+  <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+  <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+  <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+
+  <!-- App Js -->
+  <script th:src="@{/assets/js/jquery.app.js}"></script>
+  <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+  <script th:src="@{/assets/scripts/pension.js}"></script>
+
+  <script type="text/javascript" th:inline="javascript">
+      $(document).ready(function () {
+          jQuery('#fromDate').datepicker({
+              autoclose: true,
+              todayHighlight: true
+          });
+          jQuery('#toDate').datepicker({
+              autoclose: true,
+              todayHighlight: true
+          });
+          $("#loading").hide();
+          var token = $("meta[name='_csrf']").attr("content");
+          var header = $("meta[name='_csrf_header']").attr("content");
+          var b = 1;
+          var i = 0;
+          var table = $('#batchReferences').DataTable({
+              dom: 'Blfrtip',
+              lengthChange: true,
+              scrollCollapse: true,
+              scrollY: "700px",
+              scrollX: true,
+              pageLength: 10,
+              lengthMenu: [
+                  [5, 10, 25, 50, 100, 500, -1],
+                  [5, 10, 25, 50, 100, 500, 'Show all']
+              ],
+              responsive: true,
+              processing: true,
+              serverSide: true,
+              serverMethod: 'post',
+              order: [1, "desc"],
+              ajax: {
+                  'url': '/getTempPensionBatchesAjax',
+                  'beforeSend': function (request) {
+                      request.setRequestHeader(header, token);
+                  },
+                  "data": function (d) {
+                      return $.extend({}, d, {
+                          "fromDate": $("input[name='fromDate']").val(),
+                          "toDate": $("input[name='toDate']").val()
+                      });
+                  }
+              },
+              "columns": [
+                  {"data": null},
+                  {"data": 'reference'},
+                  {"data": 'itemCount'},
+                  {"data": 'totalAmount'},
+                  {"data": 'startRecId'},
+                  {"data": 'endRecId'},
+                  {"data": 'createDt'},
+                  {"data": 'successCount'},
+                  {"data": 'failureCount'},
+                  {"data": 'updateDt'},
+                  {"data": 'reference',
+                      "orderable": false,
+                      "searchable": false,
+                      "render": function (data, type, row, meta) {
+                          var a = '';
+                          if (row.successCount == 0) {
+                              a = '<button type="button" class="btn btn-primary processBatchBtn" onclick="this.disabled=true; this.value=\'Processing...\'; processBatch(\''+row.reference+'\'); return false;">Process</button>';
+                          }
+                          a += '&nbsp;<button type="button" class="btn btn-primary" onclick="viewTempTransactions(\''+row.reference+'\')">Transactions</button>';
+                          return a;
+                      }}
+              ], aoColumnDefs: [
+                  {
+                      bSortable: false,
+                      aTargets: [-1],
+                  }
+              ],
+              buttons: [{
+                      extend: "copy",
+                      title: 'TEMP PENSION BATCHES',
+                      className: "btn-sm"
+                  }, {
+                      extend: "csv",
+                      title: 'TEMP PENSION BATCHES',
+                      className: "btn-sm"
+                  }, {
+                      extend: "excel",
+                      title: 'TEMP PENSION BATCHES',
+                      className: "btn-sm"
+                  }, {
+                      extend: "pdf",
+                      title: 'TEMP PENSION BATCHES',
+                      className: "btn-sm"
+                  }, {
+                      extend: "print",
+                      title: 'TEMP PENSION BATCHES',
+                      className: "btn-sm"
+                  }]
+          });
+          table.on('order.dt search.dt', function () {
+              table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                  cell.innerHTML = i + 1;
+              });
+          }).draw();
+          $('.get-update-btn').click(function () {
+              setInterval(function() {
+                  table.ajax.reload();
+                  console.log('reloading');
+              }, 3000);
+          });
+      });
+      function reloadDatatable() {
+          $('#batchReferences').DataTable().ajax.reload();
+      }
+    </script>
+</div>

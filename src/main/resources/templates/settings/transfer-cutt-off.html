@@ -1,0 +1,201 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/main_layout}">
+    <head>
+        <title>Manage Service Providers</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    </head>
+    <body>
+        <div layout:fragment="pageStyle" th:remove="tag">
+            <style>
+                #loading {
+                    background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    height: 92%;
+                    width: 100%;
+                    z-index: 9999999;
+                }
+                .btn{
+                    border-radius: 0px !important;
+                }
+                .btn-dark {
+                    background-color: #107f13!important;
+                    border: 1px solid #ffffff!important;
+                }
+            </style>
+            <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/select2/css/select2.min.css}" rel="stylesheet" type="text/css" />
+            <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+        </div>
+        <div class="container" layout:fragment="contents">
+            <div class="table-responsive">
+                <div class="panel panel-default panel-fill" id="tabContentsss"><div class="panel-heading"> <h4 class="panel-title">TIME EXTENSION (EFT & RTGS)</h4></div>
+                    <div class="panel-body">
+                        <div  id="editPermission"></div>
+                        <div class="col-md-12" id="successFlag"></div>
+                        <form class="form-horizontal" role="form" id="addTimeExtension">
+                            <table  class="table table-striped table-bordered"  style="width: 100%; font-size: 8.5px !important;">
+                                <tbody>
+                                    <tr>
+                                        <td>Transfer Type</td>
+                                        <td><select class="form-control select2" id="transferType" name="transferType"  style="font-size: 10px !important;width: 328px !important;">
+                                                <option value="">Transfer Type--</option>
+                                                <option value="001">RTGS</option>
+                                                <option value="005">EFT</option>
+                                            </select>   
+                                        </td>                                             
+                                        <td>Week day</td>
+                                        <td><select class="form-control select2" id="dayOfWeek" name="dayOfWeek"  style="font-size: 10px !important;width: 328px !important;">
+                                                <option value="">Select day---</option>
+                                                <option value="monday">Monday</option>
+                                                <option value="tuesday">Tuesday</option>
+                                                <option value="wednesday">Wednesday</option>
+                                                <option value="thursday">Thursday</option>
+                                                <option value="friday">Friday</option>
+                                                <option value="saturday">Saturday</option>
+                                                <option value="sunday">Sunday</option>
+                                            </select>   
+                                        </td>                                       
+                                        <td>Up to</td>
+                                        <td>
+                                            <input id="toTime" name ="toTime" type="text" class="form-control">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary save-service-provider">Save Extension of Time</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- container -->
+
+        <!--</body>-->
+        <div layout:fragment="pageScript" th:remove="tag">
+            <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+            <!--init--> 
+            <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+            <!--App Js--> 
+            <script th:src="@{/assets/js/jquery.app.js}"></script>
+            <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+            <script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
+            <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+            <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+            <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+            <script th:src="@{/assets/scripts/teller.js}"></script>
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('.select2').select2();
+                    $("#loading").hide();
+                    $("#loading2").hide();
+                    jQuery('#toTime').timepicker({
+                        showMeridian: false
+                    });
+                    $("#mno").on('change', function () {
+                        $('#serviceProvidersTable').DataTable().ajax.reload();
+                    });
+                    var token = $("meta[name='_csrf']").attr("content");
+                    var header = $("meta[name='_csrf_header']").attr("content");
+                 
+                    $('.save-service-provider').click(function (e) {
+                        var formdata = new FormData($('#addTimeExtension')[0]);
+                        $.ajax({
+                            url: "/cuttOffExtension",
+                            type: 'POST',
+                            data: formdata, //{senderAccount: senderAccount, senderName: senderName, senderAddress: senderAddress, amount: amount, currency: currency, beneficiaryName: beneficiaryName, beneficiaryBIC: beneficiaryBIC, description: description, supporting_doc: supporting_doc, beneficiaryAccount: beneficiaryAccount},
+                            enctype: 'multipart/form-data',
+                            processData: false,
+                            contentType: false,
+                            success: function (res) {
+                                $('.error').html('');
+                                if (res.validated) {
+                                    $('#preloader2').hide();
+                                    $("#successFlag").html('<div class="alert alert-success" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>Time Extended successfully From 16:00 to '+$("input[name='toTime']").val()+' for day '+$("select[name='dayOfWeek']").val()+'</strong></div>');
+                                    $('#serviceProvidersTable').DataTable().ajax.reload();
+                                    $('#addNewServiceProverForm').hide();
+                                } else {
+                                    $('#preloader2').hide();
+                                    $.each(res.errorMessages, function (key, value) {
+                                        $('Select[name=' + key + ']').after('<span class="error" style="color:red">' + value + '</span>');
+                                        $('input[name=' + key + ']').after('<span class="error" style="color:red">' + value + '</span>');
+                                        $('textarea[name=' + key + ']').after('<span class="error" style="color:red">' + value + '</span>');
+
+                                    });
+                                }
+                            }
+                        });
+                    });
+                    /*
+                     * IDENTIFY THE COMPANY AS LOCAL OR INTERNATIONAL
+                     */
+                    $("#spBankSwiftCode").on('change', function () {
+                        var benBic = $("select[name='spBankSwiftCode']").val();
+                        var identifier = benBic.split('==');
+                        if (identifier[1] === 'INTERNATIONAL') {
+                            /*
+                             * ADD AN INPUT FOR INTERMEDIARY SWIFT CODE
+                             */
+                            $('#intermediary').append('<input type="text" id="intermediaryBank" name="intermediaryBank" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Intermediary Bank Swift Code (IF APPLICABLE)">');
+                            $('#intermediary').append('<input type="text" id="identifier" name="identifier" readonly="" hidden="" autocomplete="off" value="INTERNATIONAL" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Intermediary Bank Swift Code (IF APPLICABLE)">');
+
+                        }
+                        if (identifier[1] === 'EAPS') {
+                            /*
+                             * ADD AN INPUT FOR INTERMEDIARY SWIFT CODE
+                             */
+                            $('#intermediary').append('<input type="text" id="intermediaryBank" name="intermediaryBank" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Intermediary Bank Swift Code (IF APPLICABLE)">');
+                            $('#intermediary').append('<input type="text" id="identifier" name="identifier" readonly="" hidden="" autocomplete="off" value="INTERNATIONAL" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Intermediary Bank Swift Code (IF APPLICABLE)">');
+
+                        }
+                        if (identifier[1] === 'LOCAL') {
+                            /*
+                             * ADD AN INPUT FOR INTERMEDIARY SWIFT CODE
+                             */
+                            $('#intermediary').append('<input type="text" hidden="" readonly="" id="identifier" name="identifier" value="LOCAL" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Intermediary Bank Swift Code (IF APPLICABLE)">');
+
+                        }
+                    });
+                });
+                function  editPermission(id) {
+                    $.ajax({
+                        url: "/editRole",
+                        data: {role_id: id},
+                        type: 'GET',
+                        success: function (res) {
+                            console.log(res);
+                            $("#editRole").toggle('slide').html(res).return;
+//                            ("#loading").hide();
+
+                        }
+                    });
+                }
+
+            </script>
+        </div>
+
+</html>

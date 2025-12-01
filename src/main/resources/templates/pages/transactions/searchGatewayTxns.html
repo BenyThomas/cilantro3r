@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/main_layout}">
+<head>
+    <title>Search Transactions</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div layout:fragment="pageStyle" th:remove="tag">
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/plugins/select2/css/select2.min.css}" type="text/css"/>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div id="reconData" layout:fragment="contents">
+            <div class="panel panel-default panel-fill">
+                <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+                <div class="panel-body">
+                    <div class="row" id="preloader2">
+                        <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+                    </div>
+                    <!--- success start--->
+                    <div class="col-md-12" id="successFlag"></div>
+                    <!------ End ------->
+                    <br>
+                    <!--- FORM START ----->
+                    <div class="row" id="another-element">
+                        <div class="row" ><h6 style="color: red;text-align: center">Do not tick both boxes at once. Tick only one  box at a time and hit search transaction.<br/>For rubikon please make sure you only search using account number</h6></div>
+                        <form role="form" name="searchGWTransaction">
+                            <div class="row">
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label style="margin-left: 1% ! important;">Search Parameter<i class="text-danger">*</i></label>
+                                        <input type="text" name="input" class="form-control form-control-inline col-md-9" placeholder="by [reference,receipt,Phone, acctNo]" required="">
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label for="rubikon" style="margin-left: 1% ! important;">Rubikon<i class="text-danger"></i></label>
+                                        <input type="checkbox" style="margin-top:10%" id="rubikon" title="Search Transaction on Rubikon by using Account" name="cbs"/>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label for="gateway" style="margin-left: 1% ! important;">Gateway<i class="text-danger"></i></label>
+                                        <input type="checkbox" style="margin-top:10%" id="gateway" title="Search Transaction on Gateway by using Receipt/Reference/Account" name="gw"/>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label for="mkoba" style="margin-left: 1% ! important;">Mkoba<i class="text-danger"></i></label>
+                                        <input type="checkbox" title="Search Transaction on MKOBA by using Receipt/Reference/Account" style="margin-top:10%" id="mkoba" name="mkoba"/>
+                                    </div>
+                                    <div class="form-group col-md-2 m-b-0" style="">
+                                        <button  type="submit" class="btn btn-info btn-submit" style="margin-top:25px !important; margin-left:3px !important;">Search Transaction</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!--- FORM END ---->
+                    <!--- FORM START ----->
+                    <div class="container container-fluid">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <button id="initiateRefundRetryTxns" hidden="" class="btn btn-primary col-md-2" style="background-color: #089a35  !important;border: 1px solid #13a201  !important;border-radius: 41px !important; margin-top:30px !important;">Retry/Refund</button>
+                                <form role="form" name="syncRubikonForm" id="syncRubikonForm" >
+                                    <div class="form-group col-md-4">
+                                        <label for="ttype" style="margin-left: 1% ! important;">Transaction Category<i class="text-danger"></i></label>
+                                        <select class="form-control" id="tType"  name="tType">
+                                            <option selected disabled>Select Type...</option>
+                                            <option value="UTILITY">UTILITY</option>
+                                            <option value="B2C">B2C</option>
+                                            <option value="C2B">C2B</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="txnType" style="margin-left: 1% ! important;">Transaction Type<i class="text-danger"></i></label>
+                                        <select class="form-control" id="txnType"  name="txnType">
+                                            <option selected disabled>Select Type...</option>
+                                            <option value="AZAM">AZAM</option>
+                                            <option value="LUKU">LUKU</option>
+                                            <option value="TIGO">TIGO</option>
+                                            <option value="M-PESA">M-PESA</option>
+                                            <option value="AIRTEL">AIRTEL</option>
+                                            <option value="EZYPESA">ZANTEL</option>
+                                            <option value="TPESA">T-PESA</option>
+                                            <option value="HALOTEL">HALOTEL</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-2 text-right m-b-0" >
+                                        <button type="button" disabled id="syncRubikonTxnSearch" class="btn btn-primary btn-submit" style="margin-top:30px !important;">Sync Rubikon</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+<!--                    <div id="successFlag">-->
+<!--                    </div>-->
+                    <!--- FORM END ---->
+                    <div class="row">
+                        <!--DTABLE--->
+                        <table id="searchTxns" hidden="" class="table table-striped table-bordered"  style="width: 100%; font-size: 8.5px !important;">
+                            <thead>
+                            <tr>
+                                <th>S/N</th>
+                                <th>MSISDN</th>
+                                <th>BANK REFERENCE</th>
+                                <th>MNO REFERENCE</th>
+                                <th>TRAN DATE</th>
+                                <th>AMOUNT</th>
+                                <th>SOURCE A/C</th>
+                                <th>DESTINATION A/C</th>
+                                <th>FIRST STATUS</th>
+                                <th>FINAL STATUS</th>
+                                <th><input type="button" class="btn btn-primary" onclick='selectAll()' value="Tick All"/>
+                                    &nbsp;<input type="button" onclick='UnSelectAll()' class="btn btn-primary" value="UnTick"/></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/reconDashboard.js}"></script>
+    <script>
+                $(document).ready(function () {
+                    $('#preloader2').hide();
+                    /*  Submit form using Ajax */
+                    $('button[type=submit]').click(function (e) {
+                        e.preventDefault();
+                        //Remove all errors
+                        $('input').next().remove();
+                        var searchon = '-1';
+                        if (document.getElementById('mkoba').checked) {
+                            searchon = 'mkoba';
+                        } else if (document.getElementById('rubikon').checked) {
+                            searchon = 'rubikon';
+                        } else if (document.getElementById('gateway').checked) {
+                            searchon = 'gateway';
+                        } else {
+                            searchon = 'gateway';
+                        }
+                        var input = $("input[name='input']").val();
+                        $('#preloader2').show();
+                        $.ajax({
+                            url: "/getSearchGwTxnAjax",
+                            type: 'GET',
+                            data: {input: input, searchon: searchon},
+                            dataType: "json",
+                            success: function (res) {
+                            $("#kdsSyncRubikon").show();
+                                var i = 0;
+                                $('#preloader2').hide();
+                                $('#searchTxns').show();
+                                $('#searchTxns').DataTable({
+                                    "info": true,
+                                    "bDestroy": true,
+                                    dom: "Bfrtip",
+                                    "data": res,
+                                    lengthChange: false,
+                                    "columns": [
+                                        {"data": 'txid',
+                                            "render": function (data) {
+                                                i = i + 1;
+                                                return i;
+                                                ;
+                                            }},
+                                        {"data": "msisdn"},
+                                        {"data": "txid"},
+                                        {"data": "txReceipt"},
+                                        {"data": "txdate"},
+                                        {"data": "txamount"},
+                                        {"data": "txsourceAccount"},
+                                        {"data": "txdestinationAccount"},
+                                        {data: 'txstatus',
+                                            "orderable": false,
+                                            "searchable": false,
+                                            "render": function (data, type, row, meta) {
+                                                var a = 'unknown';
+                                                if (row.txstatus === 53) {
+                                                    a = "Failed, No saving account";
+                                                } else if (row.txstatus === 13) {
+                                                    a = 'Invalid amount';
+                                                } else if (row.txstatus === 14) {
+                                                    a = 'Invalid Account Number';
+                                                } else if (row.txstatus === 57) {
+                                                    a = 'Transaction not permitted to cardholder';
+                                                } else if (row.txstatus === 58) {
+                                                    a = 'Transaction not allowed at terminal';
+                                                } else if (row.txstatus === 96) {
+                                                    a = 'System Malfunctional, An error occured during processing';
+                                                } else if (row.txstatus === 51) {
+                                                    a = 'Insufficient Fund';
+                                                } else if (row.txstatus === 61) {
+                                                    a = 'Daily Limit Exceeded';
+                                                } else if (row.txstatus === 55) {
+                                                    a = 'Wrong Pin';
+                                                } else if (row.txstatus === 26) {
+                                                    a = 'Transaction Reprocessed Twice';
+                                                } else if (row.txstatus === '-1') {
+                                                    a = 'Failed';
+                                                } else if (row.txstatus === 0 || row.txstatus === 200) {
+                                                    a = 'Success';
+                                                } else {
+                                                    a = row.txstatus;
+                                                }
+                                                return a;
+                                            }},
+                                        {data: 'txstatusdesc',
+                                            "orderable": false,
+                                            "searchable": false,
+                                            "render": function (data, type, row, meta) {
+                                                var a = 'unknown';
+                                                if (row.txstatusdesc === 53) {
+                                                    a = "Failed, No saving account";
+                                                } else if (row.txstatusdesc === 13) {
+                                                    a = 'Invalid amount';
+                                                } else if (row.txstatusdesc === 14) {
+                                                    a = 'Invalid Account Number';
+                                                } else if (row.txstatusdesc === 57) {
+                                                    a = 'Transaction not permitted';
+                                                } else if (row.txstatusdesc === 59) {
+                                                    a = 'Customer changed/Swapped a Line';
+                                                } else if (row.txstatusdesc === 58) {
+                                                    a = 'Transaction not allowed at terminal';
+                                                } else if (row.txstatusdesc === 96) {
+                                                    a = 'Core Banking Error occured [96] Please verify on Rubikon';
+                                                } else if (row.txstatusdesc === 51) {
+                                                    a = 'Insufficient Fund';
+                                                } else if (row.txstatusdesc === 61) {
+                                                    a = 'Daily Limit Exceeded';
+                                                } else if (row.txstatusdesc === 55) {
+                                                    a = 'Wrong Pin';
+                                                } else if (row.txstatusdesc === 26) {
+                                                    a = 'Success';
+                                                } else if (row.txstatusdesc === '-1') {
+                                                    a = 'Timeout';
+                                                } else if (row.txstatusdesc === 'GS') {
+                                                    a = 'Success';
+                                                } else if (row.txstatusdesc === 'GF') {
+                                                    a = 'Failed on GePG';
+                                                } else if (row.txstatusdesc === 0 || row.txstatusdesc === 200) {
+                                                    a = 'Success';
+                                                } else if (row.txstatusdesc === 100) {
+                                                    a = 'Internal service error occurred. Please contact Tigo Support for further details.';
+                                                } else {
+                                                    a = row.txstatusdesc;
+                                                }
+                                                return a;
+                                            }},
+                                        {data: 'txid',
+                                            "orderable": false,
+                                            "searchable": false,
+                                            "render": function (data, type, row, meta) {
+                                                var a = '<button ><input type="checkbox" style="margin-top:10%" id="' + row.txid + '==' + row.txsourceAccount + '==' + row.txdestinationAccount + '==' + row.txamount + '==' + row.txdate + '==' + row.txstatusdesc + '==' + searchon + '" name="txndetails" /><input hidden="" name="txnid" value="' + row.txid + '"></button>';
+                                                return a;
+                                            }}
+                                    ], buttons: [{
+                                            extend: "copy",
+                                            title: 'Search Transactions',
+                                            className: "btn-sm"
+                                        }, {
+                                            extend: "csv",
+                                            title: 'Search Transactions',
+                                            className: "btn-sm"
+                                        }, {
+                                            extend: "excel",
+                                            title: 'Search Transactions',
+                                            className: "btn-sm"
+                                        }, {
+                                            extend: "pdf",
+                                            title: 'Search Transactions',
+                                            className: "btn-sm"
+                                        }, {
+                                            extend: "print",
+                                            title: 'Search Transactions',
+                                            className: "btn-sm"
+                                        }],
+                                    responsive: !1,
+                                });
+
+
+                            }
+                        })
+                    });
+                    //load the tab content
+//                    $('[data-toggle="tab"]').click(function (e) {
+//                        $("#preloader").show();
+//                        var $this = $(this),
+//                                loadurl = $this.attr('data-url');
+//                        $.ajax({
+//                            url: loadurl,
+//                            type: 'GET',
+//                            success: function (res) {
+//                                $("#tabContent").html(res).return;
+//                                //$("#tabContent").show();
+//                                $("#preloader").hide();
+//                            }
+//                        });
+//                        //$this.tab('show');
+//
+//                        return true;
+//                    });
+                });
+            </script>
+</div>
+</body>
+</html>

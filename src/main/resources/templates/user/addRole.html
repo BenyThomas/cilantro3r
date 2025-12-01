@@ -1,0 +1,272 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/main_layout}">
+    <head>
+        <title>Cilantro | Add New User</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    </head>
+    <body>
+        <div layout:fragment="pageStyle" th:remove="tag">
+            <!-- DataTables -->
+            <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+            <link th:href="@{/assets/plugins/datatables/buttons.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+            <!-- Responsive datatable examples -->
+            <link th:href="@{/assets/plugins/datatables/responsive.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+
+            <!-- Multi Item Selection examples -->
+            <link th:href="@{/assets/plugins/datatables/select.bootstrap4.min.css}" rel="stylesheet" type="text/css" />
+        </div>
+        <div class="container" layout:fragment="contents">
+            <div class="table-responsive">
+                <div class="panel panel-default panel-fill" id="tabContentsss"><div class="panel-heading"> <h4 class="panel-title">SYSTEM ROLES</h4></div>
+                    <div class="panel-body">
+                        <div  id="editRole"></div>
+
+                        <div hidden id="addNewRoleForm">
+                            <form role="form" name="getReconDashboard">
+                                <div class="row">
+                                    <div class="form-group col-md-6" >
+                                        <label for="roleName" style="margin-left: 1% ! important;">Role Name *</label>
+                                        <input class="hidden" name="roleId" value="-1"/>
+                                        <input name="roleName" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="roleName" data-date-format="yyyy-mm-dd" type="text" placeholder="Role Name eg. Administrator" autocomplete="off"/>
+                                    </div>
+                                    <div class="form-group col-md-6" >
+                                        <label for="description" style="margin-left: 1% ! important;">Role Description *</label>
+                                        <input name="description" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="description" data-date-format="yyyy-mm-dd" type="text" placeholder="" autocomplete="off"/>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12" >
+                                    <label for="Name" style="margin-left: 40% ! important;">MODULES PERMISSIONS</label>
+                                </div>
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Module Name</th>
+                                            <th>Permissions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="module,i:${modules}">
+                                            <td th:text="${module.name}"></td>
+                                            <td><input class="permissions" th:each="permission:${permissions}" style="margin-left: 1% ! important;"  th:if="${permission.moduleID==module.id}" type="checkbox" name="permission" th:text="${permission.permissionName}" th:value="${permission.permID+'__'+module.id}"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <label for="Name" style="margin-left: 40% ! important;">RECONCILIATION TYPES</label>
+
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Reconciliation Type</th>
+                                            <th>Permission</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Recon types</td>
+                                            <td><input class="reconType" th:each="recon:${reconTypes}" style="margin-left: 1% ! important;" type="checkbox" name="reconType" th:text="${recon.name}" th:value="${recon.id}"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <label for="Name" style="margin-left: 40% ! important;">BOOKS RECON TYPES</label>
+
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Reconciliation Type</th>
+                                        <th>Permission</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr><td>Recon types</td>
+                                        <td><input class="generalReconType" th:each="recon:${generalReconTypes}" style="margin-left: 1% ! important;" type="checkbox" name="generalReconType" th:text="${recon.displayName}" th:value="${recon.id}"/>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <label for="Name" style="margin-left: 40% ! important;">TRANSFER TYPES</label>
+
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Transfer Type</th>
+                                            <th>Permission</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td >Transfer types</td>
+                                            <td><input class="transferType" th:each="transfer:${transferTypes}" th:text="${transfer.name}" style="margin-left: 1% ! important;" type="checkbox" name="transferType"  th:value="${transfer.id}"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <label for="Name" style="margin-left: 40% ! important;">POSTING/PAYMENTS MODULES</label>
+
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Module Name</th>
+                                            <th>Permission</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="pmodule,i:${paymentModules}">
+                                            <td th:text="${pmodule.name}"></td>
+                                            <td><input class="permissions" th:each="ppermission:${paymentPermissions}" style="margin-left: 1% ! important;"  th:if="${ppermission.moduleID==pmodule.id}" type="checkbox" name="permission" th:text="${ppermission.permissionName}" th:value="${ppermission.permID+'__'+pmodule.id}"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <label for="Name" style="margin-left: 40% ! important;">KYC MODULES</label>
+
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Module Name</th>
+                                        <th>Permission</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <td >KYC</td>
+                                    <td><input class="kyc" th:each="module:${kycModules}" th:text="${module.name}" style="margin-left: 1% ! important;" type="checkbox" name="kyc"  th:value="${module.id}"/>
+                                    </td>
+                                    </tbody>
+                                </table>
+                                <label for="Name" style="margin-left: 40% ! important;">SYSTEM OPERATION ROLES</label>
+
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Operations Roles</th>
+                                            <th>Permission</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Roles types</td>
+                                            <td>
+                                                <input class="operation" th:each="operation:${operations}" style="margin-left: 1% ! important;" type="checkbox" name="operation" th:text="${operation.name}" th:value="${operation.id}"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="form-group col-md-12" >
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="row"> <a class="btn btn-primary pull-right" id="addNewRole">New Role</a></div>
+                        <div class="row">
+                            <div id="successFlag">
+                            </div>
+                            <table id="reconTypes" class="table table-striped table-bordered"  style="width: 100%; font-size: 11px !important;">
+                                <thead>
+                                    <tr>
+                                        <th>S/N</th>
+                                        <th>Role Name</th>
+                                        <th>Role Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="role,i:${roles}">
+                                        <td th:text="${i.index+1}">S/N</td>
+                                        <td th:text="${role.name}">Operations Roles</td>
+                                        <td th:text="${role.description}">Operations Roles</td>
+                                        <td><a class="btn btn-primary" th:onclick="editUserRole([[${role.id}]])">Edit</a> <a class="btn btn-danger"> Deactivate</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div> 
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div> <!-- container -->
+
+        <!--</body>-->
+        <div layout:fragment="pageScript" th:remove="tag">
+            <!-- Required datatable js -->
+            <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap4.min.js}"></script>
+            <!-- Buttons examples -->
+            <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.bootstrap4.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+
+            <!-- Key Tables -->
+            <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+
+            <!-- Responsive examples -->
+            <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/responsive.bootstrap4.min.js}"></script>
+
+            <!-- Selection table -->
+            <script th:src="@{/assets/plugins/datatables/dataTables.select.min.js}"></script>
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    //submit the roles
+                    $('button[type=submit]').click(function (e) {
+                        e.preventDefault();
+                        var permissionID = $('.permissions:checked').serialize();
+                        var reconTypeID = $('.reconType:checked').serialize();
+                        var generalReconTypeID = $('.generalReconType:checked').serialize();
+                        var operationID = $('.operation:checked').serialize();
+                        var transferTypeID = $('.transferType:checked').serialize();
+                        var kycID = $('.kyc:checked').serialize();
+                        var roleName = $('input[name="roleName"]').val();
+                        var description = $('input[name="description"]').val();
+                        var role_id = $('input[name="roleId"]').val();
+                        var moduleId = $('.module:hidden').serialize();
+                        console.log('Role Name:' + roleName + ' description: ' + description);
+                        $.ajax({
+                            url: "/saveRole",
+                            type: 'GET',
+                            data: {moduleId: moduleId, permissionID: permissionID, reconTypeID: reconTypeID, generalReconTypeID: generalReconTypeID, operationID: operationID, roleName: roleName, role_id: role_id, description: description, transferTypeID: transferTypeID, kycID: kycID},
+                            dataType: "json",
+                            success: function (res) {
+                                $('.error').html('');
+                                if (res.validated) {
+                                    $('#preloader2').hide();
+                                    location.reload();
+                                } else {
+                                    $('#preloader2').hide();
+                                    $.each(res.errorMessages, function (key, value) {
+                                        $('Select[name=' + key + ']').after('<span class="error" style="color:red">' + value + '</span>');
+                                        $('input[name=' + key + ']').after('<span class="error" style="color:red">' + value + '</span>');
+                                    });
+                                }
+                            }
+                        });
+                    });
+                    //show the addNew Role Div
+                    $('#addNewRole').click(function () {
+                        $('#addNewRoleForm').toggle('slide');
+                    });
+                });
+                function  editUserRole(id) {
+                    $.ajax({
+                        url: "/editRole",
+                        data: {role_id: id},
+                        type: 'GET',
+                        success: function (res) {
+                            console.log(res);
+                            $("#editRole").toggle('slide').html(res).return;
+//                            ("#loading").hide();
+
+                        }
+                    });
+                }
+
+            </script>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/main_layout}">
+    <head>
+        <title>Government Payments</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div layout:fragment="pageStyle" th:remove="tag">
+            <link th:href="@{/assets/plugins/bootstrap-tagsinput/css/bootstrap-tagsinput.css}" rel="stylesheet" />
+            <link rel="stylesheet" th:href="@{/assets/plugins/switchery/switchery.min.css}">
+            <link th:href="@{/assets/plugins/select2/css/select2.min.css}" rel="stylesheet" type="text/css" />
+            <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/clockpicker/css/bootstrap-clockpicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.css}" rel="stylesheet">
+        </div>
+        <div class="container" layout:fragment="contents">
+            <div class="container"><h2 style="margin-top: 12px; margin-bottom: 7px;background-color: #2b6331; padding: 10px;color: white;">GePG PAYMENTS [ MALIPO YA SERIKALI ]</h2></div>
+
+            <div id="exTab2" class="container">	
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a  href="#1" data-toggle="tab">Make Payment</a>
+                    </li>
+                    <li><a href="#2" data-toggle="tab">Completed</a>
+                    </li>
+                    <li><a href="#3" data-toggle="tab">Pending Payments</a>
+                    <li><a href="#3" data-toggle="tab">Failed Payments</a>
+                    <li><a href="#3" data-toggle="tab">Check Payments </a>
+                    <li><a href="#3" data-toggle="tab">Print Receipt </a>
+
+                    </li>
+                </ul>
+
+                <div class="tab-content ">
+                    <div class="tab-pane active" id="1">
+                        <h3>Standard tab panel created on bootstrap using nav-tabs</h3>
+                    </div>
+                    <div class="tab-pane" id="2">
+                        <h3>Notice the gap between the content and tab after applying a background color</h3>
+                    </div>
+                    <div class="tab-pane" id="3">
+                        <h3>add clearfix to tab-content (see the css)</h3>
+                    </div>
+                </div>
+            </div>
+
+            <hr/>
+            <!-- Bootstrap core JavaScript
+                ================================================== -->
+            <!-- Placed at the end of the document so the pages load faster -->
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+            <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+            <!-- end col -->
+            <!--            <div class="panel panel-default panel-fill" id="tabContentsss"><div class="panel-heading"> <h4 class="panel-title" th:text="${'GOVERNMENT PAYMENTS [ MALIPO YA SERIKALI ]'}"></h4></div>
+                            <div class="panel-body">
+                                <div class="d-flex" id="wrapper">
+                                    <div class="col-sm-3 pull-left">
+                                        <div class="bg-light border-right" id="sidebar-wrapper">
+                                            <div class="list-group list-group-flush">
+                                                <button onclick="makeNewPayments()" class="list-group-item list-group-item-action bg-light">Make New Payment</button>
+                                                <button class="list-group-item list-group-item-action bg-light">Completed Transactions </button>
+                                                <button class="list-group-item list-group-item-action bg-light">Pending Transactions</button>
+                                                <button class="list-group-item list-group-item-action bg-light">Reprocess GEPG Only</button>
+                                                <button class="list-group-item list-group-item-action bg-light">Check Control NO.</button>
+                                                <button class="list-group-item list-group-item-action bg-light">Print GePG Receipt</button>
+                                                <button class="list-group-item list-group-item-action bg-light">Send SMS Receipt</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="container-fluid">
+                                        <div id="billDetails" hidden="">
+                                            <div class="col-sm-9"><h4 class="m-b-20 header-title">MAKE A NEW PAYMENT</h4><div class="row"><div class="col-md-12"><form class="form-horizontal"> <div class="form-group col-sm-9"><input type="text" class="form-control" name="control_No" placeholder="Control No. eg. 9911013443"></div>&nbsp;&nbsp;<div class="form-group col-md-3"><button style="margin-left: 23px !important;" type="submit-validation" class="btn btn-primary">Validate Bill</button></div></div></div></div>
+                                        </div>
+                                        <div id="moduleDashboard"> <h2>GePG PAYMENTS</h2>
+                                            <p>Governmanet payment dashboard for both Teller and Supervisor. Please ensure the Reconciliation for Previous Day are reconciled otherwise you cannot proceed with posting if there is any hanging item for your branch. if there is any difficulties kindly consult IT HELPDESK for support</p>
+                                        </div>
+                                        <div id="validationResponse"></div>
+                                    </div>
+                                </div>
+                            </div>
+                           
+                        </div>-->
+        </div>
+    </div>
+    <div layout:fragment="pageScript" th:remove="tag">
+        <script th:src="@{/assets/plugins/bootstrap-tagsinput/js/bootstrap-tagsinput.min.js}"></script>
+        <script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
+        <script th:src="@{/assets/plugins/bootstrap-filestyle/js/bootstrap-filestyle.min.js}" type="text/javascript"></script>
+        <script th:src="@{/assets/plugins/switchery/switchery.min.js}"></script>
+        <script type="text/javascript" th:src="@{/assets/plugins/parsleyjs/parsley.min.js}"></script>
+        <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+        <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+        <script th:src="@{/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js}"></script>
+        <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+        <script th:src="@{/assets/plugins/clockpicker/js/bootstrap-clockpicker.min.js}"></script>
+        <script th:src="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.js}"></script>
+        <!--<script th:src="@{/assets/plugins/summernote/summernote-bs.min.js}"></script>-->
+        <script>
+            $(document).ready(function () {
+                $('#preloader').hide();
+                $('#preloader2').hide();
+                $('input[id$=datepicker-autoclose]').datepicker({dateFormat: 'yy-mm-dd'});
+                /*  Submit form using Ajax */
+                $('button[type=submit-validation]').click(function (e) {
+                    $('#preloader2').show();
+                    //Prevent default submission of form
+                    e.preventDefault();
+                    //Remove all errors
+                    $('input').next().remove();
+                    var controlNo = $("input[name='control_No']").val();
+                    $.ajax({
+                        url: "/queryBill",
+                        type: 'GET',
+                        data: {controlNo: controlNo},
+                        success: function (res) {
+                            console.log(res);
+                            $('#validationResponse').html(res).fadeIn(400).show();
+                        }
+                    })
+                });
+                //load the tab content
+            });
+            function makeNewPayments() {
+                $('#moduleDashboard').hide();
+                $('#billDetails').show();
+            }
+        </script>
+    </div>
+</body>
+</html>

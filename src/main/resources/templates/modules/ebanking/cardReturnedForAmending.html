@@ -1,0 +1,310 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/plugins/select2/css/select2.min.css}" type="text/css"/>
+</div>
+<div id="loading"></div>
+
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentsss">
+        <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <!--client registration form start-->
+            <div class="col-md-12" id="successFlag"></div>
+            <!--client registration form ends-->
+            <div class="row">
+                <table class="display nowrap table table-striped table-bordered" id="profilesAmendment"
+                       style="width: 100%; font-size: 7.5px !important;">
+                    <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Account</th>
+                        <th>Phone</th>
+                        <th>Bin</th>
+                        <th>Name</th>
+                        <th>Rim No</th>
+                        <th>Short Name</th>
+                        <th>Category</th>
+                        <th>Address1</th>
+                        <th>Address2</th>
+                        <th>Address3</th>
+                        <th>Address4</th>
+                        <th>Created by</th>
+                        <th>Create Date</th>
+                        <th>Status</th>
+                        <th style="width: 512px !important;">ACTION</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!--</form>-->
+            </div>
+        </div>
+    </div>
+</div>
+<!--<div class="form-group col-md-9">-->
+
+<div class="row">
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+
+    <!--init-->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!--App Js-->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
+    <script th:src="@{/assets/scripts/ebanking.js}"></script>
+    <script>
+        $(document).ready(function () {
+            //ADD NEW CLIENT TOGGLE MENU
+            $('#addNewClient').click(function () {
+                $('#newClientForm').toggle('slide');
+            });
+            $('.select2').select2({
+            theme:'classic',
+            height:'80%',
+            width:'100%'
+            });
+            $("#loading").hide();
+//            rtgsTransferForm
+
+//add the number of files to be attached
+            var max_fields = 4;
+            var wrapper = $("#supportingDocument");
+            var add_button = $("#addField");
+
+            var x = 1;
+            $(add_button).click(function (e) {
+                e.preventDefault();
+                if (x < max_fields) {
+                    x++;
+                    $(wrapper).append('<input type="file" name="supportingDoc" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Supporting Document">'); //add input box
+                } else {
+                    alert('You Reached the limits');
+                }
+            });
+
+            $(wrapper).on("click", ".delete", function (e) {
+                e.preventDefault();
+                $(this).parent('div').remove();
+                x--;
+            });
+            //ON SELECTING DESTINATION BANK CHECK IF ITS INTERNATIONAL AND ADD AN INPUT FIELD FOR INTERMEDIARY BANK
+            $('#intermediary').html("");
+            $("#destinationBank").on('change', function () {
+                var benBic = $("select[name='beneficiaryBIC']").val();
+                var identifier = benBic.split('==');
+                if (identifier[1] === 'INTERNATIONAL') {
+                    /*
+                     * ADD AN INPUT FOR INTERMEDIARY SWIFT CODE
+                     */
+                    $('#intermediary').append('<input type="text" id="intermediaryBank" name="intermediaryBank" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Intermediary Bank Swift Code (IF APPLICABLE)">');
+
+                }
+            });
+            $("#mno").on('change', function () {
+                $('#profilesInitiated').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $('#profilesAmendment').DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500,10000,25000,50000, -1],
+                    [5, 10, 25, 50, 100, 500,10000,25000,50000, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "desc"],
+                ajax: {
+                    'url': '/fireAmendVisaCardAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    }
+//                    "data": function (d) {
+//                        return $.extend({}, d, {
+//                            "mno": $("select[name='mno']").val()
+//                        });
+//                    }
+                },
+                "columns": [
+                    {"data": "reference"},
+                    {"data": "account_no"},
+                    {"data": "phone"},
+                    {"data": "bin"},
+                    {"data": "customer_name"},
+                    {"data": "customer_rim_no"},
+                    {"data": "customer_shortName"},
+                    {"data": "customer_category"},
+                    {"data": "address1"},
+                    {"data": 'address2'},
+                    {"data": "address3"},
+                    {"data": 'address4'},
+                    {"data": "created_by"},
+                    {
+                        "data": 'create_dt',
+                        "render": function (data, type, row){
+                            return formatDateTime(data)
+                        }
+                    },
+                    {"data": 'status',
+                        "render": function (data, type, row, meta) {
+                            var a = '';
+                            if (row.status === "RA") {
+                                a = "AMEND CARD"
+                            }
+                            return a;
+                        }},
+
+                    {"data": 'reference',
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            var a = '';
+                            a = '<button style="background-color: green !important; border-color: #6a7308; color: white !important; font-size: 11px !important;"  type="button" onclick="previewAmendmentCardRequest(\'' + row.reference + '\',\'' + row.account_no + '\')"> Amend Card </button>';
+                            return a;
+                        }}
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+                buttons: [{
+                        extend: "copy",
+                        title: 'Authorize RTGS Remittance Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='mno']").val() == '') {
+                        return false;
+                    }
+                }
+            });
+
+        });
+        function getCustomerDetails() {
+            console.log("sender account pressed!!!");
+            $("#loading").show();
+            var accountNo = $("input[name='accountNo']").val();
+            $('#senderAccountError').hide();
+            $.ajax({
+                url: "/queryCustomerDetails",
+                type: 'GET',
+                data: {accountNo: accountNo, code: "searchAccount"},
+                dataType: "json",
+                success: function (res) {
+                    $("#loading").hide();
+                    $('#senderAccountError').hide();
+                    $("#actNM").val(res[0].CUST_NM);
+                    $("#availableBalance").text('Available Blance: ' + addCommas(res[0].CLEARED_BAL));
+                    $("#customerName").val(res[0].FIRST_NM + ' ' + res[0].LAST_NM);
+                    $("#customerId").val(res[0].CUST_ID);
+                    $("#customerRim").val(res[0].CUST_NO);
+                    $("#custShortName").val(res[0].CUST_SHORT_NM);
+                    $("#custCategory").val(res[0].CUST_CAT);
+                    $("#address1").val(res[0].ADDR_LINE_1);
+                    $("#address2").val(res[0].ADDR_LINE_2);
+                    $("#address3").val(res[0].ADDR_LINE_3);
+                    $("#address4").val(res[0].ADDR_LINE_4);
+                    $("#city").val(res[0].CITY);
+//                    $("#email").val("not set");
+                    $("#branchId").val(res[0].BU_NO);
+                    $("#branchCode").val(res[0].MAIN_BRANCH_ID);
+                    $("#state").val(res[0].STATE);
+                    console.log(res)
+                },
+                error: function (res) {
+                    $("#loading").hide();
+                    $('#senderAccountError').show();
+                    console.log(res);
+                }
+            })
+        }
+        function formatDateTime(dateString) {
+            if (!dateString) return ''; // Handle null or empty values
+            var date = new Date(dateString);
+            var year = date.getFullYear();
+            var month = ('0' + (date.getMonth() + 1)).slice(-2);
+            var day = ('0' + date.getDate()).slice(-2);
+            var hours = ('0' + date.getHours()).slice(-2);
+            var minutes = ('0' + date.getMinutes()).slice(-2);
+            var seconds = ('0' + date.getSeconds()).slice(-2);
+
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+
+        function addCommas(nStr) {
+            nStr += '';
+            x = nStr.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            }
+            return x1 + x2;
+        }
+    </script>
+</div>

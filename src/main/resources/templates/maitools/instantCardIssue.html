@@ -1,0 +1,984 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/main_layout}">
+<head>
+    <title layout:title-pattern="Cilantro ~ Dashboard">Visa-Card-Report</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div layout:fragment="pageStyle" th:remove="tag">
+        <style>
+            #loading {
+                background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+                position: absolute; top: 0; left: 0; height: 92%; width: 100%; z-index: 9999999;
+            }
+            #rtgsTxnOnWorkFlow { table-layout: fixed !important; word-wrap: break-word; }
+            .inline-hint { font-size: 12px; color: #888; margin-top: 6px; min-height: 18px; }
+
+            /* Tiny toast */
+            #toast {
+                position: fixed; right: 20px; bottom: 20px; z-index: 999999;
+                min-width: 260px; max-width: 380px; display: none;
+            }
+            #toast .toast-item {
+                margin-top: 8px; padding: 10px 14px; border-radius: 4px; color: #fff;
+                box-shadow: 0 2px 8px rgba(0,0,0,.2);
+            }
+            #toast .ok { background:#28a745; }
+            #toast .err { background:#dc3545; }
+            #toast .info { background:#17a2b8; }
+        </style>
+        <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+        <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+        <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+    </div>
+</head>
+<body>
+<div class="row" layout:fragment="contents">
+    <div class="panel panel-default panel-fill" id="tabContentsss">
+        <div class="panel-heading">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#instantTab" data-toggle="tab" id="navInstant">Instant</a></li>
+            </ul>
+            <h4 class="panel-title" id="visaCard-header" th:text="${heading}"></h4>
+        </div>
+
+        <div class="panel-body tab-content">
+            <div class="tab-pane active" id="instantTab">
+                <div class="row" id="preloader2"><img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/></div>
+
+                <form id="instantFilterForm" class="row" style="margin-bottom:10px;">
+                    <div class="form-group col-md-3">
+                        <select class="form-control select2" id="instantStatus" name="status">
+                            <option value="ALL" selected>All</option>
+                            <option value="F" >Failed</option>
+                            <option value="L">Linked</option>
+                            <option value="PR">Pin Reissued</option>
+                            <option value="R">Registered</option>
+                            <option value="C">Charged</option>
+                            <option value="PC">PIN Changed</option>
+                            <option value="A">Activated</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <div class="input-group">
+                            <input name="fromDate" th:value="${startDate}" class="form-control default-date-picker"
+                                   id="instantFrom" data-date-format="yyyy-mm-dd" type="text" placeholder="From yyyy-mm-dd" autocomplete="off"/>
+                            <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <div class="input-group">
+                            <input name="toDate" th:value="${endDate}" class="form-control default-date-picker"
+                                   id="instantTo" data-date-format="yyyy-mm-dd" type="text" placeholder="To yyyy-mm-dd" autocomplete="off"/>
+                            <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-12 text-right">
+                        <button type="button" class="btn btn-primary" id="btnOpenIssueCard">Issue Card</button>
+                        <button type="button" class="btn btn-info" id="btnInstantSearch">Search</button>
+                    </div>
+                    <div class="col-md-12"><div id="instantMsg" class="inline-hint"></div></div>
+                </form>
+
+                <div id="instantTableWrap">
+                    <table id="instantCardTable" class="display nowrap table table-striped table-bordered"
+                           style="width:100%; font-size: 9.5px !important;">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Reference</th>
+                            <th>PAN</th>
+                            <th>Account</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Stage</th>
+                            <th>Created</th>
+                            <th>Last Error</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- Details Modal -->
+                <div class="modal fade" id="instantDetailsModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document" style="width: 95%;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Card Details & Event Trail</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-22px;">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div id="cardDetailsBlock" class="well well-sm" style="margin-bottom:10px;"></div>
+
+                                <div class="row" style="margin-bottom:8px;">
+                                    <div class="col-sm-2">
+                                        <label class="small text-muted">Step</label>
+                                        <select id="eventStepFilter" class="form-control input-sm">
+                                            <option value="">All</option>
+                                            <option value="L">Link</option>
+                                            <option value="A">Activate</option>
+                                            <option value="PR">Reissue PIN</option>
+                                            <option value="R">Issue to CBS</option>
+                                            <option value="C">Charge</option>
+                                            <option value="PC">Change PIN</option>
+                                            <option value="N">Notify</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label class="small text-muted">Status</label>
+                                        <select id="eventStatusFilter" class="form-control input-sm">
+                                            <option value="">All</option>
+                                            <option value="BEGIN">Begin</option>
+                                            <option value="SUCCESS">Success</option>
+                                            <option value="FAILED">Failed</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label class="small text-muted">From</label>
+                                        <input id="eventFrom" class="form-control input-sm default-date-picker" placeholder="YYYY-MM-DD">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label class="small text-muted">To</label>
+                                        <input id="eventTo" class="form-control input-sm default-date-picker" placeholder="YYYY-MM-DD">
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label class="small text-muted">Search</label>
+                                        <input id="eventSearch" class="form-control input-sm" placeholder="Search message...">
+                                    </div>
+                                    <div class="col-sm-1 text-right">
+                                        <label class="small text-muted" style="display:block;">&nbsp;</label>
+                                        <button id="btnClearEventFilters" class="btn btn-default btn-sm">Clear</button>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table id="eventTrailTable" class="display nowrap table table-striped table-bordered" style="width:100%; font-size: 11px;">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Step</th>
+                                            <th>Status</th>
+                                            <th>Message</th>
+                                            <th>Updated</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button id="btnRecomplete" class="btn btn-danger" style="display:none;">Retry</button>
+                                <div class="pull-left">
+                                    <label class="small text-muted" style="margin-right:8px;">
+                                        <input type="checkbox" id="autoRefreshEvents"> Auto-refresh (3s)
+                                    </label>
+                                    <button type="button" class="btn btn-default btn-sm" id="btnRefreshEvents">Refresh</button>
+                                    <span id="eventMsg" class="inline-hint" style="margin-left:8px;"></span>
+                                </div>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Issue Card Modal -->
+                <div class="modal fade" id="issueCardModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document" style="width: 700px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Issue Card</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-22px;">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div id="issueStatus" class="alert" style="display:none;"></div>
+
+                                <form id="issueCardForm">
+                                    <div class="row">
+                                        <div class="form-group col-sm-6">
+                                            <label>Card Number (PAN)</label>
+                                            <input name="cardNumber" class="form-control" required placeholder="4021410210000012">
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label>Account Number</label>
+                                            <input name="accountNumber" class="form-control" required placeholder="110210000830">
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label>MSISDN</label>
+                                            <input name="msisdn" class="form-control" required placeholder="2557XXXXXXXX">
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label>Email</label>
+                                            <input name="email" class="form-control" placeholder="customer@bank.tz">
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label>PAN Expiry (YYMM)</label>
+                                            <input name="panExpireDate" class="form-control" required placeholder="2711">
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label>PIN (for CBS registration)</label>
+                                            <input name="pin" class="form-control" type="number" min="0000" max="9999" required placeholder="4545">
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <div class="well well-sm" id="issueStages" style="margin-top:10px;">
+                                    <strong>Stages:</strong>
+                                    <ol style="margin: 8px 0 0 18px; padding:0;">
+                                        <li id="st1">1 - Link</li>
+                                        <li id="st2">2 - Reissue PIN</li>
+                                        <li id="st3">3 - Register to CBS</li>
+                                        <li id="st4">4 - Charge</li>
+                                        <li id="st5">5 - Change PIN</li>
+                                        <li id="st6">6 - Activate</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <div class="pull-left" id="issueActionsLeft"></div>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button id="btnStartIssue" class="btn btn-success">Start</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /instantTab -->
+        </div>
+    </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast"></div>
+
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+    <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+
+    <!-- Keep JS non-inlined so Thymeleaf won't parse arrays/objects -->
+    <script th:inline="none">
+        /* =========================
+           Endpoints
+        ========================= */
+        const API_ISSUE = {
+            link:        '/api/instant/card/link',
+            reissuePin:  '/api/instant/card/reissue-pin',
+            registerCBS: '/api/instant/card/register-cbs',
+            charge:      '/api/instant/card/charge',
+            changePin:   '/api/instant/card/change-pin',
+            activate:    '/api/instant/card/activate'
+        };
+
+        /* =========================
+           Tiny toast
+        ========================= */
+        function toast(msg, kind='info', ms=3500) {
+            const $wrap = $('#toast');
+            const $t = $(`<div class="toast-item ${kind}"></div>`).text(msg);
+            $wrap.append($t).fadeIn(120);
+            setTimeout(() => {
+                $t.fadeOut(200, () => { $t.remove(); if ($wrap.children().length===0) $wrap.hide(); });
+            }, ms);
+        }
+
+        /* =========================
+           CSRF
+        ========================= */
+        function csrf() {
+            return {
+                token: $("meta[name='_csrf']").attr("content"),
+                header: $("meta[name='_csrf_header']").attr("content")
+            };
+        }
+
+        /* =========================
+           Boot
+        ========================= */
+        $(document).ready(function () {
+            $('#preloader2').hide();
+            $('#instantFrom').datepicker({autoclose: true, todayHighlight: true, format: 'yyyy-mm-dd'});
+            $('#instantTo').datepicker({autoclose: true, todayHighlight: true, format: 'yyyy-mm-dd'});
+
+            window.instantTable = $('#instantCardTable').DataTable({
+                dom: 'Blfrtip',
+                info: true,
+                bDestroy: true,
+                lengthMenu: [10, 25, 50, 100, 200, 500, 1000],
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                data: [],
+                columns: [
+                    {data: null, render: (_, __, ___, meta) => meta.row + 1},
+                    {data: 'reference'},
+                    {data: 'pan', render: (d) => d ? maskCard(d) : ''},
+                    {data: 'accountNo', render: (d) => d ? maskCard(d) : ''},
+                    {data: 'customerName'},
+                    {data: 'phone'},
+                    {data: 'status', render: renderStatusCode},
+                    {data: 'stage'},
+                    {data: 'createdAt', render: (val) => escapeHtml(val || '')},
+                    {data: 'lastError', defaultContent: ''},
+                    {
+                        data: 'id',
+                        orderable: false,
+                        render: (id, _, row) => {
+                            const viewBtn = `<button class="btn btn-xs btn-primary act-view" data-id="${id}">View</button>`;
+                            const canRetry = String(row.status || '').toUpperCase() !== 'A';
+                            const retryBtn = canRetry ? ` <button class="btn btn-xs btn-warning act-retry" data-id="${id}">Retry</button>` : '';
+                            return viewBtn + retryBtn;
+                        }
+                    }
+                ]
+            });
+
+            loadInstantCards();
+            $('#btnInstantSearch').on('click', loadInstantCards);
+
+            // row actions
+            $('#instantCardTable').on('click', '.act-view', function () {
+                openDetails($(this).data('id'));
+            });
+            $('#instantCardTable').on('click', '.act-retry', function () {
+                retryFromList($(this).data('id'));
+            });
+
+            // modal actions
+            $('#btnRecomplete').on('click', function () {
+                const id = $(this).data('id');
+                retryFromDetails(id);
+            });
+
+            // Issue modal
+            $('#btnOpenIssueCard').on('click', function(){
+                $('#issueCardForm')[0].reset();
+                $('#issueActionsLeft').empty();
+                resetStages();
+                showIssueMsg(null, '');
+                $('#btnStartIssue').prop('disabled', false);
+                $('#issueCardModal').modal('show');
+            });
+
+            $('#btnStartIssue').on('click', function(){
+                showIssueMsg('info', 'Starting issuance workflow...');
+                resetStages();
+                runIssueFlow(1);
+            });
+        });
+
+        /* =========================
+           Helpers & renderers
+        ========================= */
+        function maskCard(cardNumber) {
+            if (!cardNumber) return '';
+            const firstSeven = cardNumber.slice(0, 7);
+            const lastFour = cardNumber.slice(-4);
+            return `${firstSeven} ** **** ${lastFour}`;
+        }
+        function escapeHtml(s) {
+            return String(s || '').replace(/[&<>"'`=\/]/g, function (c) {
+                return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'}[c]);
+            });
+        }
+        function ymdhmsArrayToString(a) {
+            if (!Array.isArray(a) || a.length < 3) return '';
+            const [Y, M, D, h=0, m=0, s=0] = a;
+            const pad = n => String(n).padStart(2, '0');
+            return `${Y}-${pad(M)}-${pad(D)} ${pad(h)}:${pad(m)}:${pad(s)}`;
+        }
+
+        function renderStatusCode(code) {
+            const c = (code || '').toUpperCase();
+            const map = {
+                'F':  { text: 'Failed',       cls: 'label label-danger'  }, // red
+                'L':  { text: 'Linked',       cls: 'label label-orange'  }, // orange
+                'PR': { text: 'Pin Reissued', cls: 'label label-amber'   }, // amber
+                'R':  { text: 'Registered',   cls: 'label label-info'    }, // cyan
+                'C':  { text: 'Charged',      cls: 'label label-purple'  }, // purple
+                'PC': { text: 'Pin Changed',  cls: 'label label-teal'    }, // teal
+                'A':  { text: 'Activated',    cls: 'label label-success' }  // green
+            };
+            const m = map[c] || {text: c, cls: 'label label-default'};
+            return `<span class="${m.cls}">${m.text}</span>`;
+        }
+
+        /* =========================
+           List loader
+        ========================= */
+        function loadInstantCards() {
+            const {token, header} = csrf();
+            $('#instantMsg').text('');
+            const payload = new FormData();
+            payload.append('status', $('#instantStatus').val() || 'F');
+            payload.append('fromDate', $('#instantFrom').val());
+            payload.append('toDate', $('#instantTo').val());
+
+            $('#preloader2').show();
+            $.ajax({
+                processData: false,
+                contentType: false,
+                data: payload,
+                type: "POST",
+                url: "/api/instant/card/list",
+                beforeSend: (req) => req.setRequestHeader(header, token),
+                success: function (resp) {
+                    $('#preloader2').hide();
+                    const ok = (resp && (resp.status === 'SUCCESS' || resp.message === 'SUCCESS' || resp.status === true));
+                    const rowsRaw = (resp && (resp.result || resp.data)) || [];
+                    if (!ok || !Array.isArray(rowsRaw)) {
+                        console.warn('Failed to load instant cards:', resp && (resp.message || resp.status), resp);
+                        $('#instantMsg').text('Could not refresh right now.');
+                        toast('Failed to load list', 'err');
+                        return;
+                    }
+                    const rows = rowsRaw.map(r => ({
+                        ...r,
+                        createdAt: Array.isArray(r.createdAt) ? ymdhmsArrayToString(r.createdAt) : (r.createdAt || '')
+                    }));
+                    window.instantTable.clear().rows.add(rows).draw(false);
+                    $('#instantMsg').text(`Loaded ${rows.length} record(s).`);
+                },
+                error: function (e) {
+                    $('#preloader2').hide();
+                    console.error('Error loading data:', e);
+                    $('#instantMsg').text('Error loading data.');
+                    toast('Error loading data', 'err');
+                }
+            });
+        }
+
+        function renderCardHeader(c) {
+            const mask = c.pan ? maskCard(c.pan) : '';
+            return `
+    <div>
+      <div><strong>Customer:</strong> ${escapeHtml(c.customerName || '')}</div>
+      <div><strong>Account:</strong> ${escapeHtml(c.accountNo || '')}</div>
+      <div><strong>PAN:</strong> ${escapeHtml(mask)}</div>
+      <div><strong>Status:</strong> ${renderStatusCode(c.status)}</div>
+      <div><strong>Created:</strong> ${escapeHtml(c.createdAt || '')}</div>
+      <div><strong>Branch:</strong> ${escapeHtml(c.originatingBranch || '')}</div>
+    </div>`;
+        }
+
+        // function openDetails(id) {
+        //     currentCardId = id;
+        //     $('#preloader2').show();
+        //     $('#eventMsg').text('');
+        //     $.getJSON(`/api/instant/card/${id}`, function (resp) {
+        //         $('#preloader2').hide();
+        //         const ok = !!resp && (resp.status === true || resp.status === 'SUCCESS' || resp.message === 'SUCCESS');
+        //         const payload = resp && (resp.data || resp.result);
+        //         if (!ok || !payload) {
+        //             $('#eventMsg').text('Failed to load.');
+        //             return;
+        //         }
+        //         const card = normalizeCard(payload.card);
+        //         $('#cardDetailsBlock').html(renderCardHeader(card));
+        //
+        //         if (String(card.status).toUpperCase() !== 'A') {
+        //             $('#btnRecomplete').show().data('id', card.id);
+        //         } else {
+        //             $('#btnRecomplete').hide().data('id', '');
+        //         }
+        //
+        //         $('#instantDetailsModal').modal('show');
+        //     }).fail(function () {
+        //         $('#preloader2').hide();
+        //         $('#eventMsg').text('Error loading details.');
+        //     });
+        // }
+
+        /* =========================
+           Retry — status-only decision
+        ========================= */
+        // Normalize any backend wording to our codes
+        function normalizeStatus(raw) {
+            const s = String(raw || '').trim().toUpperCase();
+            const map = {
+                'F':'F','L':'L','PR':'PR','R':'R','C':'C','PC':'PC','A':'A',
+                'FAILED':'F','LINKED':'L','PIN_REISSUED':'PR','REISSUED':'PR',
+                'REGISTERED':'R','ISSUE TO CBS':'R','CBS_REGISTERED':'R',
+                'CHARGED':'C','PIN_CHANGED':'PC','CHANGE PIN':'PC',
+                'ACTIVATED':'A','ACTIVE':'A'
+            };
+            return map[s] || s;
+        }
+
+        // Build payloads once per card
+        function buildBodies(card) {
+            const pan = card.pan || card.cardNumber;
+            return {
+                link: {
+                    cardNumber: pan,
+                    accountNumber: card.accountNo,
+                    msisdn: card.phone || '',
+                    email: card.email || '',
+                    panExpireDate: card.panExpireDate || card.cardexpireDt || ''
+                },
+                onlyCard: { cardNumber: pan },
+                register: { cardNumber: pan, pin: card.newPin || card.pin || '' },
+                changePin: { cardNumber: pan, pin: card.newPin || '', currentPin: card.otac || '' }
+            };
+        }
+
+        /**
+         * Decide the NEXT step purely from CURRENT STATUS:
+         * - not in {L,PR,R,C,PC} -> link
+         * - L  -> reissue-pin
+         * - PR -> register-cbs
+         * - R  -> charge
+         * - C  -> change-pin
+         * - PC -> activate
+         * - A  -> nothing
+         */
+        function pickRetryByStatus(card) {
+            const s = normalizeStatus(card.status);
+            const b = buildBodies(card);
+            switch (s) {
+                case 'L':   return { url: API_ISSUE.reissuePin,  body: b.onlyCard   };
+                case 'PR':  return { url: API_ISSUE.registerCBS, body: b.register   };
+                case 'R':   return { url: API_ISSUE.charge,      body: b.onlyCard   };
+                case 'C':   return { url: API_ISSUE.changePin,   body: b.changePin  };
+                case 'PC':  return { url: API_ISSUE.activate,    body: b.onlyCard   };
+                case 'A':   return { url: null,                  body: null         };
+                default:    return { url: API_ISSUE.link,        body: b.link       }; // F or unknown
+            }
+        }
+
+        function retryFromList(cardId) {
+            $.getJSON(`/api/instant/card/${cardId}`, function (resp) {
+                const ok = !!resp && (resp.status === true || resp.status === 'SUCCESS' || resp.message === 'SUCCESS');
+                const data = resp && (resp.data || resp.result);
+                if (!ok || !data || !data.card) {
+                    toast('Retry: failed to load details', 'err');
+                    return;
+                }
+                doRetry(data.card);
+            }).fail(function () {
+                toast('Retry: error fetching details', 'err');
+            });
+        }
+        function retryFromDetails(cardId) { retryFromList(cardId); }
+
+        function doRetry(card) {
+            const { url, body } = pickRetryByStatus(card);
+            if (!url) {
+                toast('Nothing to retry for this status.', 'info');
+                return;
+            }
+            const { token, header } = csrf();
+            $('#preloader2').show();
+            $.ajax({
+                url,
+                type: 'POST',
+                data: JSON.stringify(body),
+                contentType: 'application/json',
+                beforeSend: req => req.setRequestHeader(header, token),
+                success: function (resp2) {
+                    $('#preloader2').hide();
+                    if (isOK(resp2) || (resp2 && (resp2.responseCode === '00' || resp2.responseCode === 0))) {
+                        toast('Retry step succeeded', 'ok');
+                    } else {
+                        toast((resp2 && (resp2.message || resp2.responseMessage)) || 'Retry failed', 'err');
+                    }
+                    loadInstantCards();
+                    if (currentCardId) openDetails(currentCardId); // refresh details
+                },
+                error: function () {
+                    $('#preloader2').hide();
+                    toast('Retry request error', 'err');
+                }
+            });
+        }
+
+        /* =========================
+           Issue workflow (fixed order)
+        ========================= */
+        function setStageState(n, state) {
+            const el = $('#st' + n);
+            el.removeClass('text-muted text-success text-danger text-info');
+            if (state === 'ok') el.addClass('text-success');
+            else if (state === 'fail') el.addClass('text-danger');
+            else if (state === 'run') el.addClass('text-info');
+            else el.addClass('text-muted');
+        }
+        function resetStages() { for (let i = 1; i <= 6; i++) setStageState(i, 'idle'); }
+        function showIssueMsg(type, msg) {
+            const $b = $('#issueStatus');
+            $b.removeClass('alert-success alert-danger alert-info').hide();
+            if (!msg) return;
+            const cls = type === 'ok' ? 'alert-success' : type === 'info' ? 'alert-info' : 'alert-danger';
+            $b.addClass(cls).text(msg).show();
+        }
+        function postJSON(url, data, onDone) {
+            const {token, header} = csrf();
+            $.ajax({
+                url, type: 'POST', data: JSON.stringify(data), contentType: 'application/json',
+                beforeSend: req => req.setRequestHeader(header, token),
+                success: resp => onDone(null, resp),
+                error: err => onDone(err)
+            });
+        }
+        function isOK(resp) {
+            if (!resp) return false;
+            if (resp.status === 'SUCCESS') return true;
+            if (resp.status === true && (resp.message || '').toUpperCase() === 'SUCCESS') return true;
+            if ((resp.message || '').toUpperCase() === 'SUCCESS') return true;
+            if (resp.responseCode === '00' || resp.responseCode === 0 || resp.responseCode === '0') return true;
+            return false;
+        }
+        function toIssuePayload() {
+            const f = $('#issueCardForm')[0];
+            const data = Object.fromEntries(new FormData(f).entries());
+            if (!data.cardNumber || !data.accountNumber || !data.msisdn || !data.panExpireDate || !data.pin) {
+                showIssueMsg('error', 'Please fill all required fields.');
+                return null;
+            }
+            data.pin = parseInt(data.pin, 10);
+            return data;
+        }
+
+        function runIssueFlow(startAt) {
+            const form = toIssuePayload();
+            if (!form) return;
+            $('#btnStartIssue').prop('disabled', true);
+
+            const makeBtn = (label, cb, style = 'primary') =>
+                $(`<button class="btn btn-${style}" style="margin-right:6px;">${label}</button>`).on('click', cb);
+            const left = $('#issueActionsLeft').empty();
+
+            const doneAll = () => {
+                showIssueMsg('ok', 'All stages completed successfully.');
+                toast('Issuance complete', 'ok');
+                $('#btnStartIssue').prop('disabled', false);
+                loadInstantCards();
+            };
+
+            const doLink = () => {
+                setStageState(1, 'run');
+                postJSON(API_ISSUE.link, form, (err, resp) => {
+                    if (err || !isOK(resp)) {
+                        setStageState(1, 'fail');
+                        showIssueMsg('error', 'Link failed.');
+                        toast('Link failed', 'err');
+                        left.html('').append(makeBtn('Retry Link', doLink, 'warning'));
+                        $('#btnStartIssue').prop('disabled', false);
+                        return;
+                    }
+                    setStageState(1, 'ok'); showIssueMsg('ok', 'Linked successfully.'); toast('Linked', 'ok');
+                    doReissuePin();
+                });
+            };
+            const doReissuePin = () => {
+                setStageState(2, 'run');
+                postJSON(API_ISSUE.reissuePin, {cardNumber: form.cardNumber}, (err, resp) => {
+                    if (err || !isOK(resp)) {
+                        setStageState(2, 'fail');
+                        showIssueMsg('error', 'Reissue PIN failed.');
+                        toast('Reissue PIN failed', 'err');
+                        left.html('').append(makeBtn('Retry Reissue PIN', doReissuePin, 'warning'));
+                        $('#btnStartIssue').prop('disabled', false);
+                        return;
+                    }
+                    setStageState(2, 'ok'); showIssueMsg('ok', 'PIN reissued.'); toast('PIN reissued', 'ok');
+                    doRegisterCBS();
+                });
+            };
+            const doRegisterCBS = () => {
+                setStageState(3, 'run');
+                postJSON(API_ISSUE.registerCBS, {cardNumber: form.cardNumber, pin: form.pin}, (err, resp) => {
+                    if (err || !isOK(resp)) {
+                        setStageState(3, 'fail');
+                        showIssueMsg('error', 'Register to CBS failed.');
+                        toast('Register to CBS failed', 'err');
+                        left.html('').append(makeBtn('Retry Register to CBS', doRegisterCBS, 'warning'));
+                        $('#btnStartIssue').prop('disabled', false);
+                        return;
+                    }
+                    setStageState(3, 'ok'); showIssueMsg('ok', 'Registered to CBS.'); toast('Registered to CBS', 'ok');
+                    doCharge();
+                });
+            };
+            const doCharge = () => {
+                setStageState(4, 'run');
+                postJSON(API_ISSUE.charge, {cardNumber: form.cardNumber}, (err, resp) => {
+                    if (err || !isOK(resp)) {
+                        setStageState(4, 'fail');
+                        showIssueMsg('error', 'Charge failed.');
+                        toast('Charge failed', 'err');
+                        left.html('').append(makeBtn('Retry Charge', doCharge, 'warning'));
+                        $('#btnStartIssue').prop('disabled', false);
+                        return;
+                    }
+                    setStageState(4, 'ok'); showIssueMsg('ok', 'Charge successful.'); toast('Charged', 'ok');
+                    doChangePin();
+                });
+            };
+            const doChangePin = () => {
+                setStageState(5, 'run');
+                postJSON(API_ISSUE.changePin, {cardNumber: form.cardNumber, pin: form.pin}, (err, resp) => {
+                    if (err || !isOK(resp)) {
+                        setStageState(5, 'fail');
+                        showIssueMsg('error', 'Change PIN failed.');
+                        toast('Change PIN failed', 'err');
+                        left.html('').append(makeBtn('Retry Change PIN', doChangePin, 'warning'));
+                        $('#btnStartIssue').prop('disabled', false);
+                        return;
+                    }
+                    setStageState(5, 'ok'); showIssueMsg('ok', 'PIN changed.'); toast('PIN changed', 'ok');
+                    doActivate();
+                });
+            };
+            const doActivate = () => {
+                setStageState(6, 'run');
+                postJSON(API_ISSUE.activate, {cardNumber: form.cardNumber}, (err, resp) => {
+                    if (err || !isOK(resp)) {
+                        setStageState(6, 'fail');
+                        showIssueMsg('error', 'Activate failed.');
+                        toast('Activate failed', 'err');
+                        left.html('').append(makeBtn('Retry Activate', doActivate, 'warning'));
+                        $('#btnStartIssue').prop('disabled', false);
+                        return;
+                    }
+                    setStageState(6, 'ok'); showIssueMsg('ok', 'Card activated.'); toast('Activated', 'ok');
+                    doneAll();
+                });
+            };
+
+            // FIXED: correct stage mapping
+            switch (startAt) {
+                case 1: return doLink();
+                case 2: return doReissuePin();
+                case 3: return doRegisterCBS();
+                case 4: return doCharge();
+                case 5: return doChangePin();
+                case 6: return doActivate();
+                default: return doLink();
+            }
+        }
+
+        /* =========================
+   Events table + helpers
+========================= */
+        let eventsDT = null, currentCardId = null, eventsTimer = null;
+
+        function prettyStep(step) {
+            const s = (step || '').toUpperCase();
+            const map = { L:'Link', A:'Activate', PR:'Reissue PIN', R:'Issue to CBS', C:'Charge', PC:'Change PIN', N:'Notify' };
+            return map[s] || s;
+        }
+        function renderEventStatusLabel(s) {
+            const x = (s || '').toUpperCase();
+            const cls = x === 'SUCCESS' ? 'label label-success'
+                : x === 'FAILED'  ? 'label label-danger'
+                    : x === 'BEGIN'   ? 'label label-info'
+                        : 'label label-default';
+            return `<span class="${cls}">${x}</span>`;
+        }
+        function mapEventStatus(s) {
+            if (!s) return '';
+            const x = String(s).trim().toUpperCase();
+            return x === 'INITIATED' ? 'BEGIN' : x;
+        }
+        function normalizeEvent(ev) {
+            // format updatedAt: [Y,M,D,h,m,s] -> "YYYY-MM-DD HH:mm:ss"
+            const toStr = (a) => {
+                if (!Array.isArray(a) || a.length < 3) return '';
+                const [Y,M,D,h=0,m=0,s=0] = a;
+                const pad = n => String(n).padStart(2,'0');
+                return `${Y}-${pad(M)}-${pad(D)} ${pad(h)}:${pad(m)}:${pad(s)}`;
+            };
+            return {
+                ...ev,
+                status: mapEventStatus(ev.status),
+                updatedAt: toStr(ev.updatedAt)
+            };
+        }
+        function initEventsTable() {
+            if (eventsDT) return;
+            eventsDT = $('#eventTrailTable').DataTable({
+                dom: 'Blfrtip',
+                buttons: ['copy','csv','excel','pdf','print'],
+                order: [[4, 'desc']],
+                pageLength: 10,
+                lengthMenu: [10,25,50,100],
+                scrollX: true,
+                columns: [
+                    { data: null, width: 30, render: (_, __, ___, meta) => meta.row + 1 },
+                    { data: 'step',   width: 120, render: s => prettyStep(s) },
+                    { data: 'status', width: 90,  render: s => renderEventStatusLabel(s) },
+                    { data: 'message', className: 'dt-left', render: s => escapeHtml(s || '') },
+                    { data: 'updatedAt', width: 160, render: s => escapeHtml(s || '') }
+                ]
+            });
+
+            // Filters: step, status, search, date range
+            $('#eventStepFilter').on('change', function(){
+                const v = this.value;
+                const pat = v ? `^${prettyStep(v)}$` : '';
+                eventsDT.column(1).search(pat, true, false).draw();
+            });
+            $('#eventStatusFilter').on('change', function(){
+                const v = (this.value || '').toUpperCase();
+                eventsDT.column(2).search(v ? v : '', true, false).draw();
+            });
+            $('#eventSearch').on('keyup change', function(){
+                eventsDT.search(this.value).draw();
+            });
+            $.fn.dataTable.ext.search.push(function (settings, data) {
+                if (settings.nTable.id !== 'eventTrailTable') return true;
+                const from = $('#eventFrom').val();
+                const to   = $('#eventTo').val();
+                const updated = data[4] || '';
+                if (!from && !to) return true;
+                if (!updated) return false;
+                const u = updated.substring(0,10);
+                if (from && u < from) return false;
+                if (to   && u > to)   return false;
+                return true;
+            });
+            $('#eventFrom,#eventTo')
+                .datepicker({autoclose:true, format:'yyyy-mm-dd', todayHighlight:true})
+                .on('changeDate clearDate change', () => eventsDT.draw());
+
+            $('#btnClearEventFilters').on('click', function(){
+                $('#eventStepFilter').val('');
+                $('#eventStatusFilter').val('');
+                $('#eventFrom').val('');
+                $('#eventTo').val('');
+                $('#eventSearch').val('');
+                eventsDT.search('');
+                eventsDT.columns().search('');
+                eventsDT.draw();
+            });
+
+            // Auto-refresh
+            $('#autoRefreshEvents').on('change', function(){
+                if (this.checked) {
+                    if (eventsTimer) clearInterval(eventsTimer);
+                    eventsTimer = setInterval(() => { if (currentCardId) reloadEvents(currentCardId); }, 3000);
+                } else if (eventsTimer) {
+                    clearInterval(eventsTimer);
+                    eventsTimer = null;
+                }
+            });
+            $('#btnRefreshEvents').on('click', function(){ if (currentCardId) reloadEvents(currentCardId); });
+
+            // Stop refresh when modal closes
+            $('#instantDetailsModal').on('hidden.bs.modal', function(){
+                if (eventsTimer) { clearInterval(eventsTimer); eventsTimer = null; }
+                $('#autoRefreshEvents').prop('checked', false);
+                currentCardId = null;
+                $('#eventMsg').text('');
+            });
+        }
+        function renderEvents(rows) {
+            initEventsTable();
+            const data = Array.isArray(rows) ? rows.map(normalizeEvent) : [];
+            eventsDT.clear().rows.add(data).draw(false);
+            $('#eventMsg').text(`Events: ${data.length}`);
+        }
+        function reloadEvents(cardId) {
+            $.getJSON(`/api/instant/card/${cardId}`, function(resp){
+                const ok = !!resp && (resp.status === true || resp.status === 'SUCCESS' || resp.message === 'SUCCESS');
+                const payload = resp && (resp.data || resp.result);
+                if (!ok || !payload) { $('#eventMsg').text('Could not refresh events.'); return; }
+                renderEvents(payload.events || []);
+            }).fail(function(){ $('#eventMsg').text('Error refreshing events.'); });
+        }
+
+        /* =========================
+           Replace your openDetails with this
+        ========================= */
+        function openDetails(id) {
+            currentCardId = id;
+            $('#preloader2').show();
+            $('#eventMsg').text('');
+            $.getJSON(`/api/instant/card/${id}`, function (resp) {
+                $('#preloader2').hide();
+                const ok = !!resp && (resp.status === true || resp.status === 'SUCCESS' || resp.message === 'SUCCESS');
+                const payload = resp && (resp.data || resp.result);
+                if (!ok || !payload) { $('#eventMsg').text('Failed to load.'); return; }
+
+                // card header
+                const card = (function normalizeCard(c){
+                    if (!c) return c;
+                    return {
+                        ...c,
+                        createdAt: Array.isArray(c.createdAt) ? ymdhmsArrayToString(c.createdAt) : (c.createdAt || '')
+                    };
+                })(payload.card);
+                $('#cardDetailsBlock').html(renderCardHeader(card));
+
+                // show/hide Retry button
+                if (String(card.status).toUpperCase() !== 'A') {
+                    $('#btnRecomplete').show().data('id', card.id);
+                } else {
+                    $('#btnRecomplete').hide().data('id', '');
+                }
+
+                // EVENTS: build + populate
+                renderEvents(payload.events || []);
+
+                // show modal
+                $('#instantDetailsModal').modal('show');
+            }).fail(function () {
+                $('#preloader2').hide();
+                $('#eventMsg').text('Error loading details.');
+            });
+        }
+
+    </script>
+
+    <style>
+        /* Distinct label colors (visible on white background) */
+        .label-orange { background:#fd7e14; color:#111; }
+        .label-amber  { background:#d39e00; color:#fff; } /* darker amber for contrast */
+        .label-purple { background:#6f42c1; color:#fff; }
+        .label-teal   { background:#20c997; color:#111; }
+    </style>
+
+</div>
+</body>
+</html>

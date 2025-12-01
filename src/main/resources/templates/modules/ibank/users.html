@@ -1,0 +1,192 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+  <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 35%;
+            width: 60%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+    </style>
+  <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+  <!-- iziToast -->
+  <link th:href="@{/assets/plugins/iziman/dist/css/iziToast.min.css}" rel="stylesheet" type="text/css"/>
+<!--  <link th:href="@{/assets/plugins/iziman/dist/css/iziToast.min.css}" rel="stylesheet">-->
+</div>
+<div class="row">
+  <div class="panel panel-default panel-fill" id="tabContents"><div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+    <div class="panel-body">
+
+      <div id="successFlag">
+      </div>
+      <div  id="loading" hidden=""> </div>
+      <div class="row">
+        <form role="form" id="form1292">
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label for="custName" style="margin-left: 1% ! important;">User Name / First Name / Last Name<i class="text-danger">*</i></label>
+              <input type="text"  placeholder="Enter User Name Or Full Name" name="custName" id="custName" class="form-control"/>
+            </div>
+            <div class="form-group col-md-3">
+              <div class="form-group col-md-3 text-right m-b-0" style="margin-top: 10%;">
+                <button  type="button" class="btn btn-info btn-submit-inwardEft-Summary" onclick="doAjaxSearching()">Search User</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="row">
+        <table id="usersDataT" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 7.5px !important;">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>USERNAME</th>
+            <th>FULL NAME</th>
+            <th>EMAIL</th>
+            <th>ENABLED</th>
+            <th>PARTNER CODE</th>
+            <th>ACCOUNT LOCKED</th>
+<!--            <th>LAST SEEN</th>-->
+<!--            <th>CREATED ON</th>-->
+            <th>ACTION</th>
+          </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <!--</form>-->
+      </div>
+    </div>
+  </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+  <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+
+  <!-- iziToast -->
+  <script th:src="@{/assets/plugins/iziman/dist/js/iziToast.min.js}" type="text/javascript"></script>
+  <!-- init -->
+  <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+  <!-- App Js -->
+  <script th:src="@{/assets/js/jquery.app.js}"></script>
+  <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+  <script th:src="@{/assets/scripts/ibank.js}"></script>
+
+  <script>
+          $(document).ready(function () {
+              $("#loading").hide();
+              });
+
+              function doAjaxSearching() {
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var formdata = new FormData($('#form1292')[0]);
+                 iziToast.success({ title: 'PROCESSING', message: 'Fetching Data', color:'green',position:'topRight', timeout: 3000 });
+                var count = 0;
+               $("#preloader2").show();
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formdata,
+                    type: "POST",
+                    'url': '/fireIBUsersManagementAjax',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#preloader2").show();
+                    },
+
+                    success: function (response) {
+                       $("#preloader2").hide();
+                            var table = $('#usersDataT').DataTable({
+                                dom: 'Blfrtip',
+                                "info": true,
+                                "bDestroy": true,
+                                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                                lengthChange: true,
+                                scrollCollapse: true,
+                                scrollY: "700px",
+                                scrollX: true,
+                                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                "data": response.result,
+                              "columns": [
+                            {"data": 'id',
+                                "render": function (data) {
+                                    count =  count + 1;
+                                    return count;
+                                }},
+                            {data: 'USERNAME'},
+                            {data: 'FULL_NAME'},
+                            {data: 'EMAIL'},
+                            {data: 'ENABLED',
+                              "render": function (data, type, row, meta) {
+                              var a = '';
+                              if (row.ENABLED == 1) {
+                                  a = "ENABLED"
+                              }
+                              if(row.ENABLED == 0){
+                                  a = "DISABLED"
+                              }
+                              return a;
+                              }},
+                            {data: 'PARTNER_CODE'},
+                            {data: 'ACCOUNT_LOCKED',
+                              "render": function (data, type, row, meta) {
+                              var a = '';
+                              if (row.ACCOUNT_LOCKED === 1) {
+                                  a = "LOCKED"
+                              }
+                              if(row.ACCOUNT_LOCKED === 0){
+                                  a = "NOT LOCKED"
+                              }
+                              return a;
+                              }},
+<!--                            {data: 'LAST_LOGIN_TIME'},-->
+<!--                            {data: 'CREATED_ON'},-->
+                            {data: 'USERNAME',
+                            "render": function(data, type, row, meta){
+                            var a = '<div class="mr-2"><a class="btn btn-xs btn-primary" onclick="changeUserPasswordAjax(\'' + row.CUST_ID + '\',\'' + row.USERNAME + '\', \'' + row.FULL_NAME + '\',\'' + row.PARTNER_CODE +'\')"><i class="fa fa-key" aria-hidden="true"> Change Password</i></a>';
+                                a += '&nbsp <a class="btn btn-xs btn-primary"  onclick="modifyUserIBDetails(\'' + row.CUST_ID + '\',\'' + row.USERNAME + '\', \'' + row.ID + '\',\'' + row.PARTNER_CODE +'\')"> <i class="fa fa-pencil" aria-hidden="true"> Edit User</i></a>';
+                                a +='</div>';
+                           return a;
+
+                            }}
+                        ]
+                            });
+
+                            table.buttons().container().appendTo('#usersDataT-buttons_wrapper .col-md-6:eq(0)');
+                    },
+                    error: function (e) {
+                    iziToast.warning({ title: 'FAIL', message: 'Failed Fetching Data', color:'green',position:'topRight', timeout: 3000 });
+                        $("#preloader2").hide();
+                        console.log(e);
+                    }
+                });
+            }
+    </script>
+</div>

@@ -1,0 +1,24 @@
+<channel-adaptor
+ name="cbs-adaptor"
+ class="org.jpos.q2.iso.ChannelAdaptor" logger="Q2">
+
+  <channel
+ name="cbs-adaptor"
+packager="org.jpos.iso.packager.PostPackager" 
+class="org.jpos.iso.channel.PostChannel" logger="cbsLogs"
+ realm="cbs">
+<property name="connection-timeout" value="60000" />
+<property name="keep-alive" value="true" />
+ <property name="host" value="192.168.200.228"/>
+ <property name="port" value="9977"/>
+<!--<property name="protect" value="2 35 45" />-->
+ <!--<property name="wipe" value="52" />-->
+ <property name="packager-config" value="amgw/cbs/pack/tanescopack.xml" />
+ <property name="keep-alive" value="true" />
+<property name='round-robin' value='false' />
+ </channel>
+
+   <in>from-ussdGW</in>
+ <out>to-CBS</out>
+ <reconnect-delay>60000</reconnect-delay>
+</channel-adaptor>

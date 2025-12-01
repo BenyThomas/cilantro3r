@@ -1,0 +1,104 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    
+    </style>
+</div>
+<div class="panel panel-default panel-fill">
+    <div class="panel-heading" style="background-color: #04ab18 ! important; "><h3 class="panel-title"
+                                                                                   style="color: #ffffff !important;">
+        INTERNET BANKING USER DETAILS</h3>
+    </div>
+    <div class="panel-body">
+        <div class="row" id="content"></div>
+        <div class="row">
+            <div id="successFlag"></div>
+        </div>
+
+        <div class="row" id="messageData">
+            <form id="ibUsersDetailsChange" role="form">
+
+                <div class="form-row">
+                    <div class="col-md-12 alert alert-info" style="font-size:12px;  font-weight: bold;">
+                        USER LOGIN DETAILS
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="userName" style="margin-left: 1% ! important;">User Name</label>
+                        <input class="form-control" id="userName" name="username" placeholder="User Name"
+                               th:value="${data.userName}" type="text" readonly>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label for="fullName" style="margin-left: 1% ! important;">Full Name</label>
+                        <input class="form-control" id="fullName" name="fullName" th:value="${data.fullName}"
+                               type="text">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="email" style="margin-left: 1% ! important;">Email</label>
+                        <input class="form-control" id="email" name="email" placeholder="Email" th:value="${data.email}"
+                               type="text">
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label for="contactNo" style="margin-left: 1% ! important;">Contact Number</label>
+                        <input class="form-control" id="contactNo" name="contactNo" th:value="${data.contactNumber}"
+                               type="text">
+                    </div>
+                </div>
+                <div class="col-md-12 alert alert-info" style="font-size:12px;  font-weight: bold;">
+                    ACCOUNT PARAMETERS
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="accountExpires" style="margin-left: 1% ! important;">Account Expired</label>
+                        <select class="form-control form-select" id="accountExpires" name="accountExpires">
+                            <option th:selected="${data.accountExpires==1}" value="1">Account Expired</option>
+                            <option th:selected="${data.accountExpires==0}" value="0">Account Not Expired</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="credentialExpires" style="margin-left: 1% ! important;">Credentials Expired</label>
+                        <select class="form-control form-select" id="credentialExpires" name="credentialExpires">
+                            <option th:selected="${data.credentialsExpires==1}" value="1">Credential Expired</option>
+                            <option th:selected="${data.credentialsExpires==0}" value="0">Credential Not Expired
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="enableAccount" style="margin-left: 1% ! important;">Enable Account</label>
+                        <select class="form-control form-select" id="enableAccount" name="enableAccount">
+                            <option th:selected="${data.enableAccount==1}" value="1">Account Enabled</option>
+                            <option th:selected="${data.enableAccount==0}" value="0">Account Not Enabled</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label for="accountLocked" style="margin-left: 1% ! important;">Account Locked </label>
+                        <select class="form-control form-select" id="accountLocked" name="accountLocked">
+                            <option th:selected="${data.accountLocked==1}" value="1">Account Locked</option>
+                            <option th:selected="${data.accountLocked==0}" value="0">Account Not Locked</option>
+                        </select>
+                    </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="modal-footer">
+                <button class="btn btn-primary pull-right col-md-3 mr-2" id="updateIBUser"
+                        th:onclick='updateIbUsersDetailsChange()'>save changes
+                </button>
+                <button class="btn btn-default mx-3" data-dismiss="modal" id="closeModal" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+    <div layout:fragment="pageScript" th:remove="tag">
+        <script th:src="@{/assets/scripts/ibank.js}"></script>
+    </div>
+

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/main_layout}">
+<head>
+    <title>ZCSRA Data</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/..resources/static/assets/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container no-print" layout:fragment="contents">
+    <div class="container" style="padding-left: 0;">
+        <h2 style="margin-top: 12px; margin-bottom: 7px; background-color: #2b6331; padding: 10px; color: white;" th:text="${pageTitle}">ZCSRA Data</h2>
+    </div>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a href="#demographicTab" data-toggle="tab" class="nav-link active">Demographic</a>
+        </li>
+        <li class="nav-item">
+            <a href="#biometricTab" data-toggle="tab" class="nav-link">Biometric</a>
+        </li>
+        <li class="nav-item">
+            <a href="#reportsTab" data-toggle="tab" class="nav-link">Reports</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="demographicTab">
+            <div class="row">
+                <form id="searchForm" method="post" class="form-inline" th:action="@{/api/demographic/search}">
+                    <label for="zanid">Enter ZanID:</label>
+                    <input type="text" id="zanid" name="zanid" class="form-control mx-2" placeholder="Enter ZanID" required>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+
+            <div class="row mt-3" th:if="${demographicData != null}">
+                <h4>Demographic Data</h4>
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <td><strong>zanID</strong></td>
+                        <td th:text="${demographicData.prsnId}"></td>
+                        <td><strong>First Name</strong></td>
+                        <td th:text="${demographicData.prsnFirstName}"></td>
+                        <td><strong>Last Name</strong></td>
+                        <td th:text="${demographicData.prsnLastName}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sex</strong></td>
+                        <td th:text="${demographicData.prsnSex}"></td>
+                        <td><strong>Birth Date</strong></td>
+                        <td th:text="${demographicData.prsnBirthDate}"></td>
+                        <td><strong>Birth Place</strong></td>
+                        <td th:text="${demographicData.prsnBirthPlace}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Birth Nationality</strong></td>
+                        <td th:text="${demographicData.prsnBirthNationality}"></td>
+                        <td><strong>Nationality Indicator</strong></td>
+                        <td th:text="${demographicData.prsnNationalityInd}"></td>
+                        <td><strong>Dual Nationality</strong></td>
+                        <td th:text="${demographicData.prsnNationalityInd}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Eye Color</strong></td>
+                        <td th:text="${demographicData.prsnEyeColor}"></td>
+                        <td><strong>Height</strong></td>
+                        <td th:text="${demographicData.prsnHeight}"></td>
+                        <td><strong>Occupation</strong></td>
+                        <td th:text="${demographicData.prsnOccupation}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Residential Address</strong></td>
+                        <td th:text="${demographicData.prsnResAddress}"></td>
+                        <td><strong>District</strong></td>
+                        <td th:text="${demographicData.prsnResDistrict}"></td>
+                        <td><strong>Ward</strong></td>
+                        <td th:text="${demographicData.prsnResWard}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>House Plot</strong></td>
+                        <td th:text="${demographicData.prsnResHousePlot}"></td>
+                        <td><strong>Town/Village</strong></td>
+                        <td th:text="${demographicData.prsnResTownVillage}"></td>
+                        <td><strong>Postal Address</strong></td>
+                        <td th:text="${demographicData.prsnPostAddress}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Post Town/Village</strong></td>
+                        <td th:text="${demographicData.prsnPostTownVillage}"></td>
+                        <td><strong>Post Code</strong></td>
+                        <td th:text="${demographicData.prsnPostCode}"></td>
+                        <td><strong>Post Country</strong></td>
+                        <td th:text="${demographicData.prsnPostCountry}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Kin Name</strong></td>
+                        <td th:text="${demographicData.prsnKinName}"></td>
+                        <td><strong>Kin Address</strong></td>
+                        <td th:text="${demographicData.prsnKinAddress}"></td>
+                        <td><strong>Kin Phone</strong></td>
+                        <td th:text="${demographicData.prsnKinPhone}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Father's Name</strong></td>
+                        <td th:text="${demographicData.prsnFatherFullName}"></td>
+                        <td><strong>Father's Nationality</strong></td>
+                        <td th:text="${demographicData.prsnFatherNationality}"></td>
+                        <td><strong>Father's Birth Place</strong></td>
+                        <td th:text="${demographicData.prsnFatherBirthPlace}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mother's Name</strong></td>
+                        <td th:text="${demographicData.prsnMotherFullName}"></td>
+                        <td><strong>Mother's Nationality</strong></td>
+                        <td th:text="${demographicData.prsnMotherNationality}"></td>
+                        <td><strong>Mother's Birth Place</strong></td>
+                        <td th:text="${demographicData.prsnMotherBirthPlace}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Marital Status</strong></td>
+                        <td th:text="${demographicData.prsnMaritalStatus}"></td>
+                        <td><strong>Email</strong></td>
+                        <td th:text="${demographicData.prsnEmails}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Signature</strong></td>
+                        <td><img th:src="'data:image/jpeg;base64,' + ${demographicData.prsnSignature}" width="100px" /></td>
+                        <td><strong>Photo</strong></td>
+                        <td><img th:src="'data:image/jpeg;base64,' + ${demographicData.prsnPhoto}" width="100px" /></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+
+
+                <!-- Download PDF Button -->
+                <a th:href="@{/api/demographic/download/{zanid}(zanid=${demographicData.prsnId})}" class="btn btn-success">Download PDF</a>
+            </div>
+
+            <div class="row mt-3" th:if="${demographicData == null}">
+                <p class="text-danger">No Demographic data found</p>
+            </div>
+        </div>
+
+        <!-- Biometric Tab -->
+        <div class="tab-pane" id="biometricTab">
+            <h3>Biometric Data</h3>
+            <p>Biometric Data will be available here.</p>
+            <!-- Form to input PRSN_ID for Biometric Data -->
+            <form action="#" th:action="@{/biometric/search}" method="get" class="form-inline">
+                <label for="biometricPrsnId">Enter PRSN ID:</label>
+                <input type="text" id="biometricPrsnId" name="prsnId" class="form-control mx-2" placeholder="Enter PRSN ID" required>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+
+        <div class="tab-pane" id="reportsTab">
+            <h3>Reports</h3>
+            <p>Reports will be available here.</p>
+        </div>
+    </div>
+</div>
+<script src="/static/assets/js/jquery-3.6.0.min.js"></script>
+<script src="/static/assets/js/bootstrap.min.js"></script>
+</body>
+</html>

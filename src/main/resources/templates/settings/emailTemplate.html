@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>EMAIL TEMPLATE</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'/>
+        <!-- use the font -->
+        <style>
+            body {
+                font-family: 'Roboto', sans-serif;
+                font-size: 12px;
+            }
+        </style>
+    </head>
+    <body>
+        <p> Dear <b th:text="${mno}"></b> Team</p>
+        <p>
+            Kindly confirm the following <b th:text="${ttype}"></b> ambiguous Transactions.
+        </p>
+        <table lign="center" border="1" cellpadding="5" cellspacing="4" style="border-collapse: collapse;">
+            <tr>
+                <th>Terminal</th>
+                <th>Txn Reference</th>
+                <th>Account No</th>
+                <th>Amount</th>
+                <th>Card No</th>
+                <th>Txn Date</th>
+                <th>Tanesco Status</th>
+                <th>TPB Status</th>
+                <th>Confirmation</th>
+            </tr>
+            <tr th:each="txn: ${transactions}">
+                <td th:text="${txn.terminal}"></td>
+                <td th:text="${txn.reference}"></td>
+                <td th:text="${txn.accountNo}"></td>
+                <td th:text="${#numbers.formatDecimal(txn.amount, 0, 'COMMA', 2, 'POINT')}"></td>
+                <td th:text="${txn.pan}"></td>
+                <td th:text="${txn.txndate}"></td>
+                <td th:text=" 'Customer is Debited' "></td>
+                <td th:text=" 'No Debit on Settlement Acct' "></td>
+                <td th:text=" '      ' "></td>
+            </tr>
+        </table>
+        <p>
+            Regards, <br />
+            <p th:text="${username}"></p>
+        </p>
+    </body>
+</html>

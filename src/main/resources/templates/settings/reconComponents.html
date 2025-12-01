@@ -1,0 +1,125 @@
+
+<div th:each="rType:${reconType}">
+    <h2 th:text="${rType.name+' [ COMPONENTS ]'}"></h2>
+    <hr/>
+    <form role="form" name="getReconDashboard">
+        <div class="row">
+            <div class="form-group col-md-3" >
+                <label for="Name" style="margin-left: 1% ! important;">Name * (Eg. MPESA)</label>
+                <input name="name" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose"  type="text"  autocomplete="off"/>
+            </div>
+            <div class="form-group col-md-3" >
+                <label for="code" style="margin-left: 1% ! important;">Code * (Eg. M-PESA)</label>
+                <input name="code" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose"  type="text" autocomplete="off"/>
+            </div>
+            <div class="form-group col-md-3" >
+                <label for="ttype" style="margin-left: 1% ! important;">TTYPE * (Eg. C2B)</label>
+                <input name="ttype" class="form-control form-control-inline input-txndatemedium default-date-picker" th:value="${rType.code}" readonly="" id="datepicker-autoclose"  type="text" autocomplete="off"/>
+            </div>
+            <div class="form-group col-md-12" >
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+            <!--             <div class="form-group col-md-3" >
+                            <label for="ttype" style="margin-left: 1% ! important;">Account No</label>
+                            <input name="account" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose"  type="text" autocomplete="off"/>
+                        </div>-->
+        </div>
+        <!--         <div class="row">
+                    <div class="form-group col-md-3" >
+                        <label for="Name" style="margin-left: 1% ! important;">Gateway DoCode</label>
+                        <input name="gwdocode" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose"  type="text"  autocomplete="off"/>
+                    </div>
+                    <div class="form-group col-md-3" >
+                        <label for="code" style="margin-left: 1% ! important;">SFTP Directory</label>
+                        <input name="sftpDir" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose"  type="text" autocomplete="off"/>
+                    </div>
+                    <div class="form-group col-md-3" >
+                        <label for="ttype" style="margin-left: 1% ! important;">Refund URL</label>
+                        <input name="refundUrl" class="form-control form-control-inline input-txndatemedium default-date-picker" value="-1" id="datepicker-autoclose"  type="text" autocomplete="off"/>
+                    </div>
+                     <div class="form-group col-md-3" >
+                        <label for="ttype" style="margin-left: 1% ! important;">Retry URL</label>
+                        <input name="retryUrl" class="form-control form-control-inline input-txndatemedium default-date-picker" value="-1" id="datepicker-autoclose"  type="text" autocomplete="off"/>
+                    </div>
+                </div>
+                   <div class="row">
+                    <div class="form-group col-md-3" >
+                        <label for="Name" style="margin-left: 1% ! important;">Username</label>
+                        <input name="username" class="form-control form-control-inline input-txndatemedium default-date-picker" id="datepicker-autoclose"  type="text"  autocomplete="off"/>
+                    </div>
+                    <div class="form-group col-md-3" >
+                        <label for="code" style="margin-left: 1% ! important;">password</label>
+                        <input name="password" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose"  type="text" autocomplete="off"/>
+                    </div>
+                    <div class="form-group col-md-3" >
+                        <label for="ttype" style="margin-left: 10% ! important;">Is it Allowed?</label>
+                        <input name="isallowed" class="form-control form-control-inline"  type="checkbox" autocomplete="off"/>
+                    </div>
+                     <div class="form-group col-md-3" >
+                        <label for="ttype" style="margin-left: 1% ! important;">Retry URL</label>
+                        <input name="retryUrl" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose"  type="text" autocomplete="off"/>
+                    </div>
+                </div>-->
+
+<!--        <div class="form-group col-md-12" >
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>-->
+    </form>
+    <div class="row">
+        <div id="successFlag">
+        </div>
+        <table id="reconTypes" class="table table-striped table-bordered"  style="width: 100%; font-size: 11px !important;">
+            <thead>
+                <tr>
+                    <th>S/N</th>
+                    <th>Component Name</th>
+                    <th>Component Code</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="Component,i:${ComponentTypes}">
+                    <td th:text="${i.index+1}">S/N</td>
+                    <td th:text="${Component.name}">name</td>
+                    <td th:text="${Component.code}">code</td>
+                    <td><a class="btn btn-primary" th:onclick="'javascript:editUserRole(' + ${Component.id} + ')'">Remove</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div> 
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //submit the roles
+            $('button[type=submit]').click(function (e) {
+                console.log('here we are');
+                e.preventDefault();
+                var name = $('input[name="name"]').val();
+                var code = $('input[name="code"]').val();
+                var ttype = $('input[name="ttype"]').val();
+
+                $.ajax({
+                    url: "/saveReconComponents",
+                    type: 'GET',
+                    data: {name: name, code: code, ttype: ttype},
+                    success: function (res) {
+                        $('.error').html('');
+                        if (res.validated) {
+                            $('#preloader2').hide();
+                            $('#successFlag').show();
+                            $('#successFlag').html('<div class="alert alert-success" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>recon Component Saved Successfully refresh to see changes</strong></div>');
+                            $('#editRole').hide();
+                            //location.reload();
+                        } else {
+                            $('#preloader2').hide();
+                            $.each(res.errorMessages, function (key, value) {
+                                $('input[name=' + key + ']').after('<span class="error" style="color:red">' + value + '</span>');
+                                $('input[name=' + key + ']').after('<span class="error" style="color:red">' + value + '</span>');
+                            });
+                        }
+                    }
+                });
+            });
+        });
+
+    </script>
+</div>

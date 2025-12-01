@@ -1,0 +1,176 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/main_layout}">
+<head>
+    <title layout:title-pattern="Cilantro ~ Dashboard">Visa-Card-Report</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div layout:fragment="pageStyle" th:remove="tag">
+        <style>
+            #loading {
+                background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 92%;
+                width: 100%;
+                z-index: 9999999;
+            };
+            #rtgsTxnOnWorkFlow{
+                table-layout: fixed !important;
+                word-wrap:break-word;
+            }
+        </style>
+        <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+        <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+        <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+
+
+    </div>
+</head>
+<body>
+<div class="row" layout:fragment="contents">
+    <div class="panel panel-default panel-fill" id="tabContentsss">
+        <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <div class="row" id="preloader2" >
+                <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+            </div>
+            <div class="row">
+                <form role="form" id="partnerForm">
+                    <div class="row">
+                        <div class="form-group col-md-3">
+                                <input type="text"  placeholder="Enter control number" name="controlNo" id="controlNo" class="form-control"/>
+                        </div>
+                      
+                        <div class="form-group col-md-3">
+                            <div class="form-group col-md-3 text-right m-b-0" style="margin: 2%;">
+                                <button  type="button" class="btn btn-info btn-submit-inwardEft-Summary" onclick="doAjaxSearching()">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="successFlag">
+            </div>
+            <div  id="loading" hidden=""> </div>
+            <div class="row">
+                <table id="partnerSummary" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important;">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Account Number</th>
+                        <th>Control Number</th>
+                        <th>Partner Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!--</form>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+    <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/teller.js}"></script>
+    <script th:src="@{/assets/scripts/eft.js}"></script>
+    <script>
+            $(document).ready(function () {
+                $('#preloader2').hide();
+            });
+
+      function doAjaxSearching() {
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var formdata = new FormData($('#partnerForm')[0]);
+                var count = 0;
+               $("#preloader2").show();
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formdata,
+                    type: "POST",
+                    'url': '/fireGetPartnerAccountAjax',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#preloader2").show();
+                    },
+
+                    success: function (response) {
+                       $("#preloader2").hide();
+                        console.log(response);
+                        if (response.status === "SUCCESS") {
+                            var table = $('#partnerSummary').DataTable({
+                                dom: 'Blfrtip',
+                                "info": true,
+                                "bDestroy": true,
+                                // lengthChange: false,
+                                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                                responsive: true,
+                                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                "data": response.result,
+                               columns: [
+                               {data:'ID',
+                                  "render": function(data){
+                                  count +=1;
+                                  return count;
+                                  }
+                                  },
+                                {"data": 'acct_no'},
+                                {"data": "reference"},
+                                {"data": 'full_name'}
+                                ]
+                            });
+                            table.buttons().container().appendTo('#partnerForm-buttons_wrapper .col-md-6:eq(0)');
+
+                        } else if (response.status === "ERROR") {
+                                       $("#preloader2").hide();
+                           //error with response
+                           alert('error');
+                        }
+                    },
+                    error: function (e) {
+                        $("#preloader2").hide();
+                        console.log(e);
+                    }
+                });
+            }
+        </script>
+</div>
+
+</body>
+</html>
+
+
+

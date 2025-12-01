@@ -1,0 +1,297 @@
+
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/main_layout}">
+    <head>
+        <title layout:title-pattern="Cilantro ~ Dashboard">MKOBA SOLUTION</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div layout:fragment="pageStyle" th:remove="tag">
+        <style>
+            #loading {
+                background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 92%;
+                width: 100%;
+                z-index: 9999999;
+            }
+            ;
+            #rtgsTxnOnWorkFlow{
+                table-layout: fixed !important;
+                word-wrap:break-word;
+            }
+        </style>
+        <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+        <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+        <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+
+
+    </div>
+</head>
+<body>
+    <div class="row" layout:fragment="contents">
+        <div class="panel panel-default panel-fill" id="tabContentsss"><div class="panel-heading"> <h4 class="panel-title" >MKOBA RESOLUTION</h4></div>
+            <div class="panel-body">
+                <div class="row">
+                    <form role="form">
+                        <div class="row">
+                            <div class="form-group col-md-3">
+                                <!--<label>Report Type</label>-->
+                                <div class="input-group">
+                                    <select class="form-control" id="ttype"  name="ttype">
+                                        <option value="DR" selected="">WITHDRAWAL</option>            
+                                        <option value="CR">DEPOSIT</option>            
+                                    </select>                           
+                                </div>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <!--<label>Report Type</label>-->
+                                <div class="input-group">
+                                    <input name="account" id="account"  class="form-control form-control-inline"   type="text" placeholder="account"/>
+
+                                </div>
+                            </div>                           
+                        </div>
+                        <div class="row">                          
+                            <div class="form-group col-md-3">
+                                <div class="form-group col-md-3 text-right m-b-0" style="margin: 2%;">
+                                    <button  type="button" class="btn btn-info btn-submit-inwardEft-Summary">Search</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div id="successFlag">
+                </div>
+                <div id="balanceHeader">
+                    <p>CBS Balance: <span id="cbsBalance"></span></p>
+                    <p>MKOBA Balance: <span id="mkobaBalance"></span></p>
+                    <p>Account 1: <span id="account1"></span></p>
+                    <p>Account 2: <span id="account2"></span></p>
+                </div>
+                <div  id="loading" hidden=""> </div>
+                <div class="row">
+                    <table id="inwardEFTBatchSummary" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important;">
+                        <thead>
+                            <tr>
+                                <th>txnid</th>
+                                <th>msisdn</th>
+                                <th>account</th>
+                                <th>dr_cr</th>
+                                <th>account</th>
+                                <th>balance</th>
+                                <th>amount</th>
+                                <th>reference</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>                      
+                    </table>
+                    <!--</form>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div layout:fragment="pageScript" th:remove="tag">
+        <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+        <!-- init -->
+        <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+        <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+        <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+        <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+
+        <!-- App Js -->
+        <script th:src="@{/assets/js/jquery.app.js}"></script>
+        <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+        <script th:src="@{/assets/scripts/teller.js}"></script>
+        <script th:src="@{/assets/scripts/eft.js}"></script>
+        <script>
+            $(document).ready(function () {
+                jQuery('#fromTime').timepicker({
+                    showMeridian: false
+                });
+                jQuery('#toTime').timepicker({
+                    showMeridian: false
+                });
+                jQuery('#datepicker-autoclose').datepicker({
+                    autoclose: true,
+                    todayHighlight: true
+                });
+                jQuery('#datepicker-autoclose2').datepicker({
+                    autoclose: true,
+                    todayHighlight: true
+                });
+                $("#loading").hide();
+                $("#select2").select2();
+                //            $('.authorize-payments').attr('disabled', 'disabled');
+                $('.btn-submit-inwardEft-Summary').click(function () {
+                    $('#inwardEFTBatchSummary').DataTable().ajax.reload();
+                    viewSummary();
+                });
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var b = 1;
+                var i = 0;
+                var a = 'actions';
+                var table = $('#inwardEFTBatchSummary').DataTable({
+                    dom: 'Blfrtip',
+                    lengthChange: true,
+                    scrollCollapse: true,
+                    scrollY: "700px",
+                    scrollX: true,
+                    pageLength: 1000,
+                    lengthMenu: [
+                        [5, 10, 25, 50, 100, 500, -1],
+                        [5, 10, 25, 50, 100, 500, 'Show all']
+                    ],
+                    responsive: false,
+                    processing: true,
+                    serverSide: true,
+                    serverMethod: 'post',
+                    order: [1, "desc"],
+                    ajax: {
+                        'url': '/fireMkobaSolutionAjax',
+                        'beforeSend': function (request) {
+                            request.setRequestHeader(header, token);
+                        },
+                        "data": function (d) {
+                            return $.extend({}, d, {
+                                "txnType": $("select[name='txnType']").val(),
+                                "ttype": $("select[name='ttype']").val(),
+                                "account": $("input[name='account']").val(),
+                                "reference": $("input[name='reference']").val(),
+                                "amount": $("input[name='amount']").val(),
+                                "fromDate": $("input[name='fromDate']").val(),
+                                "toDate": $("input[name='toDate']").val(),
+                            });
+                        }
+                    },
+                    "columns": [
+                        {"data": "TXID",
+                            "render": function (data) {
+                               
+                                return  '\u200C' +data;
+                            }},
+                        {"data": "MSISDN"},
+                        {"data": "SOURCEACCOUNT",
+                            "render": function (data) {
+                               
+                                return  '\u200C' +data;
+                            }},
+                        {"data": "TXNDATE"},
+                        {"data": "DR_CR_IND"},
+                        {"data": "SOURCEACCOUNT",
+                            "render": function (data) {
+                               
+                                return  '\u200C' +data;
+                            }},
+                        {"data": 'STMNT_BAL'},
+                        {"data": "AMOUNT",
+                            "render": function (data) {
+                                var amount = addCommas(data);
+                                return amount;
+                            }},
+                        {"data": 'TXID'}
+                    ], aoColumnDefs: [
+                        {
+                            bSortable: false,
+                            aTargets: [-1],
+                        }
+                    ], columnDefs: [
+                        {width: 1000, targets: 14}
+                    ],
+//                fixedColumns: true,
+                    buttons: [{
+                            extend: "copy",
+                            title: 'SUSPICIOUS',
+                            className: "btn-sm"
+                        }, {
+                            extend: "csv",
+                            title: 'SUSPICIOUS',
+                            className: "btn-sm"
+                        }, {
+                            extend: "excel",
+                            title: 'SUSPICIOUS',
+                            className: "btn-sm"
+                        }, {
+                            extend: "pdf",
+                            title: 'SUSPICIOUS',
+                            className: "btn-sm"
+                        }, {
+                            extend: "print",
+                            title: 'SUSPICIOUS',
+                            className: "btn-sm"
+                        }],
+                    "preDrawCallback": function (settings) {
+                        if ($("input[name='account']").val() == '') {
+                            return false;
+                        }
+                    }
+                });
+
+                //            });
+            }
+            );
+
+            function viewSummary() {
+                // get the form values
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var formdata = new FormData();
+                formdata.append('account', $("input[name='account']").val());
+
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formdata,
+                    type: "POST",
+                    url: "/fireMkobaSolutionBalanceAjax",
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        $("#cbsBalance").text(addCommas(response.cbsBalance));
+                        $("#mkobaBalance").text(addCommas(response.mkobaBalance));
+                        $("#account1").text(response.accountStr);
+                        $("#account2").text(response.account);
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                });
+
+            }
+
+        </script>
+    </div>
+
+</body>
+</html>
+
+
+

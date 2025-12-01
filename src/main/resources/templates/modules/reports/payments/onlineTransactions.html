@@ -1,0 +1,170 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 35%;
+            width: 60%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+    <!-- iziToast -->
+    <link th:href="@{/assets/plugins/iziman/dist/css/iziToast.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/iziman/dist/css/iziToast.min.css}" rel="stylesheet">
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContents"><div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+
+            <div id="successFlag">
+            </div>
+            <div  id="loading" hidden=""> </div>
+            <div class="row">
+                <table id="usersDataT" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 7.5px !important;">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>USERNAME</th>
+                        <th>FULL NAME</th>
+                        <th>EMAIL</th>
+                        <th>ENABLED</th>
+                        <th>PARTNER CODE</th>
+                        <th>ACCOUNT LOCKED</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!--</form>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+
+    <!-- iziToast -->
+    <script th:src="@{/assets/plugins/iziman/dist/js/iziToast.min.js}" type="text/javascript"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/ibank.js}"></script>
+
+    <script>
+          $(document).ready(function () {
+                    $("#loading").hide();
+                    var token = $("meta[name='_csrf']").attr("content");
+                    var header = $("meta[name='_csrf_header']").attr("content");
+                    var i = 0;
+                    var table = $('#usersDataT').DataTable({
+                        dom: 'Blfrtip',
+                        lengthChange: true,
+                        lengthMenu: [10, 25, 50, 100, 200, 300, 500],
+                        responsive: false,
+                        serverMethod: 'post',
+                        ajax: {
+                            'url': '/fireIBUsersManagementAjax',
+                            'beforeSend': function (request) {
+                                request.setRequestHeader(header, token);
+                            }
+                        },
+                        "columns": [
+                            {"data": 'id',
+                                "render": function (data) {
+                                    i = i + 1;
+                                    return i;
+                                }},
+                            {data: 'USERNAME'},
+                            {data: 'FULL_NAME'},
+                            {data: 'EMAIL'},
+                            {data: 'ENABLED',
+                              "render": function (data, type, row, meta) {
+                              var a = '';
+                              if (row.ENABLED == 1) {
+                                  a = "ENABLED"
+                              }
+                              if(row.ENABLED == 0){
+                                  a = "DISABLED"
+                              }
+                              return a;
+                              }},
+                            {data: 'PARTNER_CODE'},
+                            {data: 'ACCOUNT_LOCKED',
+                              "render": function (data, type, row, meta) {
+                              var a = '';
+                              if (row.ACCOUNT_LOCKED === 1) {
+                                  a = "LOCKED"
+                              }
+                              if(row.ACCOUNT_LOCKED === 0){
+                                  a = "NOT LOCKED"
+                              }
+                              return a;
+                              }}
+                        ], aoColumnDefs: [
+                            {
+                                bSortable: false,
+                                aTargets: [-1]
+                            }
+                        ], buttons: [{
+                                extend: "copy",
+                                title: 'USERS',
+                                className: "btn-sm"
+                            }, {
+                                extend: "csv",
+                                title: 'USERS',
+                                className: "btn-sm"
+                            }, {
+                                extend: "excel",
+                                title: 'USERS',
+                                className: "btn-sm"
+                            }, {
+                                extend: "pdf",
+                                title: 'USERS',
+                                className: "btn-sm"
+                            }, {
+                                extend: "print",
+                                title: 'USERS',
+                                className: "btn-sm"
+                            }]
+                    });
+                    table.on('order.dt search.dt', function () {
+                        table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                            cell.innerHTML = i + 1;
+                        });
+                    }).draw();
+                });
+                function reloadDatatable() {
+                    $('#usersDataT').DataTable().ajax.reload();
+                }
+    </script>
+</div>

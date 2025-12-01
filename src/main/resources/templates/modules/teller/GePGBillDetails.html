@@ -1,0 +1,108 @@
+<div class="col-sm-9"  th:if="${GEPG_RESP_CODE.equals('7101')}">                                                             
+    <table class="table table-bordered">
+        <thead>
+        <th  class="text-bold text-center" colspan="3">LOW VALUE - GOVERNMENT BILL [PROCESS TO RUBIKON]</th>                                            
+        </thead>
+        <tbody>           
+            <tr>
+                <td  class="text-bold">Control Number:</td>
+                <td  class="text-left"  colspan="2"  th:text="${BillCtrNum}">99</td>                        
+            </tr>
+            <tr class="tbl-item">
+                <td class="text-bold">Service Provider Code:</td>
+                <td   class="text-left"  colspan="2"  th:text="${SpCode}">
+                </td>
+            </tr> 
+            <tr class="tbl-item">
+                <td class="text-bold">Service Provider Name:</td>
+                <td  class="text-left" colspan="2"  th:text="${SpName}">
+                </td>
+            </tr> 
+            <tr class="tbl-item">
+                <td class="text-bold">Payer Name:</td>
+                <td  class="text-left"  colspan="2"   th:text="${PyrName}">                    
+                </td>                                                      
+            </tr>  
+            <tr class="tbl-item" th:unless="${PyrCellNum==null}" >
+                <td class="text-bold">Payer Mobile No:</td>
+                <td  class="text-left"  colspan="2"   th:text="${PyrCellNum}">
+                </td>                                                      
+            </tr>  
+            <tr class="tbl-item" th:unless="${PyrEmailAddr==null}">
+                <td class="text-bold">Payer Email Address:</td>
+                <td  class="text-left"  colspan="2"   th:text="${PyrEmailAddr}"></td>                                                      
+            </tr>  
+            <tr class="tbl-item" >
+                <td style="border-bottom: 1px solid #0279007d;"  class="text-bold">Bill Description:</td>
+                <td style="border-bottom: 1px solid #0279007d;"  class="text-left"  colspan="2"  th:text="${BillDesc}"></td>                                                      
+            </tr>
+            <tr th:each="item,iter : ${BillItems}">
+                <td style="border-bottom: 1px solid #0279007d;"  th:text="${'Billed Item('+iter.index+1+')'}">01</td>
+                <td style="border-bottom: 1px solid #0279007d;" class="text-left" th:text="${item.BillItemDesc}">desc</td>
+                <td style="border-bottom: 1px solid #0279007d;" class="text-right" th:text="${#numbers.formatDecimal(item.BillItemAmt, 1, 'DEFAULT', 2, 'DEFAULT') +' '+CCy}">1,200.00</td>
+            </tr>
+            <tr class="tbl-item">
+                <td  colspan="2"  class="text-bold text-right">Total Billed Amount:</td>
+                <td class="text-right" th:text="${#numbers.formatDecimal(BillAmt, 1, 'DEFAULT', 2, 'DEFAULT')+' '+CCy}">                    
+                </td>                                                         
+            </tr> 
+            <tr class="tbl-item" >
+                <td class="text-bold">Payment Option:</td>
+                <td  class="text-left"  colspan="2"  th:text="${BillPayOpt}"></td>                                                      
+            </tr>
+            <tr class="tbl-item" >
+                <td class="text-bold">Pay Before:</td>
+                <td  class="text-left"  colspan="2"  th:text="${BillExprDt}"></td>                                                      
+            </tr>
+        </tbody>
+    </table>                                               
+    <br>      
+</div>
+
+<div  class="col-sm-9"  th:if="${GEPG_RESP_CODE.equals('7336')}">                                                             
+    <table class="table table-bordered">
+        <thead>
+        <th  class="text-bold text-center" colspan="2">HIGH VALUE- GOVERNMENT BILL [REQUIRES SUPERVISOR TO POST]</th>                                            
+        </thead>
+        <tbody>           
+            <tr>
+                <td class="text-bold">32A:Amount/Currency</td>
+                <td th:text="${#numbers.formatDecimal(BillAmt, 1, 'DEFAULT', 2, 'DEFAULT')+' '+CCy}">Sarafu</td>                        
+            </tr>
+            <tr class="tbl-item">
+                <td class="text-bold">50:Ordering Customer - BIC</td>
+                <td >
+                    <span  th:text="${PyrName}"></span><br>
+                    <span th:unless="${PyrCellNum==null}"  th:text="${PyrCellNum}"></span><br  th:unless="${PyrCellNum==null}" >
+                    <span th:unless="${PyrEmailAddr==null}"  th:text="${PyrEmailAddr}"></span><br th:unless="${PyrEmailAddr==null}" >
+                    <span  th:text="${BillDesc}"></span>
+                </td>                                                      
+            </tr>                   
+            <tr class="tbl-item">
+                <td class="text-bold">56A:Intermediary (Bank)</td>
+                <td> Bank of Tanzania - TANZTZTX</td>                                                           
+            </tr>                                  
+            <tr class="tbl-item">
+                <td class="text-bold">59:Beneficiary Customer-Name & Addr</td>
+                <td>
+                    <span  th:text="${SpName}"></span><br>
+                    <span  th:text="${SpCode}"></span>
+                </td>                                                         
+            </tr>  
+            <tr class="tbl-item">
+                <td class="text-bold">70:Remittance Information</td>
+                <td  th:text="${'/ROC/'+BillCtrNum}">/ROC/99XXXXXXXX</td>                                                           
+            </tr> 
+            <tr class="tbl-item">
+                <td class="text-bold">71A:Details of Charges</td>
+                <td>OUR <!--THEM--></td>                                                           
+            </tr> 
+        </tbody>
+    </table>                                               
+    <br>      
+</div>
+<div class="container" th:unless="${ERROR_MESSAGE==null}">
+    <div class="col-md-9">
+        <div class="alert alert-danger " th:text="${ERROR_MESSAGE}"></div>
+    </div>
+</div>

@@ -1,0 +1,77 @@
+<div class="panel panel-default panel-fill" >
+    <div class="panel-heading" style="background-color:#a8ab06 ! important; "> <h3 class="panel-title" style="color: #ffffff !important;">CONFIRMING CARD DETAILS BOTH ON CUSTOMER REQUEST AND DATABASE DETAILS</h3>
+    </div>
+    <div class="panel-body" >
+        <div class="row" ><h6 style="color: red;text-align: center">COMPARE DETAILS ON REQUEST SIDE AND DATABASE SIDE.</h6></div>
+        <div class="row" id="content"></div>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>CUSTOMER REQUEST SIDE</h3>
+                <table id="customerRequestSide"  class="table table-bordered table-striped"  style="width: 100%; font-size: 10px !important;">
+                    <tbody th:each="data:${requestSideDetails}">
+                        <tr>
+                            <th>ACCOUNT NUMBER</th>
+                            <td th:text="${data.account_no}"></td>
+                        </tr>
+                        <tr>
+                            <th>PHONE</th>
+                            <td th:text="${data.phone}"></td>
+                        </tr>
+                        <tr>
+                            <th>RIM</th>
+                            <td th:text="${data.customer_rim_no}"></td>
+                        </tr>
+                        <tr>
+                            <th>SQL</th>
+                            <td th:text="${data.sql_check}"></td>
+                        </tr>
+                        <tr>
+                            <th>ERROR ENCOUNTERD</th>
+                            <td th:text="${data.error_encountered}"></td>
+                        </tr>
+                        <tr>
+                            <th>ACTION TO TAKE</th>
+                            <td th:text="${data.action_to_take}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h3>CARD TABLE SIDE</h3>
+                <table id="cardTableSide" class="table table-bordered table-striped"  style="width: 100%; font-size: 10px !important;">
+                    <tbody th:each="data:${cardSideDetails}">
+                    <tr>
+                        <th>ACCT NO: </th>
+                        <td th:text="${data.account_no}"></td>
+                    </tr>
+                    <tr>
+                        <th>PHONE:</th>
+                        <td th:text="${data.phone}"></td>
+                    </tr>
+                    <tr>
+                        <th>RIM NO: </th>
+                        <td th:text="${data.customer_rim_no}"></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div>
+            <div class="mr-2"><a class="btn btn-xs btn-primary" id="generateNEWPIN" th:onclick='generateNewVisaPin([[${cardDetailsForPinReset[0].account_no}]],[[${cardDetailsForPinReset[0].customer_rim_no}]],[[${cardDetailsForPinReset[0].customer_shortName}]],[[${cardDetailsForPinReset[0].PAN}]],[[${requestSideDetails[0].phone}]],[[${requestSideDetails[0].check_sum}]])'><i class="fa fa-question-circle-o" aria-hidden="true">Generate PIN</i></a>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default " data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+<div class="row" id="preloader333" hidden="">
+    <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+</div>
+<!--</div>-->
+<script>
+    $(document).ready(function () {
+        $("#successFlag").hide();
+        $('#myModal').data('modal', null);
+    });
+</script>

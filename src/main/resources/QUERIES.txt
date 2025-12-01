@@ -1,0 +1,1 @@
+INSERT INTO `payment_modules` (`id`, `name`, `image_url`, `module_dashboard_url`) VALUES (NULL, 'E-BANKING', '/assets/images/e-banking.png', '/ebankingDashboard');

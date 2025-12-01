@@ -1,0 +1,220 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/select2/css/select2.min.css}" rel="stylesheet" type="text/css" />
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div layout:fragment="contents" id="reconData">
+            <div class="panel panel-default panel-fill"  >
+                <div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+                <div class="panel-body">
+                    <div class="row" id="preloader2">
+                        <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+                    </div>
+                    <!--- success start--->
+                    <div class="col-md-12" id="successFlag"></div>
+                    <!------ End ------->
+                    <br>
+                    <!--- FORM START ----->
+                    <div class="row" id="another-element" >
+                        <form id="initiateCashMovement" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="form-row" style="display:none;" id="sourceDestDependant">
+                                    <div class="form-group col-md-6 sdaDependant">
+                                        <label for="sourceAcc" style="margin-left: 1% ! important;">Source Account<i class="text-danger">*</i></label>
+                                        <input name="sourceAcc" id="sourceAcc" class="form-control form-control-inline col-md-9" readonly>
+                                    </div>
+                                    <div class="form-group col-md-6 sdaDependant" >
+                                        <label for="destinationAcc" style="margin-left: 1% ! important;">Destination Account<i class="text-danger">*</i></label>
+                                        <input name="sourceAcc" id="destinationAcc" class="form-control form-control-inline col-md-9" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row" >
+                                <div class="form-group col-md-4">
+                                    <label for="txnType" style="margin-left: 1% ! important;" >Movement Type <i class="text-danger">*</i></label>
+                                    <select class="form-control" id="txnType" name="indicator">
+                                        <option value="" selected disabled>Select Movement Type</option>
+                                        <option value="btnMNO">Between MNO Accounts</option>
+                                        <option value="viaBOT">Via BOT</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="sourceAcctDestAcct" style="margin-left: 1% ! important;">Select Destination<i class="text-danger">*</i></label>
+                                    <select class="form-control" id="sourceAcctDestAcct" name="sourceAcctDestAcct" >
+                                        <option value="" selected disabled>Select destination MNO</option>
+                                        <option th:each="acct: ${controlAccounts}" th:value="${acct.sourceAcct+'=='+acct.sourceAcctName+'=='+acct.destinationAcct+'=='+acct.destinationAcctName+'=='+acct.code}" th:text="${acct.code}"> ATM  </option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label for="amount" style="margin-left: 1% ! important;">Transfer Amount<i class="text-danger">*</i></label>
+                                    <input name="amount" id="amount" class="form-control form-control-inline col-md-9 comma-number" placeholder="Amount" required="">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="reference" style="margin-left: 1% ! important;">Transfer Reference<i class="text-danger">*</i></label>
+                                    <input name="reference" id="reference" class="form-control form-control-inline col-md-9" placeholder="reference" required="">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="supportingDoc" style="margin-left: 1% ! important;">Supporting Document<i class="text-danger">*</i></label>
+                                    <input autocomplete="off" class="form-control form-control-sm" id="supportingDoc" name="supportingDoc" placeholder="Supporting Document" style="font-size: 10px !important;" type="file">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="comments" style="margin-left: 1% ! important;">Payment Narration<i class="text-danger">*</i></label>
+                                    <textarea name="comments"  id="comments" rows="3" cols="42" th:text="${defaultNarr}"></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-3" >
+                            <button  type="submit" style="margin-top: 8% !important;" class="btn btn-info pull-left btn-submit-initiate-cashMovementpayments">Submit</button>
+                        </div>
+                    </div>
+                    <!----- FORM END ------->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/clockpicker/js/bootstrap-clockpicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#preloader2").hide();
+            $("#preloader").hide();
+            $(".btn-submit-initiate-cashMovementpayments").click(function (e) {
+            $(".btn-info btn-submit-initiate-cashMovementpayments").attr('disabled',true);
+                e.preventDefault();
+                $('#preloader2').show();
+                var formdata = new FormData($("#initiateCashMovement")[0]);
+                console.log(formdata);
+                $.ajax({
+                    url: '/fireSubmitInitiatedMobileCashMovement',
+                    data: formdata,
+                    type: 'POST',
+                    enctype: 'multipart/form-data',
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        $("#preloader2").hide();
+                        console.log(res);
+                        $('#preloader2').hide();
+                        if(res.status == "SUCCESS"){
+                        $('#initiateCashMovement')[0].reset();
+                        $(".sdaDependant").hide();
+                           $("#successFlag").html('<div class="alert alert-success" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"success-label="Close"> </button><strong>'+res.result+'</strong></div>');
+                        }else if(res.status == "ERROR"){
+                           $(".sdaDependant").hide();
+                           $("#successFlag").html('<div class="alert alert-danger" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"danger-label="Close"> </button><strong>'+res.result+'</strong></div>');
+                        }else if(res.status == "FAIL"){
+                            $(".sdaDependant").hide();
+                            $.each(res.result,function(key,value){
+                                $('[name = '+ key +']').after('<span class="error text-danger">'+value+'</span>');
+                            });
+                        }
+                    }
+                });
+            });
+            //load tab content
+            $('[data-toggle="tab"]').click(function (e) {
+                $("#preloader").show();
+                var $this = $(this),
+                        loadurl = $this.attr('data-url');
+                $.ajax({
+                    url: loadurl,
+                    type: 'GET',
+                    success: function (res) {
+                        $("#tabContent").html(res).return;
+                        //$("#tabContent").show();
+                        $("#preloader").hide();
+                    }
+                });
+                //$this.tab('show');
+
+                return true;
+            });
+
+            $('#sourceAcctDestAcct').change(function(e){
+               var sdAccount = $(this).val();
+               console.log(sdAccount);
+               var txnType = $('#txnType').val();
+               $('#sourceAcc').val(sdAccount.split('==')[0] +' ( '+sdAccount.split('==')[1] +' )');
+               if(txnType =="viaBOT"){
+                   $('#destinationAcc').val('1-000-00-1111-1111001');
+               }else{
+                $('#destinationAcc').val(sdAccount.split('==')[2] + ' ( ' + sdAccount.split('==')[3] + ' )');
+               }
+               $('#sourceDestDependant').show();
+            });
+
+            //comma separated val
+             $('.comma-number').keyup(function (event) {
+                // skip for arrow keys
+                if (event.which >= 37 && event.which <= 40) {
+                    event.preventDefault();
+                }
+
+                $(this).val(function (index, value) {
+                    value = value.replace(/,/g, '');
+                    return numberWithCommas(value);
+                });
+            });
+        });
+
+         function numberWithCommas(x) {
+            var parts = x.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return parts.join(".");
+        }
+    </script>
+</div>
+</body>
+</html>
+

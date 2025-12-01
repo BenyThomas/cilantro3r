@@ -1,0 +1,291 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentStaffVisit">
+        <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <div class="input-group">
+                        <button type="button" class="btn btn-primary" th:onclick="assignStaffVisits(this.getAttribute('data-user-id'))">Assign Staff Visits</button>
+                    </div><!-- input-group -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <div class="input-group">
+                        <input id="fromDate" name="fromDate" class="form-control form-control-inline input-medium default-date-picker" data-date-format="yyyy-mm-dd" type="text" placeholder="From Date" autocomplete="off"/>
+                        <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                    </div><!-- input-group -->
+                </div>
+                <div class="form-group col-md-3">
+                    <div class="input-group">
+                        <input id="toDate" name="toDate" class="form-control form-control-inline input-medium default-date-picker" data-date-format="yyyy-mm-dd" type="text" placeholder="To Date" autocomplete="off"/>
+                        <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                    </div><!-- input-group -->
+                </div>
+                <div class="form-group col-md-3" style="margin-top: auto; margin-bottom: auto;">
+                    <button type="button" class="btn btn-primary btn-filter-staff-visits">Search</button>
+                </div>
+            </div>
+            <div class="row">
+                <form role="form">
+                    <div class="form-group col-md-3">
+                        <div class="input-group">
+                            <select class="form-control col-sm-12 select2" id="branch" name="branch" style="font-size: 10px !important;">
+                                <option value="">Select Branch...</option>
+                                <option th:each="branch: ${branches}" th:value="${branch.code}" th:text="${branch.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="successFlag">
+            </div>
+            <div id="loading" hidden=""></div>
+            <div class="row">
+                <table id="staffVisits" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important;">
+                    <thead>
+                    <tr>
+                        <th>S/N</th>
+                        <th>Champion</th>
+                        <th>Category</th>
+                        <th>Branch</th>
+                        <th>Agent Name</th>
+                        <th>Agent phone</th>
+                        <th>Agent account</th>
+                        <th>Agent location</th>
+                        <th>Captured Location</th>
+                        <th>Captured Latitude</th>
+                        <th>Captured Longitude</th>
+                        <th>Activity Performed</th>
+                        <th>Remarks Collected</th>
+                        <th>Visitor</th>
+                        <th>Visitation Date</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+    <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/kyc.js}"></script>
+
+    <script type="text/javascript" th:inline="javascript">
+        let userRoles = /*[[${roleId}]]*/;
+        let branches = /*[[${branches}]]*/;
+        $(document).ready(function () {
+            $("#fromDate").datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#toDate").datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#datepicker-autoclose").datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#loading").hide();
+            $(".select2").select2();
+            $(".btn-filter-staff-visits").click(function () {
+                $('#staffVisits').DataTable().ajax.reload();
+            });
+            $("#branch").on('change', function () {
+                $('#staffVisits').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $("#staffVisits").DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "desc"],
+                ajax: {
+                    'url': '/getChampionVisitsAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    },
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "branch": $("select[name='branch']").val(),
+                            "fromDate": $("input[name='fromDate']").val(),
+                            "toDate": $("input[name='toDate']").val()
+                        });
+                    }
+                },
+                "columns": [
+                    {"data": "id"},
+                    {"data": "champion"},
+                    {"data": "category"},
+                    {"data": "name"},
+                    {"data": "agent_name"},
+                    {"data": "agent_phone"},
+                    {"data": "account"},
+                    {"data": "agent_location"},
+                    {"data": "captured_location"},
+                    {"data": "captured_latitude"},
+                    {"data": "captured_longitude"},
+                    {"data": "activity_performed"},
+                    {"data": "remarks_collected"},
+                    {"data": "created_by"},
+                    {"data": "visit_date",
+                        "render": function (data, type, row, meta) {
+                            let date = new Date(row.visit_date);
+                            return date.toLocaleString();
+                        }
+                    },
+                    {"data": "id",
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            var a = '';
+                            if (userRoles.includes("21") || userRoles.includes("27") || userRoles.includes("44")) {
+                                a = '<button type="button" class="btn btn-primary" onclick="printVisitForm('+row.id+')">Print Form</button>';
+                                a += '&nbsp;<button type="button" class="btn btn-info" onclick="getChampionVisitBlob(\''+row.id+'\',\'location_photo\')">View Place</button>';
+                                //a += '&nbsp;<button type="button" class="btn btn-info" onclick="openBase64Image(\''+row.location_photo+'\')">View Place</button>';
+                                a += '&nbsp;<button type="button" class="btn btn-info" onclick="getChampionVisitBlob(\''+row.id+'\',\'signature\')">View Signature</button>';
+                                //a += '&nbsp;<button type="button" class="btn btn-info" onclick="openBase64Image(\''+row.signature+'\')">View Signature</button>';
+                            }
+                            return a;
+                        }
+                    }
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+                buttons: [{
+                        extend: "copy",
+                        title: 'STAFF VISITS ON WORKFLOW',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'STAFF VISITS ON WORKFLOW',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'STAFF VISITS ON WORKFLOW',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'STAFF VISITS ON WORKFLOW',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'STAFF VISITS ON WORKFLOW',
+                        className: "btn-sm"
+                    }
+                ],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='branch']").val() == '') {
+                        return false;
+                    }
+                },
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        });
+        function reloadDatatable() {
+            $('#staffVisits').DataTable().ajax.reload();
+        }
+        function getChampionVisitBlob(id, col) {
+            $("#loading").show();
+            $.ajax({
+                url: "/getChampionVisitBlob",
+                data: {id: id, col: col},
+                type: 'GET',
+                success: function (response) {
+                    $("#loading").hide();
+                    if (response.signature) {
+                        openBase64Image(\''+response.signature+'\');
+                    } else if (response.location_photo) {
+                        openBase64Image(\''+response.location_photo+'\');
+                    }
+                }
+            });
+        }
+        function openBase64Image(img) {
+            if (img == null || img == '') {
+                alert('No image attached!');
+            } else {
+                const image = new Image();
+                image.src = "data:image/jpeg;base64,"+img;
+                image.width = 1024;
+                image.height = 768;
+
+                const w = window.open("");
+                w.document.write(image.outerHTML);
+            }
+        }
+    </script>
+</div>

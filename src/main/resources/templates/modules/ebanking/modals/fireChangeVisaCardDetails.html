@@ -1,0 +1,83 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+</div>
+<div class="panel panel-default panel-fill">
+    <div class="panel-heading" style="background-color: #04ab18 ! important; ">
+        <h3 class="panel-title" style="color: #ffffff !important;"><strong>Update Card With Account:
+            <td th:text="${accountNo}">account </td> AND REFERENCE: <td th:text="${cardReference}">reference</td>
+        </strong></h3>
+    </div>
+    <div class="panel-body">
+        <div class="row" id="content"></div>
+        <div class="row">
+            <div id="successFlag"></div>
+        </div>
+        <div class="row" hidden="" id="preloader2">
+            <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+        </div>
+        <div class="container container-fluid">
+            <div class="row" id="messageData">
+                <div class="row">
+                    <form id="form">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="statelessActionTrigger" style="margin-left: 1% ! important;">Choose Action<i lass="text-danger">*</i></label>
+                                <select class="form-control select2" id="statelessActionTrigger" name="actionTrigger">
+                                    <option disabled selected value="">Choose...</option>
+                                    <option value="account_no">Update Account Number</option>
+                                    <option value="phone">Update Customer Contact</option>
+                                    <option value="customer_rim_no">Update customer rim</option>
+                                    <option value="PAN">Update card PAN</option>
+                                    <option value="allow_multiple">Allow Multiple Card</option>
+                                    <option value="block_multiple">Block Multiple Card</option>
+                                </select>
+                            </div>
+                            <input type="hidden" id="accountNo" name="accountNo" class="form-control" th:value="${accountNo}">
+                            <input type="hidden" id="cardReference" name="cardReference" class="form-control" th:value="${cardReference}">
+                        </div>
+                        <div class="row statelessUpdating">
+                            <div class="form-group col-md-6">
+                                <label for="statelessUpdating" style="margin-left: 1% ! important;">Enter value<i class="text-danger">*</i></label>
+                                <input autocomplete="off" class="form-control form-control-sm" id="statelessUpdating" type="text" name="statelessUpdating">
+                            </div>
+                        </div>
+                        <div class="row statelessUpdating">
+                            <div class="form-group col-md-4" >
+                                <a class="btn btn-primary" id="statelessVisaCardUpdating" onclick="statelessVisaCardUpdating()" >Update</a>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default col-md-2 pull-right" data-dismiss="modal" id="closeModal" type="button">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/scripts/ebanking.js}"></script>
+</div>
+<div class="row" hidden="" id="preloader333">
+    <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+</div>
+<!--</div>-->
+<script>
+    $(document).ready(function () {
+        $("#successFlag").hide();
+        $('#myModal').data('modal', null);
+    });
+</script>

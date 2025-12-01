@@ -1,0 +1,225 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentsss"><div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <div id="successFlag">
+            </div>
+            <div  id="loading" hidden=""> </div>
+
+            <!--            <div class="form-group  col-md-12">
+                            <button id="authorizeRTGSTxnsOnWorkFlow" class="btn btn-primary pull-right col-md-3" style="background-color: #0a941b !important;border: 1px solid #ffffff !important;">Authorize Payment</button>
+                        </div>-->
+            <div class="row">
+                <table id="rtgsTxnOnWorkFlow" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 7.5px !important;">
+                    <thead>
+                        <tr>
+                            <th>S/N</th>
+                            <th>Txn Date</th>
+                            <th>Reference</th>
+                            <th>Sender Acct</th>
+                            <th>Sender Name</th>
+                            <th>Beneficiary Acct</th>
+                            <th>Beneficiary BIC</th>
+                            <th>Beneficiary Name</th>
+                            <th>Amount</th>        
+                            <th>Currency</th>   
+                            <th>Purpose</th>
+                            <th>Initiated By</th>
+                            <th>Status</th>
+                            <th>CBS Status</th>
+                            <th style="width: 512px !important;">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!--</form>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/teller.js}"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#loading").hide();
+            $("#select2").select2();
+            $('.authorize-payments').attr('disabled', 'disabled');
+            $("#mno").on('change', function () {
+                $('#rtgsTxnOnWorkFlow').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $('#rtgsTxnOnWorkFlow').DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "desc"],
+                ajax: {
+                    'url': '/getRTGSTxnOnWorkFlowAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    }
+//                    "data": function (d) {
+//                        return $.extend({}, d, {
+//                            "mno": $("select[name='mno']").val()
+//                        });
+//                    }
+                },
+                "columns": [
+                    {"data": "id", "width": "5%", },
+                    {"data": "create_dt", "width": "5%", },
+                    {"data": "reference", "width": "5%", },
+                    {"data": "sourceAcct", "width": "5%", },
+                    {"data": "sender_name", "width": "5%", },
+                    {"data": "destinationAcct", "width": "5%", },
+                    {"data": "beneficiaryBIC", "width": "5%", },
+                    {"data": "beneficiaryName", "width": "5%", },
+                    {"data": "amount", "width": "5%", },
+                    {"data": "currency", "width": "5%", },
+                    {"data": "purpose", "width": "5%", },
+                    {"data": 'initiated_by', "width": "5%", },
+                    {"data": 'status',
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "5%",
+                        "render": function (data, type, row, meta) {
+                            var a = '';
+                            if (row.status === "I") {
+                                a = "Submitted"
+                            }
+                            if (row.status === "P") {
+                                a = "Pending"
+                            }
+                            return a;
+                        }},
+                    {"data": 'cbs_status', "width": "5%",
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            var a = '';
+                            if (row.cbs_status === "I") {
+                                a = "Pending"
+                            }
+                            if (row.cbs_status === "P") {
+                                a = "Pending"
+                            }
+                            if (row.cbs_status === "C") {
+                                a = "Completed"
+                            }
+                            return a;
+                        }},
+                    {"data": 'id',
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "25%",
+                        "render": function (data, type, row, meta) {
+//                     authorizePayment.png      a = '<a type="button" href="/downloadSupportingDoc?reference=' + row.reference + '"><button type="button"><img src="/assets/images/supportingDoc.png" style="width:20px;" title="Download Supporting Document"></button></a>
+                            a = '<div><!--button type="button"><img src="/assets/images/supportingDoc.png" style="width:20px;" title="Download Supporting Document" onclick="previewSupportingDocuments(\'' + row.reference + '\')"></button--><button type="button" onclick="previewSwiftMsg(\'' + row.reference + '\')"><img src="/assets/images/previewSwift.png" style="width:20px;" title="Preview swift Message"></button><!--button type="button" class="-authorize-payments" disabled><img src="/assets/images/authorizePayment.png" style="width:20px;" title="Authorize Payments" onclick="authorizeRTGSBranch(\'' + row.reference + '\')"></button><button type="button"><img src="/assets/images/amendment.png" style="width:20px;" title="Return for Ammendment" onclick="requireAmendmend(\'' + row.reference + '\')"></button><button type="button"><img src="/assets/images/decline.png" style="width:20px;" title="Decline Payment" onclick="declinePayment(\'' + row.reference + '\')"></button--></div>';
+                            return a;
+                        }}
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+//                fixedColumns: true,
+                buttons: [{
+                        extend: "copy",
+                        title: 'Authorize RTGS Remittance Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='mno']").val() == '') {
+                        return false;
+                    }
+                }
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        });
+        function reloadDatatable() {
+            $('#rtgsTxnOnWorkFlow').DataTable().ajax.reload();
+        }
+    </script>
+</div>

@@ -1,0 +1,15 @@
+<mux class="org.jpos.q2.iso.QMUX" logger="Q2" name="cbs_mux">
+    <property name="echo-interval" value="180000 " /> 
+    <property name="timeout" value="60000" /> 
+    <property name="logon-interval" value="90000" />
+    <property name="retry-response-codes" value="91,NL,NM,N8,CE"/>
+
+    <in>to-CBS</in>
+    <out>from-ussdGW</out>
+    <unhandled>cbs-unhandled-request</unhandled>
+    <ready>cbs-adaptor.ready</ready>
+    <key>7,37,43</key>
+ <!--request-listener class="amecore.LogonManager">
+ <property name="mti" value="0800"/>
+ </request-listener-->
+ </mux>

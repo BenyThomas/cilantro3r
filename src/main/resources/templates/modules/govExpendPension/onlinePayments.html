@@ -1,0 +1,273 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+  <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+        .btn{
+            border-radius: 0px !important;
+        }
+        .btn-dark {
+            background-color: #000000!important;
+            border: 1px solid #ffffff!important;
+        }
+        .btn:hover {
+            color: #ffffff !important;
+            text-decoration: none;
+        }
+        .btn-dark.active, .btn-dark.focus, .btn-dark:active, .btn-dark:focus, .btn-dark:hover, .open>.dropdown-toggle.btn-dark {
+            background-color: #3db9dc!important;
+            border: 1px solid #3db9dc!important;
+        }
+        .button.selected{
+            background-color: #3db9dc!important;
+            border: 1px solid #3db9dc!important;
+        }
+    </style>
+  <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/select.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/sweet-alert2/sweetalert2.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+</div>
+<div class="row">
+  <div class="panel panel-default panel-fill">
+    <div class="panel-heading">
+      <h4 class="panel-title" th:text="${pageTitle}"></h4>
+    </div>
+    <div class="panel-body">
+      <div class="row" id="onlinePaymentsInstitutionForm">
+        <form role="form">
+          <div class="row">
+            <div class="form-group col-md-2">
+              <select class="form-control col-sm-12 select2 select2-hidden-accessible" id="institutionDetails" name="institutionDetails" style="font-size: 10px !important;" tabindex="-1" aria-hidden="true">
+                <option value="">Select Institution</option>
+                <option th:each="institution: ${institutions}" th:value="${institution.accountNo}" th:text="${institution.accountName}">
+              </select>
+            </div>
+            <div class="form-group col-md-3">
+              <div class="input-group">
+                <input name="fromDate"
+                       class="form-control form-control-inline input-txndatemedium default-date-picker"
+                       id="datepicker-autoclose" data-date-format="yyyy-mm-dd" type="text"
+                       placeholder="From: yyyy-mm-dd" autocomplete="off"/>
+                <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+              </div>
+            </div>
+            <div class="form-group col-md-3">
+              <div class="input-group">
+                <input name="toDate"
+                       class="form-control form-control-inline input-txndatemedium default-date-picker"
+                       id="datepicker-autoclose2" data-date-format="yyyy-mm-dd" type="text"
+                       placeholder="To: yyyy-mm-dd" autocomplete="off"/>
+                <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+              </div>
+            </div>
+            <div class="form-group col-md-1">
+              <div class="form-group col-md-3 text-right m-b-0" style="margin: 2%;">
+                <button type="button" class="btn btn-primary btn-submit-muse-batch-Summary">Search</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div id="successFlag"></div>
+      <div id="loading" hidden=""></div>
+      <div class="row">
+        <table id="onlinePayments" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important;">
+          <thead>
+            <tr>
+              <th>S/N</th>
+              <th>Payer Name</th>
+              <th>Payer Account</th>
+              <th>Payment Type</th>
+              <th>Status</th>
+              <th>Currency</th>
+              <th>No of Txns</th>
+              <th>Total Amount</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+  <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.select.min.js}"></script>
+  <!-- init -->
+  <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+  <!-- App Js -->
+  <script th:src="@{/assets/js/jquery.app.js}"></script>
+  <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+  <script th:src="@{/assets/plugins/sweet-alert2/sweetalert2.min.js}"></script>
+  <script th:src="@{/assets/scripts/teller.js}"></script>
+  <script th:src="@{/assets/scripts/expenditure.js}"></script>
+  <script th:src="@{/assets/scripts/pension.js}"></script>
+  <script type="text/javascript" th:inline="javascript">
+        let userRoles = /*[[${roleId}]]*/;
+        var authorizedWorkFlowArr =  [[${session.authorizedGPPWFArray}]];
+        $(document).ready(function () {
+            jQuery('#datepicker-autoclose').datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            jQuery('#datepicker-autoclose2').datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#loading").hide();
+            $(".select2").select2({width: 'auto'});
+            $('.authorize-payments').attr('disabled', 'disabled');
+            $("#institutionDetails").on('change', function () {
+                $('#onlinePayments').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            $('.btn-submit-muse-batch-Summary').click(function () {
+                reloadDatatable();
+            });
+            loadMUSEData(token, header);
+        });
+
+        function reloadDatatable() {
+            $('#onlinePayments').DataTable().ajax.reload();
+        }
+
+        function loadMUSEData(token, header) {
+            var table = $('#onlinePayments').DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "asc"],
+                ajax: {
+                    'url': '/getPendingBatchesPerAccountAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    },
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "institutionDetails": $("select[name='institutionDetails']").val(),
+                            "status": "I",
+                            "searchValue": "IN0010"
+                        });
+                    }
+                },
+                "columns": [
+                    {"data": "messageId"},
+                    {"data": "payerName"},
+                    {"data": "payerAcct"},
+                    {"data": "paymentType"},
+                    {"data": "status"},
+                    {"data": "currency"},
+                    {"data": "nbOfTxns"},
+                    {"data": "totalAmount"},
+                    {
+                        "data": "messageId",
+                        "render": function (data, type, row, meta) {
+                            var a = '<button type="button" class="btn btn-primary" onclick="previewBatchTransactions(\'';
+                            a += row.messageId + '\',\'' + row.payerAcct + '\',\'' + row.status + '\',\'' + userRoles;
+                            a += '\')">Preview</button> &nbsp';
+                            var allow = false;
+                            if (row.currency.includes('USD')) {
+<!--                                if (userRoles.includes('24'))-->
+                                if (authorizedWorkFlowArr.includes(7))
+                                    allow = true;
+                            } else {
+                                if (authorizedWorkFlowArr.includes(8))
+                                    allow = true;
+                            }
+<!--                            if ((userRoles.includes('21') || allow) && row.status === 'I') {-->
+                            if ((authorizedWorkFlowArr.includes(9) || allow) && row.status === 'I') {
+                                a += '<button type="button" class="btn btn-primary" onclick="approveBatchTransactions(\'';
+                                a += row.messageId + '\',\'' + row.payerAcct + '\')">Approve</button>';
+                            }
+                            return a;
+                        }
+                    }
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+                buttons: [{
+                        extend: "copy",
+                        title: 'MUSE/ERMS PENDING BATCH TRANSACTIONS',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'MUSE/ERMS PENDING BATCH TRANSACTIONS',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'MUSE/ERMS PENDING BATCH TRANSACTIONS',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'MUSE/ERMS PENDING BATCH TRANSACTIONS',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'MUSE/ERMS PENDING BATCH TRANSACTIONS',
+                        className: "btn-sm"
+                    }],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='institutionDetails']").val() == '') {
+                        return false;
+                    }
+                }
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        }
+    </script>
+</div>

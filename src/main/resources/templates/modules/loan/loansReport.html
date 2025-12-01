@@ -1,0 +1,962 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+  <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}">
+  <link rel="stylesheet" th:href="@{/assets/plugins/select2/css/select2.min.css}" type="text/css"/>
+  <!--    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <div id="reconData" layout:fragment="contents">
+      <div class="panel panel-default panel-fill">
+        <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+          <div class="row" id="preloader2">
+            <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+          </div>
+          <!--- success start--->
+          <div class="col-md-12" id="successFlag"></div>
+          <!------ End ------->
+          <br>
+          <!--- FORM START ----->
+          <div class="row" id="another-element">
+            <form id="form2" role="form">
+              <div class="row">
+                <div class="form-row" >
+                  <div class="form-group col-md-4">
+                    <label style="margin-left:1px; importrant;">LOAN TYPE</label>
+                    <select class="form-control select2" id="loanType" name="loanType" selected="selected"
+                            style="width: 300px; height: 30px; font-size: 12px;">
+                      <!--                                            <option disabled selected value="">CHOOSE...</option>-->
+                      <option th:each="loanType:${loanTypes}" th:text="${loanType.name}" th:value="${loanType.code}">
+                      </option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label style="margin-left:1px; importrant;">REPORT TYPE</label>
+                    <select class="form-control select2" id="reportType" name="reportType" selected="selected"
+                            style="width: 300px; height: 30px; font-size: 12px;">
+                      <option disabled selected value="">CHOOSE...</option>
+                      <option value="PORTFOLIO_POSITIONS">PORTFOLIO POSITION</option>
+                      <option value="OUTSTANDING_LOAN">OUTSTANDING LOAN</option>
+                      <option value="CHARGED_OFF_LOAN">CHARGED OFF LOAN</option>
+                      <option value="REPAYMENT_SUMMARY_PER_ACCOUNT">REPAYMENT SUMMARY PER ACCOUNT</option>
+                      <option value="REPAYMENT_SUMMARY_PER_LOAN">REPAYMENT SUMMARY PER LOAN</option>
+                      <option value="DAILY_LOAN_BALANCE">DAILY LOAN BALANCE</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-4" id="hiddenOnDailyBalanceReport">
+                    <label style="margin-left: 1% ! important;">From Date <i class="text-danger">*</i></label>
+                    <div class="input-group">
+                      <input autocomplete="off"
+                             class="form-control form-control-inline input-txndatemedium default-date-picker"
+                             data-date-format="yyyy-mm-dd"
+                             id="datepicker-autoclose" name="fromDate"
+                             placeholder="From date: yyyy-mm-dd"
+                             th:value="${fromDate}" type="text" style="width: 300px; height: 30px; font-size: 12px;"/>
+                      <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                    </div><!-- input-group -->
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label style="margin-left: 1% ! important;">To Date<i class="text-danger">*</i></label>
+                    <div class="input-group">
+                      <input autocomplete="off"
+                             class="form-control form-control-inline input-txndatemedium default-date-picker"
+                             data-date-format="yyyy-mm-dd"
+                             id="datepicker-autoclose2" name="toDate"
+                             placeholder="To date: yyyy-mm-dd"
+                             th:value="${toDate}" type="text" style="width: 300px; height: 30px; font-size: 12px;"/>
+                      <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                    </div><!-- input-group -->
+                  </div>
+                  <div class="form-group col-md-3">
+                    <div class="form-group col-md-3 text-right m-b-0" style="margin-top: 25px; ">
+                      <button type="button" class="btn btn-primary" id="searchBtn" style="background-color: #769b77!important">Search</button>
+                    </div>
+                  </div>
+                </div>
+            </form>
+          </div>
+
+          <!--- FORM END ---->
+          <!-- HEN DOORWAYS START-->
+          <div class="row" th:insert="/modules/loan/include_datatables/maester :: portfolioPositionDT" id="div1">
+          </div>
+          <!-- HEN DOORWAYS END-->
+          <!-- HEN DOORWAYS 2 START-->
+          <div class="row" th:insert="/modules/loan/include_datatables/maester :: OUTSTANDING_LOAN" id="div2">
+          </div>
+          <div class="row" th:insert="/modules/loan/include_datatables/maester :: CHARGED_OFF_LOAN" id="div7">
+          </div>
+          <!-- HEN DOORWAYS 2 END-->
+          <!-- HEN DOORWAYS 3 START-->
+          <div class="row" th:insert="/modules/loan/include_datatables/maester :: REPAYMENT_SUMMARY_PER_ACCOUNT" id="div3">
+          </div>
+          <!-- HEN DOORWAYS 3 END-->
+          <!-- HEN DOORWAYS 3 START-->
+          <div class="row" th:insert="/modules/loan/include_datatables/maester :: REPAYMENT_SUMMARY_PER_LOAN" id="div4">
+          </div>
+          <!-- HEN DOORWAYS 3 END-->
+          <!-- HEN DOORWAYS START-->
+          <div class="row" th:insert="/modules/loan/include_datatables/maester :: portfolioPositionDTNISOGEZE" id="div5">
+          </div>
+          <!-- HEN DOORWAYS END-->
+          <!-- HEN DOORWAYS START-->
+          <div class="row" th:insert="/modules/loan/include_datatables/maester :: DAILY_LOAN_BALANCE" id="div6">
+          </div>
+          <!-- HEN DOORWAYS END-->
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+  <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+  <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+  <script th:src="@{/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js}"></script>
+  <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+  <script th:src="@{/assets/plugins/clockpicker/js/bootstrap-clockpicker.min.js}"></script>
+  <script th:src="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.js}"></script>
+  <!-- init -->
+  <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+  <!-- App Js -->
+  <script th:src="@{/assets/js/jquery.app.js}"></script>
+  <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+  <script th:src="@{/assets/scripts/loan.js}"></script>
+  <script>
+      function formatDateTime(data) {
+      if (data) {
+          var date = new Date(data);
+          var day = ("0" + date.getDate()).slice(-2);
+          var month = ("0" + (date.getMonth() + 1)).slice(-2);
+          var year = date.getFullYear();
+
+          var hours = ("0" + date.getHours()).slice(-2);
+          var minutes = ("0" + date.getMinutes()).slice(-2);
+
+          return `${year}-${month}-${day} ${hours}:${minutes}`;  // Date format with time (yyyy-mm-dd hh:mm)
+      } else {
+          return 'NA';  // Handle null or undefined dates
+      }
+      }
+
+    $(document).ready(function () {
+        $("#preloader2").hide();
+           jQuery('#fromTime').timepicker({
+                showMeridian: false
+            });
+            jQuery('#toTime').timepicker({
+                showMeridian: false
+            });
+            jQuery('#datepicker-autoclose').datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            jQuery('#datepicker-autoclose2').datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+
+          $('#reportType').change(function(){
+              var reportType = $(this).val();
+              if(reportType === "DAILY_LOAN_BALANCE"){
+                  $('#hiddenOnDailyBalanceReport').hide();
+              }else{
+                 $('#hiddenOnDailyBalanceReport').show();}
+          });
+
+
+        $('#searchBtn').click(function(){
+
+           var reportType = $('#reportType').val();
+           var loanType = $('#loanType').val();
+           if(reportType==null){
+              $('#successFlag').html("<div class='alert alert-danger btn-xs'><h6>PLEASE CHOOSE REPORT TYPE</h6></div>");
+            }else{
+              if(reportType=='PORTFOLIO_POSITIONS' && loanType != 'NISOGEZE'){
+                var formData = new FormData($('#form2')[0]);
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+              var count = 0;
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: "POST",
+                    'url': '/loansReportAjax',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#preloader2").show();
+                    },
+
+                    success: function (response) {
+                            $("#preloader2").hide();
+                            $('#OUTSTANDING_LOAN_DT').DataTable().destroy();
+                            $('#OUTSTANDING_LOAN_DT').hide();
+                            $('#CHARGED_OFF_LOAN_DT').DataTable().destroy();
+                            $('#CHARGED_OFF_LOAN_DT').hide();
+                            $('#REPAYMENT_SUMMARY_PER_ACCOUNT').DataTable().destroy();
+                            $('#REPAYMENT_SUMMARY_PER_LOAN').DataTable().destroy();
+                            $('#REPAYMENT_SUMMARY_PER_ACCOUNT').hide();
+                            $('#REPAYMENT_SUMMARY_PER_LOAN').hide();
+                            $("#NISOGEZE_PORTIFOLIO_POSITION").DataTable().destroy();
+                            $("#NISOGEZE_PORTIFOLIO_POSITION").hide();
+                            $("#DAILY_LOAN_BALANCE").DataTable().destroy();
+                            $("#DAILY_LOAN_BALANCE").hide();
+                            $("#dataTebo").show();
+                            var table = $('#dataTebo').DataTable({
+                                dom: 'Blfrtip',
+                                "info": true,
+                                "bDestroy": true,
+                                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                                scrollX: true,
+                                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                "data": response.outstandingPortifolio,
+                                columns: [
+
+                                     {"data": "count",
+                                      "render":function(data, type,row,meta){
+                                            return count +=1;
+                                      }
+                                      },
+                                      {"data": "accountNo"},
+                                      {"data": "fullName"},
+                                      {"data": "branchName"},
+                                      {"data": "currentSystemClass"},
+                                      {"data": "daysInAreas"},
+                                      {"data": "disbursedAmount",
+                                       "render": function numberWithCommas(disbursedAmount) {
+                                        return disbursedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },
+                                      {"data": "disbursedDate"},
+                                      {"data": "loanRef"},
+                                      {"data": "maturityDate"},
+                                      {"data": "outstandingAmt",
+                                       "render": function numberWithCommas(outstandingAmt) {
+                                        return outstandingAmt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }},
+                                      {"data": "outstandingFee",
+                                       "render": function numberWithCommas(outstandingFee) {
+                                        return outstandingFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }},
+                                      {"data": "phoneNo"},
+                                      {"data": "interestFee",
+                                       "render": function numberWithCommas(interestFee) {
+                                        return interestFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }},
+                                      {"data": "processingFee",
+                                       "render": function numberWithCommas(processingFee) {
+                                        return processingFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }},
+
+                                      {"data": "provisionAmount",
+                                       "render": function numberWithCommas(provisionAmount) {
+                                        return provisionAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }},
+                                      {"data": "provisionalRate",
+                                       "render": function numberWithCommas(provisionalRate) {
+                                        return provisionalRate.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }},
+                                      {"data": "totalOutstanding",
+                                       "render": function numberWithCommas(totalOutstanding) {
+                                        return totalOutstanding.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }}
+                                ]
+                                });
+                            table.buttons().container().appendTo('#dataTebo .col-md-6:eq(0)');
+                    },
+                    error: function (e) {
+                        $("#preloader2").hide();
+                        console.log(e);
+                    }
+                }); //end ajax
+              } else if(reportType==='PORTFOLIO_POSITIONS' && loanType === 'NISOGEZE'){
+                console.log("NISOGEZE_PORTIFOLIO_POSITION. .....");
+                var formData = new FormData($('#form2')[0]);
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var count = 0;
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: "POST",
+                    'url': '/fireUpdatedCustomerLoansAjax',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#preloader2").show();
+                    },
+
+                    success: function (response) {
+                            $("#preloader2").hide();
+                            $('#OUTSTANDING_LOAN_DT').DataTable().destroy();
+                            $('#OUTSTANDING_LOAN_DT').hide();
+                            $('#CHARGED_OFF_LOAN_DT').DataTable().destroy();
+                            $('#CHARGED_OFF_LOAN_DT').hide();
+                            $('#REPAYMENT_SUMMARY_PER_ACCOUNT').DataTable().destroy();
+                            $('#REPAYMENT_SUMMARY_PER_LOAN').DataTable().destroy();
+                            $('#REPAYMENT_SUMMARY_PER_ACCOUNT').hide();
+                            $('#REPAYMENT_SUMMARY_PER_LOAN').hide();
+                            $("#dataTebo").DataTable().destroy();
+                            $("#dataTebo").hide();
+                            $("#NISOGEZE_PORTIFOLIO_POSITION").show();
+                            $("#DAILY_LOAN_BALANCE").DataTable().destroy();
+                            $("#DAILY_LOAN_BALANCE").hide();
+                            var table = $('#NISOGEZE_PORTIFOLIO_POSITION').DataTable({
+                                dom: 'Blfrtip',
+                                "info": true,
+                                "bDestroy": true,
+                                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                                scrollX: true,
+                                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                "data": response,
+                               columns: [
+                                      {
+                                          "data": "count",
+                                          "render": function (data, type, row, meta) {
+                                              return count += 1;
+                                          }
+                                      },
+                                      {
+                                          "data": "branchName",
+                                          "render": function (data) {
+                                              return data ? data : 'NA';
+                                          }
+                                      },
+                                      {
+                                          "data": "accountNo",
+                                          "render": function (data) {
+                                              return data ? data : 'NA';
+                                          }
+                                      },
+                                      {
+                                          "data": "customerName",
+                                          "render": function (data) {
+                                              return data ? data : 'NA';
+                                          }
+                                      },
+                                      {
+                                          "data": "policyNumber",
+                                          "render": function (data) {
+                                              return data ? data : 'NA';
+                                          }
+                                      },
+                                      {
+                                          "data": "loanAmount",
+                                          "render": function (data) {
+                                              return data ? data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0';
+                                          }
+                                      },
+                                      {
+                                          "data": "processingFee",
+                                          "render": function (data) {
+                                              return data ? data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0';
+                                          }
+                                      },
+                                      {
+                                          "data": "interestRate",
+                                          "render": function (data) {
+                                              return data ? data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0';
+                                          }
+                                      },
+                                      {
+                                          "data": "loanTerm",
+                                          "render": function (data) {
+                                              return data ? data : 'NA';
+                                          }
+                                      },
+                                      {
+                                          "data": "maturityDate",
+                                          "render": function (data) {
+                                              return formatDateTime(data);
+                                          }
+                                      },
+                                      {
+                                          "data": "disbursedDate",
+                                          "render": function (data) {
+                                              return formatDateTime(data);
+                                          }
+                                      },
+                                      {
+                                          "data": "daysInArrears",
+                                          "render": function (data) {
+                                              return data ? data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0';
+                                          }
+                                      },
+                                      {
+                                          "data": "outstandingPrincipal",
+                                          "render": function (data) {
+                                              return data ? data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0';
+                                          }
+                                      },
+                                      {
+                                          "data": "phoneNumber",
+                                          "render": function (data) {
+                                              return data ? data : 'NA';
+                                          }
+                                      },
+                                      {
+                                          "data": "outstandingInterest",
+                                          "render": function (data) {
+                                              return data ? data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0';
+                                          }
+                                      },
+                                      {
+                                          "data": "totalOutstandingLoan",
+                                          "render": function (data) {
+                                              return data ? data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0';
+                                          }
+                                      },
+                                      {
+                                          "data": "classificationStatus",
+                                          "render": function (data) {
+                                              return data ? data : 'NA';
+                                          }
+                                      }
+                                  ]
+
+                                });
+                            table.buttons().container().appendTo('#dataTebo .col-md-6:eq(0)');
+                    },
+                    error: function (e) {
+                        $("#preloader2").hide();
+                        console.log(e);
+                    }
+                }); //end ajax
+              }else if(reportType=='OUTSTANDING_LOAN'){
+                   $('#dataTebo').DataTable().destroy();
+                   $('#REPAYMENT_SUMMARY_PER_ACCOUNT').DataTable().destroy();
+                    var formData = new FormData($('#form2')[0]);
+                    var header = $("meta[name='_csrf_header']").attr("content");
+                    var token = $("meta[name='_csrf']").attr("content");
+                    var count2 = 0;
+
+                  $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: "POST",
+                    'url': '/updatedCustomerLoansAjax',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#preloader2").show();
+                    },
+
+                    success: function (response) {
+                            $("#preloader2").hide();
+                                $("#dataTebo").hide();
+                                $("#REPAYMENT_SUMMARY_PER_ACCOUNT").hide();
+                                $("#NISOGEZE_PORTIFOLIO_POSITION").DataTable().destroy();
+                                $("#NISOGEZE_PORTIFOLIO_POSITION").hide();
+                                $("#DAILY_LOAN_BALANCE").DataTable().destroy();
+                                $("#DAILY_LOAN_BALANCE").hide();
+                                $('#CHARGED_OFF_LOAN_DT').DataTable().destroy();
+                                $('#CHARGED_OFF_LOAN_DT').hide();
+                                $("#OUTSTANDING_LOAN_DT").show();
+                            var table = $('#OUTSTANDING_LOAN_DT').DataTable({
+                                dom: 'Blfrtip',
+                                "info": true,
+                                "bDestroy": true,
+                                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                                scrollX: true,
+                                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                "data": response,
+                                columns: [
+                                     {"data": "count",
+                                      "render":function(data, type,row,meta){
+                                            return count2 +=1;
+                                      }
+                                      },
+                                      {"data": "accountNo"},
+                                      {"data": "customerName"},
+                                      {"data": "birthOfDate"},
+                                      {"data": "branchName"},
+                                      {"data": "policyNumber"},
+                                      {"data": "interestRate"},
+                                      {"data": "outstandingFee",
+                                       "render": function numberWithCommas(outstandingFee) {
+                                         if (outstandingFee === undefined || outstandingFee === null) {
+                                           return "NA";
+                                         }
+                                        return outstandingFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },
+                                      {"data": "outstandingPrincipal",
+                                       "render": function numberWithCommas(outstandingPrincipal) {
+                                         if (outstandingPrincipal === undefined || outstandingPrincipal === null) {
+                                           return "NA";
+                                         }
+                                        return outstandingPrincipal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },
+                                      {"data": "phoneNumber"},
+                                      {"data": "totalOutstandingLoan",
+                                       "render": function numberWithCommas(totalOutstandingLoan) {
+                                         if (totalOutstandingLoan === undefined || totalOutstandingLoan === null) {
+                                           return "NA";
+                                         }
+                                        return totalOutstandingLoan.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      }
+                                ]
+                                });
+                            table.buttons().container().appendTo('#dataTebo .col-md-6:eq(0)');
+                    },
+                    error: function (e) {
+                        $("#preloader2").hide();
+                            $("#dataTebo").hide();
+                            $("#OUTSTANDING_LOAN_DT").show();
+                        console.log(e);
+                    }
+                }); //end ajax
+              }else if(reportType =='REPAYMENT_SUMMARY_PER_ACCOUNT'){
+                $('#dataTebo').DataTable().destroy();
+                $('#REPAYMENT_SUMMARY_PER_LOAN').DataTable().destroy();
+                $("#OUTSTANDING_LOAN_DT").DataTable().destroy();
+                $('#CHARGED_OFF_LOAN_DT').DataTable().destroy();
+                $('#CHARGED_OFF_LOAN_DT').hide();
+                $("#NISOGEZE_PORTIFOLIO_POSITION").DataTable().destroy();
+                $("#NISOGEZE_PORTIFOLIO_POSITION").hide();
+                $("#DAILY_LOAN_BALANCE").DataTable().destroy();
+                 $("#DAILY_LOAN_BALANCE").hide();
+                 var formData = new FormData($('#form2')[0]);
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                 var count3 = 0;
+
+                  $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: "POST",
+                    'url': '/fireRepaymentSummaryPerAccountAjax',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#preloader2").show();
+                    },
+
+                    success: function (response) {
+                            $("#preloader2").hide();
+                                $("#dataTebo").hide();
+                                $("#OUTSTANDING_LOAN_DT").hide();
+                                $("#REPAYMENT_SUMMARY_PER_LOAN").hide();
+                                $('#CHARGED_OFF_LOAN_DT').hide();
+                                $("#REPAYMENT_SUMMARY_PER_ACCOUNT").show();
+                            var table = $('#REPAYMENT_SUMMARY_PER_ACCOUNT').DataTable({
+                                dom: 'Blfrtip',
+                                "info": true,
+                                "bDestroy": true,
+                                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                                scrollX: true,
+                                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                "data": response.loanRepaymentSummary,
+                                columns: [
+                                     {"data": "count",
+                                      "render":function(data, type,row,meta){
+                                            return count3 +=1;
+                                      }
+                                      },
+                                      {"data": "account"},
+                                      {"data": "age"},
+                                      {"data": "branchName"},
+                                      {"data": "customerRim"},
+                                      {"data": "phoneNo"},
+                                      {"data": "daysInAreas"},
+                                      {"data": "disbursedDate"},
+                                      {"data": "fullName"},
+                                      {"data": "loanRef"},
+                                      {"data": "maturityDate"},
+                                      {"data": "disbursedPrincipal",
+                                       "render": function numberWithCommas(disbursedPrincipal) {
+                                        return disbursedPrincipal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },  {"data": "outstandingAmount",
+                                       "render": function numberWithCommas(outstandingAmount) {
+                                        return outstandingAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },
+                                      {"data": "outstandingFee",
+                                       "render": function numberWithCommas(outstandingFee) {
+                                        return outstandingFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },
+                                      {"data": "processingFee",
+                                       "render": function numberWithCommas(processingFee) {
+                                        return processingFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },
+
+                                      {"data": "totalOutstandingLoan",
+                                       "render": function numberWithCommas(totalOutstandingLoan) {
+                                        return totalOutstandingLoan.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },
+                                     {"data": 'id',
+                                    "render": function (data, type, row, meta) {
+                                                a = '<div><a class="btn btn-xs btn-primary" onclick="previewCustomerLoans(\'' + row.account + '\')"><i class="fa fa-check-circle-o" aria-hidden="true"> Preview Loans</i></a></div>';
+                                                return a;
+                                    }}
+                                ]
+                                });
+                            table.buttons().container().appendTo('#REPAYMENT_SUMMARY_PER_ACCOUNT .col-md-6:eq(0)');
+                    },
+                    error: function (e) {
+                        $("#preloader2").hide();
+                            $("#dataTebo").hide();
+                            $("#OUTSTANDING_LOAN_DT").hide();
+                            $("#OUTSTANDING_LOAN_DT").show();
+                        console.log(e);
+                    }
+                }); //end ajax
+              }else if (reportType == 'REPAYMENT_SUMMARY_PER_LOAN'){
+                 $('#dataTebo').DataTable().destroy();
+                $('#REPAYMENT_SUMMARY_PER_LOAN').DataTable().destroy();
+                $("#OUTSTANDING_LOAN_DT").DataTable().destroy();
+                $('#CHARGED_OFF_LOAN_DT').DataTable().destroy();
+                $('#CHARGED_OFF_LOAN_DT').hide();
+                $("#REPAYMENT_SUMMARY_PER_ACCOUNT").DataTable().destroy();
+                $("#NISOGEZE_PORTIFOLIO_POSITION").DataTable().destroy();
+                $("#NISOGEZE_PORTIFOLIO_POSITION").hide();
+                $("#DAILY_LOAN_BALANCE").DataTable().destroy();
+                 $("#DAILY_LOAN_BALANCE").hide();
+
+                var formData = new FormData($('#form2')[0]);
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                 var count4 = 0;
+
+                  $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: "POST",
+                    'url': '/fireRepaymentSummaryPerLoanAjax',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#preloader2").show();
+                    },
+
+                    success: function (response) {
+                            $("#preloader2").hide();
+                                $("#dataTebo").hide();
+                                $("#OUTSTANDING_LOAN_DT").hide();
+                                $("#REPAYMENT_SUMMARY_PER_ACCOUNT").hide();
+                                $('#CHARGED_OFF_LOAN_DT').hide();
+                                $("#REPAYMENT_SUMMARY_PER_LOAN").show();
+                            var table = $('#REPAYMENT_SUMMARY_PER_LOAN').DataTable({
+                                dom: 'Blfrtip',
+                                "info": true,
+                                "bDestroy": true,
+                                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                                scrollX: true,
+                                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                "data": response.loanRepaymentSummary,
+                                columns: [
+                                     {"data": "count",
+                                      "render":function(data, type,row,meta){
+                                            return count4 +=1;
+                                      }
+                                      },
+                                      {"data": "loanRef"},
+                                      {"data": "account"},
+                                      {"data": "customerRim"},
+                                      {"data": "fullName"},
+                                       {"data": "phoneNo"},
+                                       {"data": "age"},
+                                      {"data": "disbursedDate"},
+                                      {"data": "maturityDate"},
+                                      {"data": "branchName"},
+                                      {"data": "lastRepaymentDate"},
+                                      {"data": "daysInAreas"},
+                                      {"data": "dob"},
+                                      {"data": "disbursedPrincipal"},
+                                      {"data": "processingFee",
+                                       "render": function numberWithCommas(processingFee) {
+                                        return processingFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },
+                                      {"data": "outstandingAmount",
+                                       "render": function numberWithCommas(outstandingAmount) {
+                                        return outstandingAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },
+                                      {"data": "outstandingFee",
+                                       "render": function numberWithCommas(outstandingFee) {
+                                        return outstandingFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },
+                                      {"data": "totalFeePaid",
+                                       "render": function numberWithCommas(totalFeePaid) {
+                                        return totalFeePaid.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },
+                                      {"data": "totalPrincipalPaid",
+                                       "render": function numberWithCommas(totalPrincipalPaid) {
+                                        return totalPrincipalPaid.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },
+                                       {"data": "totalPaidAmt",
+                                       "render": function numberWithCommas(totalPaidAmt) {
+                                        return totalPaidAmt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      },
+                                       {"data": "totalOutstandingLoan",
+                                       "render": function numberWithCommas(totalOutstandingLoan) {
+                                        return totalOutstandingLoan.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }
+                                      }
+                                ]
+                                });
+                            table.buttons().container().appendTo('#REPAYMENT_SUMMARY_PER_LOAN .col-md-6:eq(0)');
+                    },
+                    error: function (e) {
+                        $("#preloader2").hide();
+                            $("#dataTebo").hide();
+                            $("#OUTSTANDING_LOAN_DT").hide();
+                            $("#REPAYMENT_SUMMARY_PER_ACCOUNT").hide();
+                            $('#CHARGED_OFF_LOAN_DT').destroy().hide();
+                            $("#NISOGEZE_PORTIFOLIO_POSITION").DataTable().destroy();
+                            $("#NISOGEZE_PORTIFOLIO_POSITION").hide();
+                            $("#DAILY_LOAN_BALANCE").DataTable().destroy();
+                            $("#DAILY_LOAN_BALANCE").hide();
+                            $("#REPAYMENT_SUMMARY_PER_LOAN").show();
+                        console.log(e);
+                    }
+                }); //end ajax
+              }else if (reportType == 'DAILY_LOAN_BALANCE'){
+                 $('#dataTebo').DataTable().destroy();
+                 $('#dataTebo').hide();
+                $('#REPAYMENT_SUMMARY_PER_LOAN').DataTable().destroy();
+                $("#OUTSTANDING_LOAN_DT").DataTable().destroy();
+                $('#CHARGED_OFF_LOAN_DT').destroy().hide();
+                $("#REPAYMENT_SUMMARY_PER_ACCOUNT").DataTable().destroy();
+                $("#NISOGEZE_PORTIFOLIO_POSITION").DataTable().destroy();
+                $("#NISOGEZE_PORTIFOLIO_POSITION").hide();
+                $("#OUTSTANDING_LOAN_DT").hide();
+                $("#REPAYMENT_SUMMARY_PER_ACCOUNT").hide();
+                $("#REPAYMENT_SUMMARY_PER_LOAN").DataTable().destroy();
+                $("#REPAYMENT_SUMMARY_PER_LOAN").hide();
+                var formData = new FormData($('#form2')[0]);
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                 var count4 = 0;
+
+                  $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: "POST",
+                    'url': '/fireGetDailLoanBalanceFromBrinjal',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#preloader2").show();
+                    },
+
+                    success: function (response) {
+                            $("#preloader2").hide();
+                                $("#DAILY_LOAN_BALANCE").show();
+                            var table = $('#DAILY_LOAN_BALANCE').DataTable({
+                                dom: 'Blfrtip',
+                                "info": true,
+                                "bDestroy": true,
+                                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                                scrollX: true,
+                                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                "data": response.result,
+                                columns: [
+                                     {"data": "count",
+                                      "render":function(data, type,row,meta){
+                                            return count4 +=1;
+                                      }
+                                      },
+
+                                      {"data": "accountNumber"},
+                                      {"data": "customerName"},
+                                      {"data": "currentSystemClass"},
+                                      {"data": "daysInArrears"},
+                                      {"data": "disbursedAmount",
+                                       "render": function numberWithCommas(disbursedAmount) {
+                                        return disbursedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }},
+                                      {"data": "outstandingAmount",
+                                       "render": function numberWithCommas(outstandingAmount) {
+                                        return outstandingAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }},
+                                      {"data": "disbursedDate"},
+                                      {"data": "maturityDate"},
+                                      {"data": "phoneNumber"},
+                                      {"data": "interest"},
+                                      {"data": "interestBalance",
+                                       "render": function numberWithCommas(interestBalance) {
+                                        return interestBalance.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }},
+                                      {"data": "processingFee",
+                                       "render": function numberWithCommas(processingFee) {
+                                        return processingFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }},
+
+                                      {"data": "outstandingFee",
+                                       "render": function numberWithCommas(outstandingFee) {
+                                        return outstandingFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }},
+                                      {"data": "provisionAmount",
+                                       "render": function numberWithCommas(provisionAmount) {
+                                        return provisionAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }},
+                                      {"data": "provisionRate"},
+                                      {"data": "loanBalance",
+                                       "render": function numberWithCommas(loanBalance) {
+                                        return loanBalance.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                      }},
+                                      {"data": "balanceDate"}
+                                ]
+                                });
+                            table.buttons().container().appendTo('#DAILY_LOAN_BALANCE .col-md-6:eq(0)');
+                    },
+                    error: function (e) {
+                        $("#preloader2").hide();
+                            $("#dataTebo").hide();
+                            $("#OUTSTANDING_LOAN_DT").hide();
+                            $("#REPAYMENT_SUMMARY_PER_ACCOUNT").hide();
+                            $("#NISOGEZE_PORTIFOLIO_POSITION").DataTable().destroy();
+                            $('#CHARGED_OFF_LOAN_DT').destroy().hide();
+                            $("#NISOGEZE_PORTIFOLIO_POSITION").hide();
+                            $("#REPAYMENT_SUMMARY_PER_LOAN").hide();
+                            $("#DAILY_LOAN_BALANCE").show();
+                        console.log(e);
+                    }
+                }); //end ajax
+              }else if (reportType === 'CHARGED_OFF_LOAN' && loanType==='NISOGEZE'){
+                $('#dataTebo').DataTable().destroy();
+                $('#dataTebo').hide();
+                $('#REPAYMENT_SUMMARY_PER_LOAN').DataTable().destroy();
+                $('#REPAYMENT_SUMMARY_PER_LOAN').hide();
+                $("#OUTSTANDING_LOAN_DT").DataTable().destroy();
+                $("#OUTSTANDING_LOAN_DT").hide();
+                $("#REPAYMENT_SUMMARY_PER_ACCOUNT").DataTable().destroy();
+                $("#REPAYMENT_SUMMARY_PER_ACCOUNT").hide();
+                $("#NISOGEZE_PORTIFOLIO_POSITION").DataTable().destroy();
+                $("#NISOGEZE_PORTIFOLIO_POSITION").hide();
+                $("#REPAYMENT_SUMMARY_PER_LOAN").DataTable().destroy();
+                $("#REPAYMENT_SUMMARY_PER_LOAN").hide();
+                var formData = new FormData($('#form2')[0]);
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var count4 = 0;
+                $.ajax({
+                  processData: false,
+                  contentType: false,
+                  data: formData,
+                  type: "POST",
+                  'url': '/fireGetChargedOffLoanFromBrinjal',
+                  beforeSend: function (request) {
+                    request.setRequestHeader(header, token);
+                    $("#preloader2").show();
+                  },
+
+                  success: function (response) {
+                    $("#preloader2").hide();
+                    $("#CHARGED_OFF_LOAN_DT").show();
+                    var table = $('#CHARGED_OFF_LOAN_DT').DataTable({
+                      dom: 'Blfrtip',
+                      "info": true,
+                      "bDestroy": true,
+                      lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                      scrollX: true,
+                      buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                      "data": response,
+                      columns: [
+                        {"data": "count",
+                          "render":function(data, type,row,meta){
+                            return count4 +=1;
+                          }
+                        },
+
+                        {"data": "accountNo"},
+                        {"data": "customerName"},
+                        {"data": "branchName"},
+                        {"data": "currentSystemClass"},
+                        {"data": "daysInArea"},
+                        {"data": "provisionRate"},
+                        {"data": "disbursementAmount",
+                          "render": function(data) {
+                            data = data || 0;
+                            return data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                          }
+                        },
+                        {"data": "disbursementDate"},
+                        {"data": "loanReference"},
+                        {"data": "maturityDate"},
+                        {"data": "phoneNo"},
+                        {"data": "chargedOffDate"},
+                        {"data": "totalChargedOffAmount",
+                          "render": function(data) {
+                            data = data || 0;
+                            return data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                          }
+                        }
+
+                      ]
+                    });
+                    table.buttons().container().appendTo('#CHARGED_OFF_LOAN .col-md-6:eq(0)');
+                  },
+                  error: function (e) {
+                    $("#preloader2").hide();
+                    $("#dataTebo").hide();
+                    $("#OUTSTANDING_LOAN_DT").hide();
+                    $("#REPAYMENT_SUMMARY_PER_ACCOUNT").hide();
+                    $("#NISOGEZE_PORTIFOLIO_POSITION").DataTable().destroy();
+                    $('#CHARGED_OFF_LOAN_DT').show();
+                    $("#NISOGEZE_PORTIFOLIO_POSITION").hide();
+                    $("#REPAYMENT_SUMMARY_PER_LOAN").hide();
+                    $("#DAILY_LOAN_BALANCE").DataTable().destroy();
+                    $("#DAILY_LOAN_BALANCE").hide();
+                    console.log(e);
+                  }
+                });
+              }//END IF ELSE reportType with val
+          }//end report type not null
+        }); //end click function
+
+    }); //END DOCUMENT READY
+
+  </script>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,233 @@
+{
+  "ARUSHA": [
+    "ARUSHA CBD",
+    "ARUSHA",
+    "Arumeru",
+    "Monduli",
+    "Longido",
+    "Karatu",
+    "Ngorongoro"
+  ],
+  "DAR ES SALAAM": [
+    "ILALA",
+    "KIGAMBONI",
+    "KINONDONI",
+    "TEMEKE",
+    "UBUNGO"
+  ],
+  "DODOMA": [
+    "CHEMBA",
+    "DODOMA CBD",
+    "DODOMA",
+    "BAHI",
+    "CHAMWINO",
+    "KONGWA",
+    "MPWAPWA",
+    "KONDOA"
+  ],
+  "GEITA": [
+    "GEITA",
+    "NYANG'HWALE",
+    "CHATO",
+    "MBOGWE",
+    "BUKOMBE"
+  ],
+  "IRINGA": [
+    "IRINGA CBD",
+    "IRINGA",
+    "KILOLO",
+    "MUFINDI"
+  ],
+  "KAGERA": [
+    "BUKOBA CBD",
+    "BUKOBA",
+    "MISSENYI",
+    "KARAGWE",
+    "MULEBA",
+    "BIHARAMULO",
+    "NGARA",
+    "Kyerwa"
+  ],
+  "KASKAZINI PEMBA": [
+    "WETE",
+    "MICHEWENI"
+  ],
+  "KASKAZINI UNGUJA": [
+    "KASKAZINI A",
+    "KASKAZINI B"
+  ],
+  "KATAVI": [
+    "MPANDA CBD",
+    "TANGANYIKA",
+    "Mlele"
+  ],
+  "KIGOMA": [
+    "KIGOMA CBD",
+    "KIGOMA",
+    "Kasulu",
+    "KIBONDO",
+    "Buhigwe",
+    "Uvinza",
+    "Kakonko"
+  ],
+  "KILIMANJARO": [
+    "MOSHI CBD",
+    "MOSHI",
+    "HAI",
+    "SIHA",
+    "MWANGA",
+    "SAME",
+    "ROMBO"
+  ],
+  "KUSINI PEMBA": [
+    "MKOANI",
+    "CHAKECHAKE"
+  ],
+  "KUSINI UNGUJA": [
+    "Kusini",
+    "Kati"
+  ],
+  "LINDI": [
+    "LINDI  CBD",
+    "LINDI",
+    "NACHINGWEA",
+    "KILWA",
+    "Liwale",
+    "Ruangwa"
+  ],
+  "MANYARA": [
+    "BABATI CBD",
+    "BABATI",
+    "Hanang'",
+    "MBULU",
+    "KITETO",
+    "SIMANJIRO"
+  ],
+  "MARA": [
+    "MUSOMA CBD",
+    "Butiama",
+    "RORYA",
+    "TARIME",
+    "BUNDA",
+    "SERENGETI"
+  ],
+  "MBEYA": [
+    "MBEYA CBD",
+    "MBEYA",
+    "Rungwe",
+    "Mbarali",
+    "Kyela",
+    "Chunya"
+  ],
+  "MJINI MAGHARIBI": [
+    "MJINI",
+    "MAGHARIBI A",
+    "MAGHARIBI B"
+  ],
+  "MOROGORO": [
+    "ULANGA",
+    "GAIRO",
+    "Malinyi",
+    "MOROGORO CBD",
+    "MOROGORO",
+    "Mvomero",
+    "KILOSA",
+    "KILOMBERO"
+  ],
+  "MTWARA": [
+    "MTWARA CBD",
+    "MTWARA",
+    "TANDAHIMBA",
+    "NEWALA",
+    "MASASI",
+    "NANYUMBU"
+  ],
+  "MWANZA": [
+    "NYAMAGANA",
+    "ILEMELA",
+    "SENGEREMA",
+    "MAGU",
+    "MISUNGWI",
+    "UKEREWE",
+    "Kwimba"
+  ],
+  "NJOMBE": [
+    "NJOMBE CBD",
+    "NJOMBE",
+    "WANGING'OMBE",
+    "Ludewa",
+    "MAKETE"
+  ],
+  "PWANI": [
+    "KIBAHA CBD",
+    "KIBAHA",
+    "BAGAMOYO",
+    "KISARAWE",
+    "MKURANGA",
+    "RUFIJI",
+    "MAFIA",
+    "KIBITI"
+  ],
+  "RUKWA": [
+    "SUMBAWANGA CBD",
+    "SUMBAWANGA",
+    "NKASI",
+    "Kalambo"
+  ],
+  "RUVUMA": [
+    "SONGEA CBD",
+    "SONGEA",
+    "NAMTUMBO",
+    "MBINGA",
+    "NYASA",
+    "TUNDURU"
+  ],
+  "SHINYANGA": [
+    "SHINYANGA CBD",
+    "SHINYANGA",
+    "KAHAMA",
+    "KISHAPU"
+  ],
+  "SIMIYU": [
+    "MEATU",
+    "BUSEGA",
+    "BARIADI",
+    "ITILIMA",
+    "MASWA"
+  ],
+  "SINGIDA": [
+    "SINGIDA CBD",
+    "SINGIDA",
+    "IRAMBA",
+    "MANYONI",
+    "Mkalama",
+    "Ikungi"
+  ],
+  "SONGWE": [
+    "SONGWE",
+    "Mbozi",
+    "Ileje",
+    "Momba"
+  ],
+  "TABORA": [
+    "TABORA CBD",
+    "Sokoni",
+    "UYUI",
+    "SIKONGE",
+    "NZEGA",
+    "URAMBO",
+    "IGUNGA",
+    "Kaliua"
+  ],
+  "TANGA": [
+    "TANGA CBD",
+    "TANGA",
+    "PANGANI",
+    "MUHEZA",
+    "MKINGA",
+    "KOROGWE",
+    "LUSHOTO",
+    "Handeni",
+    "Kilindi"
+  ]
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/main_layout}">
+    <head>
+        <title>Bulk SMS</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div layout:fragment="pageStyle" th:remove="tag">
+            <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div layout:fragment="contents" id="reconData">
+                    <div class="panel panel-default panel-fill"  >
+                        <div class="panel-heading"> <h4 class="panel-title">SEND SMS / BULK SMS TO CUSTOMERS</h4></div>
+                        <div class="panel-body">
+                            <form role="form" action="/lookupMobileRegistration" method="GET">
+                                <div class="row">
+                                    <div class="form-group col-md-12">
+                                        <div class="input-group-addon">RECIPIENTS</div>
+                                        <textarea id="recipients"  name="recipients" class="form-control" rows="2" placeholder="Enter msisdn(s) :- 255719354203,255755145625"></textarea>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group  col-md-12">  
+                                        <div class="input-group-addon">MESSAGE</div>
+                                        <textarea type="text" name="message" id="message" rows="5" class="form-control" placeholder="Write your message here."/></textarea>
+                                    </div>   
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-12">
+                                        <button  type="button" class="btn btn-info" id="queryluku">SEND</button>
+                                    </div>    
+                                </div>
+                            </form>
+                            <div class="row" id="preloader2"> 
+                                <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div layout:fragment="pageScript" th:remove="tag">
+            <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+            <!-- init -->
+            <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+            <!-- App Js -->
+            <script th:src="@{/assets/js/jquery.app.js}"></script>
+            <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+            <script>
+                $(document).ready(function () {
+                    $('#preloader').hide();
+                    $('#preloader2').hide();
+                })
+            </script>
+        </div>
+    </body>
+</html>

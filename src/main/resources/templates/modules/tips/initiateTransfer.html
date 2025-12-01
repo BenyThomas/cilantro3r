@@ -1,0 +1,311 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentsss"><div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <div id="successFlag">
+            </div>
+            <div  id="loading" hidden=""> </div>
+
+            <div class="row">
+
+                <div class="container container-fluid" id="rtgsPayments">
+                    <div class="col-md-12 pull-right" id="MT_TYPES"></div>
+                    <div class="col-md-12" id="rtgsTransferFormDiv">
+                        <div id="errorMessage" class="alert alert-danger"></div>
+
+                        <div class="row" >
+                            <div class="row"><h3 id="transferTitle"></h3></div>
+
+                            <form class="form-horizontal" role="form" id="tipsTransferForm">
+
+                                <div class="row" id="tranferFormInformation">
+                                    <input hidden="" name="accountCurrency" id="accountCurrency">
+                                    <input type="hidden" name="bankTransferType" id="bankTransferType" style="color:red !important;" value="LOCAL">
+                                    <table  class="table table-striped table-bordered"  style="width: 100%; font-size: 8.5px !important;">
+                                        <tbody>
+                                        <tr>
+                                            <td>Sender Account</td>
+                                            <td>
+                                                <input type="text" name="senderAccount"  class="form-control form-control-sm" autocomplete="off" style="font-size: 10px !important;" placeholder="Sender Account No." id="senderAccount">
+                                                <button type="button" class="btn btn-primary btn-submit" style="font-size: 9px !important;" onclick="getAccountDetails()">Query Details</button>
+                                            </td>
+                                            <td>Sender Name <h5 id="branchName" style="font-size: 6px;"></h5>
+                                                <h5 id="ledgerName" style="font-size: 6px;"></h5></td>
+                                            <td><input type="text" name="senderName"  id="actNM" autocomplete="off"  class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Sender Name">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Amount to Transfer<h5 id="availableBalance" style="color: red;    font-size: 9px;"></h5></td>
+                                            <td><input type="text" name="amount" class="form-control form-control-sm comma-number" autocomplete="off" style="font-size: 10px !important;" placeholder="Amount"></td>
+                                            <td>Sending Currency</td>
+                                            <td>
+                                                <select class="form-control col-sm-12 select2" id="currency" name="currency"  style="font-size: 10px !important;">
+                                                    <option value="">Select Currency</option>
+                                                    <option value="TZS">TZS</option>
+                                                    <option value="USD">USD</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Category</td>
+                                            <td>
+                                                <select class="form-control col-sm-12 select2" id="category" name="category" style="font-size: 10px !important;">
+                                                    <option value="">Select Category</option>
+                                                    <option value="CONTROLNO">CONTROL NUMBER</option>
+                                                    <option value="BANK">BANK</option>
+                                                    <option value="MOBILE">MOBILE</option>
+                                                </select>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Beneficiary Bank</td>
+                                            <td>
+                                                <b><p style="color:red !important;font-size:10px;">*Please, IF YOU DONT SEE BANK HERE, PROCEED WITH RTGS</p></b>
+                                                <select class="form-control col-sm-12 select2" id="beneficiaryBank"  name="beneficiaryBIC"  style="font-size: 10px !important; width: 352px !important;">
+                                                    <option value="">Select destination Bank</option>
+                                                    <option th:each="bank: ${banks}" th:value="${bank.tips_bank_code}" th:text="${bank.name+'['+bank.swift_code+']'}"> ATM  </option>
+                                                </select>
+                                                <div id="intermediary">
+                                                </div>
+                                            </td>
+                                            <td>Sender Address</td>
+                                            <td>
+                                                <input type="text" id="customerAddress" name="senderAddress" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Sender Address">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Beneficiary Account</td>
+                                            <td><input type="text" name="beneficiaryAccount" id="beneficiaryAccount" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" disabled placeholder="Beneficiary Account">
+                                                <button type="button" class="btn btn-primary btn-submit" style="font-size: 9px !important;" onclick="getBeneficiaryAccountDetails()">Query Details</button>
+                                            </td>
+                                            <td>Beneficiary Name</td>
+                                            <td>
+                                                <input type="text" name="beneficiaryName" id="beneficiaryName" class="form-control form-control-sm" autocomplete="off" style="font-size: 10px !important;" placeholder="Beneficiary Name" readonly>
+                                                <input type="text" class="form-control form-control-sm" name="beneficiaryIdType" id="beneficiaryIdType" style="font-size: 10px !important;"  placeholder="Beneficiary ID type" readonly>
+                                                <input type="text" class="form-control form-control-sm" name="beneficiaryIdNumber" id="beneficiaryIdNumber" style="font-size: 10px !important;" placeholder="Beneficiry ID Number" readonly>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Beneficiary Contact</td>
+                                            <td><input type="text" name="beneficiaryContact" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Beneficiary Contact"></td>
+                                            <td>Sender Phone</td>
+                                            <td><input type="text" name="senderPhone" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Sender Phone"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Payment Purpose</td>
+                                            <td><textarea name="description" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Purpose of Payment"></textarea></td>
+                                            <td>Supporting Document</td>
+                                            <td><div id="supportingDocument"><input type="file" name="supportingDoc" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Supporting Document"> <button class="btn btn-primary" id="addField"><span style="font-size:16px; font-weight:bold;">+ </span></button></div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Related Reference[Optinal]</td>
+                                            <td colspan="3"><input type="text" name="relatedReference" class="form-control form-control-sm" style="font-size: 10px !important;border: 2px solid #0600c6;" placeholder="Related Reference"></td>
+
+                                        </tr>
+                                        <tr hidden="" id="systemRate">
+                                            <td>Currency conversion</td>
+                                            <td><input type="text" id="currencyConversion" readonly="" name="currencyConversion" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Currency Conversion"></td>
+                                            <td>Rubikon Rate</td>
+                                            <td><input type="text" id="rubikonRate" readonly="" name="rubikonRate" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Rubikon Rate"></td>
+                                        </tr>
+                                        <tr hidden="" id="requestingRate">
+                                            <td>Requesting Rate</td>
+                                            <td><input type="text"  name="requestingRate" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Enter Requesting Rate"></td>
+                                            <td>FX Type</td>
+                                            <td><input type="text" id="fxType" readonly="" name="fxType" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Fx Type"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="row">
+                                        <button type="button" class="btn btn-primary initiate-tips-payments">Submit For Approval</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/tips.js}"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({width: '100%'});
+            $("#loading").hide();
+            $("#errorMessage").hide();
+            //rtgsTransferForm
+            //CHANGE BANK BEGIN
+             $('#beneficiaryBank').change(function(){
+                    $('#beneficiaryAccount').attr("disabled",false);
+              });
+            //CHANGE BANK END
+            //add the number of files to be attached
+            var max_fields = 4;
+            var wrapper = $("#supportingDocument");
+            var add_button = $("#addField");
+
+            var x = 1;
+            $(add_button).click(function (e) {
+                e.preventDefault();
+                if (x < max_fields) {
+                    x++;
+                    $(wrapper).append('<input type="file" name="supportingDoc" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Supporting Document">'); //add input box
+                } else {
+                    alert('You Reached the limits');
+                }
+            });
+
+            $(wrapper).on("click", ".delete", function (e) {
+                e.preventDefault();
+                $(this).parent('div').remove();
+                x--;
+            });
+
+            $('.comma-number').keyup(function (event) {
+                // skip for arrow keys
+                if (event.which >= 37 && event.which <= 40) {
+                    event.preventDefault();
+                }
+
+                $(this).val(function (index, value) {
+                    value = value.replace(/,/g, '');
+                    return numberWithCommas(value);
+                });
+            });
+        });// end document ready
+        function getAccountDetails() {
+            $("#loading").show();
+            var accountNo = $("input[name='senderAccount']").val();
+            $.ajax({
+                url: "/querySenderDetails",
+                type: 'GET',
+                data: {accountNo: accountNo, code: "searchAccount"},
+                dataType: "json",
+                success: function (res) {
+                    $("#loading").hide();
+                    $("#actNM").val(res[0].CUST_NM);
+                    $("#branchName").text('BRANCH NAME: ' + res[0].BRANCHNAME);
+                    $("#ledgerName").text('LEDGER NAME: ' + res[0].ACCT_DESC);
+                    $("#availableBalance").text('Available Blance: ' + addCommas(res[0].CLEARED_BAL));
+                    $("#accountCurrency").val(res[0].CURRENCY);
+                    $("#customerAddress").val(res[0].ADDR_LINE_1 + ',' + res[0].ADDR_LINE_2 + ' , ' + res[0].ADDR_LINE_3 + ' , ' + res[0].ADDR_LINE_4);
+                    console.log(res)
+                },
+                error: function (res) {
+                    $("#loading").hide();
+                    $('#senderAccount').after('<h4 class="error" style="color:red     font-size: 8px !important;"> Error: Please Try Again. Please contact IT Helpdesk / Database Administrator: RUBIKON NOT FOUND</h4>');
+                    console.log(res);
+                }
+            })
+        }
+
+        function getBeneficiaryAccountDetails() {
+            $("#loading").show();
+            var accountNo = $("input[name='beneficiaryAccount']").val();
+            var category = $("select[name='category']").val();
+            var institutionCode = $("#beneficiaryBank").val();
+            $.ajax({
+                url: "/queryBeneficiaryAccountDetails",
+                type: 'GET',
+                data: {accountNo: accountNo, institutionCategory: category, institutionCode: institutionCode},
+                dataType: "json",
+                success: function (res) {
+                     console.log(res)
+                     if((res.responseCode != "0")){
+                        $('#errorMessage').html('<h6 class="error" style="color:red     font-size: 4px !important;">'+res.message+' ErrorCode: '+ res.responseCode+'</h6>');
+                         $("#errorMessage").show();
+                     }
+                    $("#loading").hide();
+                    $("#beneficiaryName").val(res.beneficiaryName);
+                    $("#beneficiaryIdType").val(res.idType);
+                    $("#beneficiaryIdNumber").val(res.idNumber);
+                },
+                error: function (res) {
+                    $("#loading").hide();
+                    $('#beneficiaryAccount').after('<h4 class="error" style="color:red;  font-size: 8px !important;"> Error: Please Try Again. Please contact IT Helpdesk / Database Administrator: RUBIKON NOT FOUND</h4>');
+                    console.log(res);
+                }
+            })
+        }
+
+        function addCommas(nStr) {
+            nStr += '';
+            x = nStr.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            }
+            return x1 + x2;
+        }
+        function getBanksDetailsBasedOnTransferType(type) {
+            var bankType = '';
+            $("#transactionType").val(type);
+            if (type.includes('TISS') || type.includes('MIRATHI') || type.includes('MT202TISS')) {
+                bankType = 'LOCAL';
+                $("#bankTransferType").val("LOCAL");
+            } else {
+                bankType = 'INTERNATIONAL';
+                $("#bankTransferType").val("INTERNATIONAL");
+            }
+            $("#transferTitle").text('[' + type + '  ]>>>>>>>>> TRANSFER');
+            $("#tranferFormInformation").show();
+
+        }
+        function numberWithCommas(x) {
+            var parts = x.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return parts.join(".");
+        }
+    </script>
+</div>

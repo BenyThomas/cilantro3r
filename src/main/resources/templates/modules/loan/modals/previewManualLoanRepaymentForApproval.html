@@ -1,0 +1,85 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+
+    </style>
+</div>
+<div class="panel panel-default panel-fill">
+    <div class="panel-heading" style="background-color: #04ab18 ! important; "><h3 class="panel-title" style="color: #ffffff !important;"
+                                                                                   th:text="${pageTitle}"></h3>
+    </div>
+    <div class="panel-body">
+        <div class="row" id="content"></div>
+        <div class="row">
+            <div id="successFlag"></div>
+        </div>
+        <div class="row" hidden="" id="preloader2">
+            <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+        </div>
+<!--        <div class="row">-->
+<!--            <label> CLEARENCE DOCUMENTS</label><br>-->
+<!--            <iframe class="col-md-12"  th:src="@{'/firePrevLoanReqSupportingDocument?reference='+${loanDetails.reference}}" width="700" height="200" frameborder="1" scrolling="yes"/>-->
+<!--        </div><br>-->
+
+<!--        <div class="row">-->
+<!--            <label> CHANGE ACCOUNT DOCUMENTS</label><br>-->
+<!--            <iframe class="col-md-12"  th:src="@{'/firePrevChangeAccSupportingDocument?reference='+${loanDetails.reference}}" width="700" height="200" frameborder="1" scrolling="yes"/>-->
+<!--        </div>-->
+        <div class="row" id="messageData">
+            <div id="txnDetails">
+                <table class=" table table-bordered table-striped">
+                    <tbody>
+                    <tr>
+                        <td>LOAN TYPE:</td>
+                        <td th:text="${data.loanType}"></td>
+                    </tr>
+                    <tr>
+                        <td>REFERENCE:</td>
+                        <td th:text="${data.reference}"></td>
+                    </tr>
+                    <tr>
+                        <td>DEBIT ACCOUNT:</td>
+                        <td th:text="${data.debitAccount}"></td>
+                    </tr>
+                    <tr>
+                        <td>REPAYMENT AMOUNT:</td>
+                        <td th:text="${#numbers.formatDecimal(data.amount, 0, 'COMMA', 2, 'POINT')}"></td>
+                    </tr>
+                    <tr>
+                        <td>DESCRIPTIONS:</td>
+                        <td th:text="${data.descriptions}"></td>
+                    </tr>
+                    <tr>
+                        <td>STATUS:</td>
+                        <td th:text="${data.status}"></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary pull-right col-md-3" id="authLoanBtn"
+                    th:onclick='fireAuthManualLoanRepayment([[${reference}]])'>Approve Loan Request
+            </button>
+<!--            <button class="btn btn-danger pull-left col-md-3" id="returnForAmmendmentLoanBtn"-->
+<!--                    th:onclick='fireReturnAmendLoanReq([[${reference}]])'>Return for Ammendment-->
+<!--            </button>-->
+            <button class="btn btn-default" data-dismiss="modal" id="closeModal" type="button">Close</button>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/scripts/transactions.js}"></script>
+</div>
+<div class="row" hidden="" id="preloader333">
+    <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+</div>

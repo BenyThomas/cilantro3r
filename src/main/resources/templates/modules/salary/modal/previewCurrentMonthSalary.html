@@ -1,0 +1,252 @@
+<div layout:fragment="pageStyle" th:remove="tag" xmlns:th="http://www.w3.org/1999/xhtml"
+     xmlns:layout="http://www.w3.org/1999/xhtml">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+    <!-- iziToast -->
+    <link th:href="@{/assets/plugins/iziman/dist/css/iziToast.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/iziman/dist/css/iziToast.min.css}" rel="stylesheet">
+</div>
+<div class="panel panel-default panel-fill">
+    <div class="panel-heading" style="background-color: #04ab18 ! important; "> <h3 class="panel-title" style="color: #ffffff !important;" th:text="${pageTitle}"></h3>
+    </div>
+    <div class="panel-body">
+        <div class="row" id="content"></div>
+        <div class="row">
+            <div id="successFlag"></div>
+        </div>
+        <div class="row" id="preloader2" hidden="">
+            <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+        </div>
+
+        <div class="row" id="messageData">
+            <div id="txnDetails" >
+            </div>
+            <input hidden="" id="batchReference" name="batchReference" th:value="${batchReference}">
+        </div>
+        <div class="row">
+            <table id="previewPayrollSalaryData" class="display nowrap table table-striped table-bordered" style="width: 80%; font-size: 7.5px !important;">
+                <thead>
+                <tr>
+                    <th>S/N</th>
+                    <th>PF NO</th>
+                    <th>STAFF NAME</th>
+                    <th>STAFF ACCT</th>
+                    <th>CREDIT TO DQA</th>
+                    <th>REFERENCE</th>
+                    <th>PAYER ACCT</th>
+                    <th>STATUS</th>
+                    <th>BRANCH</th>
+                    <th>MONTH</th>
+                    <th>YEAR</th>
+                    <th>INSTITUTION</th>
+                    <th>APPROVED BY</th>
+                    <th>APPROVED DATE</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <!--</form>-->
+        </div>
+
+        <div class="modal-footer">
+            <button id="fireAuthCurrentMonthSalaryBtn" th:if="${batchStatus != 'C'}" th:onclick='fireAuthCurrentMonthSalary([[${batchReference}]])' class="btn btn-primary pull-right mx-2">Approve Salary</button>
+            <button type="button" class="btn btn-default" id="closeModal" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+<div class="row" id="preloader333" hidden="">
+    <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+</div>
+
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/transactions.js}"></script>
+    <!-- iziToast -->
+    <script th:src="@{/assets/plugins/iziman/dist/js/iziToast.min.js}" type="text/javascript"></script>
+    <script>
+        $(document).ready(function () {
+            $("#loading").hide();
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var count = 1;
+            var i = 0;
+            var batchReference = $("#batchReference").val();
+            var table = $('#previewPayrollSalaryData').DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "asc"],
+                ajax: {
+                    'url': '/firePreviewPayrollPerBatchAjax',
+                     data: {batchReference: batchReference},
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    }
+
+                },
+                "columns": [
+                    {"data": "id", "width": "5%",
+                     "render": function(data){
+                                  count +=1;
+                                  return count;
+                     }},
+                    {"data": "pf_no", "width": "5%", },
+                    {"data": "staff_name", "width": "5%", },
+                    {"data": "account_no", "width": "5%", },
+                    {"data": "credit_to_dqa", "width": "5%",
+                        "render": function numberWithCommas(credit_to_dqa) {
+                            return credit_to_dqa.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                         }
+                    },
+                    {"data": "reference", "width": "5%", },
+                    {"data": "payer_account", "width": "5%", },
+                    {"data": "status", "width": "5%",
+                     "render": function (data, type, row, meta) {
+                            var a = '';
+                            if (row.status === "I") {
+                                a = "INITIATED"
+                            }
+                            if (row.status === "S") {
+                                S = "IN QUEUE"
+                            }
+                            if (row.status === "C") {
+                                a = "COMPLETED"
+                            }
+                            if (row.status === "R") {
+                                a = "REJECTED"
+                            }
+
+                            if (row.status === "F") {
+                                a = "FAILED"
+                            }
+                            return a;
+                        }
+                     },
+                    {"data": "branch_no", "width": "5%", },
+                    {"data": "month", "width": "5%", },
+                    {"data": "year", "width": "5%", },
+                    {"data": "institution", "width": "5%", },
+                    {"data": "approved_by", "width": "5%", },
+                    {"data": "approved_date", "width": "5%", }
+
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+                buttons: [{
+                        extend: "copy",
+                        title: 'Payroll',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'Payroll',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'Payroll',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'Payroll',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'Payroll',
+                        className: "btn-sm"
+                    }],
+                    footerCallback: function (row, data, start, end, display) {
+                                var api = this.api();
+
+                                // Remove the formatting to get integer data for summation
+                                var intVal = function (i) {
+                                    return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+                                };
+
+                                // Total over all pages
+                                total = api
+                                    .column(4)
+                                    .data()
+                                    .reduce(function (a, b) {
+                                        return intVal(a) + intVal(b);
+                                    }, 0);
+
+                                // Total over this page
+                                pageTotal = api
+                                    .column(5, { page: 'current' })
+                                    .data()
+                                    .reduce(function (a, b) {
+                                        return intVal(a) + intVal(b);
+                                    }, 0);
+
+                                // Update footer
+                                $(api.column(4).footer()).html('' + addCommas(pageTotal) + ' TZS / ('+  addCommas(total) + ' TZS)');
+                            },
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        });
+        function reloadDatatable() {
+            $('#tipsTxnOnWorkFlow').DataTable().ajax.reload();
+        }
+    </script>
+</div>
+

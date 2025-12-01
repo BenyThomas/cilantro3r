@@ -1,0 +1,256 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+  <style>
+      #loading {
+          background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 92%;
+          width: 100%;
+          z-index: 9999999;
+      };
+      #rtgsTxnOnWorkFlow{
+          table-layout: fixed !important;
+          word-wrap:break-word;
+      }
+  </style>
+  <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+  <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+
+
+</div>
+<div class="row">
+  <div class="panel panel-default panel-fill" id="tabContentsss"><div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+    <div class="panel-body">
+      <div class="row">
+        <form role="form">
+          <div class="form-group col-md-3">
+            <div class="input-group">
+              <select class="form-control col-sm-12 select2" id="branch" name="branch" style="font-size: 10px !important;">
+                <option value="">Select Branch</option>
+                <option th:each="branch: ${branches}" th:value="${branch.code}" th:text="${branch.name}"></option>
+              </select>
+            </div><!-- input-group -->
+          </div>
+          <div class="form-group col-md-2">
+              <div class="input-group">
+                  <select class="form-control col-sm-12 select2" id="currency" name="currency"  style="font-size: 10px !important;">
+                      <option value="">Select Currency</option>
+                      <option value="USD">USD</option>
+                      <option value="TZS">TZS</option>
+                  </select>
+              </div>
+          </div>
+          <div class="form-group col-md-4">
+            <div class="input-group">
+              <select class="form-control col-sm-12 select2" id="category" name="category"  style="font-size: 10px !important;">
+                <option value="">Select Category</option>
+                <option value="Company">Company</option>
+                <option value="MFI">MFI</option>
+                <option value="Sole Proprietor">Sole Proprietor</option>
+                <option value="Government">Government</option>
+                <option value="Cooperative/AMCOS">Cooperative/AMCOS</option>
+                <option value="Informal Group">Informal Group</option>
+                <option value="VICOBA">VICOBA</option>
+                <option value="Partnership">Partnership</option>
+                <option value="VLA/SILC">VLA/SILC</option>
+                <option value="Club/Association/NGO/Trust/Religious Institution">Club/Association/NGO/Trust/Religious Institution</option>
+                <option value="Special Institutions">Special Institutions</option>
+                <option value="SACCOS">SACCOS</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group col-md-3">
+            <div class="input-group">
+              <select class="form-control col-sm-12 select2" id="signing_powers" name="power"  style="font-size: 10px !important;">
+                <option value="">Select Signing Powers</option>
+                <option value="Either/or">Either/or</option>
+                <option value="Two to sign">Two to sign</option>
+                <option value="All to sign">All to sign</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div id="successFlag">
+      </div>
+      <div id="loading" hidden=""></div>
+      <div class="row">
+        <table id="groupsKyc" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important;">
+          <thead>
+          <tr>
+            <th>S/N</th>
+            <th>Tracking No</th>
+            <th>Group Name</th>
+            <th>Trade Name</th>
+            <th>Category</th>
+            <th>Signing Powers</th>
+            <th>Other Services</th>
+            <th>Registration No</th>
+            <th>Status</th>
+            <th>Rubikon Status</th>
+            <th>ACTION</th>
+          </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+  <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+  <!-- init -->
+  <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+  <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+  <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+  <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+
+  <!-- App Js -->
+  <script th:src="@{/assets/js/jquery.app.js}"></script>
+  <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+  <script th:src="@{/assets/scripts/kyc.js}"></script>
+
+  <script>
+        $(document).ready(function () {
+            jQuery('#fromTime').timepicker({
+                showMeridian: false
+            });
+            jQuery('#toTime').timepicker({
+                showMeridian: false
+            });
+            jQuery('#datepicker-autoclose').datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#loading").hide();
+            $(".select2").select2();
+            $('#category').on().click(function () {
+                $('#groupsKyc').DataTable().ajax.reload();
+            });
+            $("#category").on('change', function () {
+                $('#groupsKyc').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $('#groupsKyc').DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "desc"],
+                ajax: {
+                    'url': '/getGroupsAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    },
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "branch": $("select[name='branch']").val(),
+                            "category": $("select[name='category']").val()
+                        });
+                    }
+                },
+                "columns": [
+                    {"data": "id"},
+                    {"data": "tracking_no"},
+                    {"data": "name"},
+                    {"data": "trade_name"},
+                    {"data": "category"},
+                    {"data": "signing_powers"},
+                    {"data": "other_services"},
+                    {"data": "registration_no"},
+                    {"data": "action_status"},
+                    {"data": "cbs_response_code"},
+                    {"data": 'id',
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            var a = "";
+                            a = '<button type="button" class="btn btn-primary" onclick="getGroupKycAndAccountDetails('+row.id+','+row.branch_code+')">Details</button>';
+                            a += '&nbsp;<button type="button" class="btn btn-primary" onclick="getGroupSignatories('+row.id+')">Signatories</button>';
+                            return a;
+                        }}
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+//                fixedColumns: true,
+                buttons: [{
+                        extend: "copy",
+                        title: 'BUSINESS/GROUP ACCOUNTS ON WORKFLOW',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'BUSINESS/GROUP ACCOUNTS ON WORKFLOW',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'BUSINESS/GROUP ACCOUNTS ON WORKFLOW',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'BUSINESS/GROUP ACCOUNTS ON WORKFLOW',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'BUSINESS/GROUP ACCOUNTS ON WORKFLOW',
+                        className: "btn-sm"
+                    }],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='mno']").val() == '') {
+                        return false;
+                    }
+                },
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        }
+        );
+        function reloadDatatable() {
+            $('#groupsKyc').DataTable().ajax.reload();
+        }
+    </script>
+</div>

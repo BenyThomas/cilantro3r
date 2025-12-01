@@ -1,0 +1,642 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+  <link th:href="@{/assets/plugins/bootstrap-tagsinput/css/bootstrap-tagsinput.css}" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/assets/plugins/switchery/switchery.min.css}">
+  <link th:href="@{/assets/plugins/select2/css/select2.min.css}" rel="stylesheet" type="text/css" />
+  <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+  <link th:href="@{/assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css}" rel="stylesheet">
+  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+  <link th:href="@{/assets/plugins/clockpicker/css/bootstrap-clockpicker.min.css}" rel="stylesheet">
+  <link th:href="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.css}" rel="stylesheet">
+  <style>
+      .card-primary.card-outline {
+        border-top: 3px solid #3ba03e;
+        box-shadow: 0 0 1px rgb(0 0 0 / 13%), 0 1px 3px rgb(0 0 0 / 20%);
+        margin-bottom: 1rem;
+      }
+      .card-header {
+        background-color: transparent;
+        border-bottom: 1px solid rgba(0,0,0,.125);
+        padding: 0.75rem 1.25rem;
+        position: relative;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+      }
+      .card-header>.card-title {
+        float: left;
+        font-size: 1.1rem;
+        font-weight: 400;
+        margin: 0;
+      }
+      .card-header>.card-tools {
+        float: right;
+        margin-right: -0.625rem;
+      }
+      .btn-tool {
+        background-color: transparent;
+        color: #adb5bd;
+        font-size: .875rem;
+        margin: -0.75rem 0;
+        padding: 0.25rem 0.5rem;
+      }
+      .flot {
+        left: 0px;
+        top: 0px;
+        width: 610px;
+        height: 250px;
+      }
+      .form-check {
+        display: inline-block;
+      }
+      .form-check-label {
+        margin-left: 0;
+        margin-left: 5px;
+      }
+  </style>
+</div>
+<div class="container" layout:fragment="contents">
+  <div class="row" style="margin: 20px 0;">
+    <div class="col-md-4">
+      <div class="card card-primary card-outline">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fa fa-bar-chart"></i>
+            Login Status
+          </h3>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fa fa-refresh"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="login-chart" style="height: 300px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card card-primary card-outline">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fa fa-bar-chart"></i>
+            Lock Status
+          </h3>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fa fa-refresh"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="lock-chart" style="height: 300px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card card-primary card-outline">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fa fa-bar-chart"></i>
+            Block Status
+          </h3>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fa fa-refresh"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="block-chart" style="height: 300px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row" style="margin: 20px 0;">
+    <h4>Transactions</h4>
+    <ul id="transactionReportTab" class="nav nav-pills" style="font-size: 10px !important;">
+      <li class="nav-item active">
+        <a style="font-size: 10px !important;" class="nav-link active" id="cards-tab" data-toggle="tab" href="#cards" role="tab" aria-controls="cards" aria-selected="true">
+          Cards
+        </a>
+      </li>
+      <li class="nav-item">
+        <a style="font-size: 10px !important;" class="nav-link" id="chart-tab" data-toggle="tab" href="#chart" role="tab" aria-controls="chart" aria-selected="false">
+          Chart
+        </a>
+      </li>
+    </ul>
+    <div class="tab-content" id="transactionReportContent">
+      <div class="tab-pane active" id="cards" role="tabpanel" aria-labelledby="cards-tab">
+        <div class="row" th:each="txnType, row: ${txnTypes}" th:with="numList=${#strings.listSplit('3,2,1,0', ',')}" th:if="${row.count} % 4 == 0 or ${row.last}" style="margin: 20px 0;">
+          <div class="col-md-3" th:each="num : ${numList}" th:with="dataIndex=(${row.index} - ${num})">
+            <div class="card" style="flex-direction: inherit; box-shadow: 0 0 10px 0 rgba(100, 100, 100, 0.26);">
+              <img th:src="@{${txnTypes[dataIndex].image_url}}" style="margin-left: 10px">
+              <div class="card-body">
+                <h5 class="card-title" th:text="${txnTypes[dataIndex].name}"></h5>
+                <p class="card-text"><strong>Count: </strong><span th:text="${txnTypes[dataIndex].count}"></span></p>
+                <p class="card-text"><strong>Total: </strong><span th:text="${txnTypes[dataIndex].total}"></span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane" id="chart" role="tabpanel" aria-labelledby="chart-tab">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="txn_radio" id="count_check" checked/>
+          <label class="form-check-label" for="count_check"> Count </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="txn_radio" id="cash_check"/>
+          <label class="form-check-label" for="cash_check"> Cash </label>
+        </div>
+        <div id="transaction-chart" style="width: 100%; height: 300px;"></div>
+      </div>
+    </div>
+  </div>
+  <div class="row" style="margin: 50px 0;">
+    <h4>Utilities</h4>
+    <div class="col-md-6">
+      <ul class="nav nav-pills" style="font-size: 10px !important;">
+        <li class="nav-item active">
+          <a style="font-size: 10px !important;" class="nav-link active" id="count-tab" data-toggle="tab" href="#count" role="tab" aria-controls="count" aria-selected="true">
+            Count
+          </a>
+        </li>
+        <li class="nav-item">
+          <a style="font-size: 10px !important;" class="nav-link" id="cash-tab" data-toggle="tab" href="#cash" role="tab" aria-controls="cash" aria-selected="false">
+            Cash
+          </a>
+        </li>
+      </ul>
+      <div id="utilities-chart" style="height: 300px;"></div>
+    </div>
+    <div class="col-md-6">
+      <ul class="nav nav-pills" style="font-size: 10px !important;">
+        <li class="nav-item active">
+          <a style="font-size: 10px !important;" class="nav-link active" id="airtime-tab" data-toggle="tab" role="tab" aria-controls="airtime" aria-selected="true">
+            Airtime
+          </a>
+        </li>
+        <li class="nav-item">
+          <a style="font-size: 10px !important;" class="nav-link" id="tv-tab" data-toggle="tab" role="tab" aria-controls="tv" aria-selected="false">
+            TV
+          </a>
+        </li>
+      </ul>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="util_radio" id="count_check_1" checked/>
+        <label class="form-check-label" for="count_check_1"> Count </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="util_radio" id="cash_check_1"/>
+        <label class="form-check-label" for="cash_check_1"> Cash </label>
+      </div>
+      <div id="utility-pie-chart" style="height: 300px;"></div>
+      <div id="flot-memo" style="text-align:center;height:30px;width:250px;height:20px;text-align:center;margin:0 auto"></div>
+    </div>
+  </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+  <script th:src="@{/assets/plugins/bootstrap-tagsinput/js/bootstrap-tagsinput.min.js}"></script>
+  <script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
+  <script th:src="@{/assets/plugins/bootstrap-filestyle/js/bootstrap-filestyle.min.js}" type="text/javascript"></script>
+  <script th:src="@{/assets/plugins/switchery/switchery.min.js}"></script>
+  <script th:src="@{/assets/plugins/parsleyjs/parsley.min.js}" type="text/javascript"></script>
+  <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+  <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+  <script th:src="@{/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js}"></script>
+  <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+  <script th:src="@{/assets/plugins/clockpicker/js/bootstrap-clockpicker.min.js}"></script>
+  <script th:src="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.js}"></script>
+  <script th:src="@{/assets/plugins/flot-chart/jquery.flot.min.js}"></script>
+  <script th:src="@{/assets/plugins/flot-chart/jquery.flot.resize.js}"></script>
+  <script th:src="@{/assets/plugins/flot-chart/jquery.flot.pie.js}"></script>
+  <!--<script th:src="@{/assets/plugins/summernote/summernote-bs.min.js}"></script>-->
+  <script th:inline="none">
+      var categories = [];
+      var categoryOption = 'count';
+      $(document).ready(function () {
+          var previousPoint = null;
+          $.fn.UseTooltip = function () {
+              $(this).bind("plothover", function(event, pos, item) {
+                  if (item) {
+                      if (previousPoint != item.dataIndex) {
+                          previousPoint = item.dataIndex;
+
+                          $("#tooltip").remove();
+
+                          var x = item.datapoint[0];
+                          var y = item.datapoint[1];
+
+                          if (categoryOption == "count")
+                              showTooltip(item.pageX, item.pageY, categories[x][1] + "<br/>" + "<strong>" + y.toLocaleString('sw-TZ') + "</strong>");
+                          else
+                              showTooltip(item.pageX, item.pageY, categories[x][1] + "<br/>" + "<strong>TZS " + y.toLocaleString('sw-TZ') + "</strong>");
+                      }
+                  } else {
+                      $("#tooltip").remove();
+                      previousPoint = null;
+                  }
+              });
+          };
+          $.fn.showPieData = function () {
+              $(this).bind("plothover", function (event, pos, item) {
+                  if (!item) { return; }
+
+                  var html = [];
+                  var percent = parseFloat(item.series.percent).toFixed(2);
+
+                  html.push("<div style=\"border:1px solid grey;background-color:",
+                      item.series.color,
+                      "\">",
+                      "<span style=\"color:white\">",
+                      item.series.label,
+                      " : ",
+                      item.series.data[0][1].toLocaleString('sw-TZ'),
+                      " (", percent, "%)",
+                      "</span>",
+                      "</div>");
+                  $("#flot-memo").html(html.join(''));
+              });
+          }
+          /*
+           * DONUT CHARTS
+           * ------------
+           */
+          // login status chart
+          $.ajax({
+              url: "/loginStatusReport",
+              type: 'POST',
+              success: function (data) {
+                  var donutData = []
+                  data.forEach(function (item) {
+                      if (item.firstLogin == 'N') {
+                          var element = {};
+                          element.label = 'YES';
+                          element.data = item.count;
+                          element.color = '#3ba03e'
+                          donutData.push(element);
+                      } else if (item.firstLogin == 'Y') {
+                          var element = {};
+                          element.label = 'NO';
+                          element.data = item.count;
+                          element.color = '#cf5d5d'
+                          donutData.push(element);
+                      }
+                  })
+                  $.plot('#login-chart', donutData, {
+                      series: {
+                          pie: {
+                              show: true,
+                              radius: 1,
+                              innerRadius: 0.5,
+                              label: {
+                                  show: true,
+                                  radius: 3 / 4,
+                                  formatter: labelFormatter,
+                                  threshold: 0.1
+                              }
+                          }
+                      },
+                      legend: {
+                          show: false
+                      }
+                  })
+              }
+          });
+          // lock status chart
+          $.ajax({
+              url: "/lockStatusReport",
+              type: 'POST',
+              success: function (data) {
+                  var donutData = []
+                  data.forEach(function (item) {
+                      if (item.accountNoLocked == '0') {
+                          var element = {};
+                          element.label = 'YES';
+                          element.data = item.count;
+                          element.color = '#cf5d5d'
+                          donutData.push(element);
+                      } else if (item.accountNoLocked == '1') {
+                          var element = {};
+                          element.label = 'NO';
+                          element.data = item.count;
+                          element.color = '#3ba03e'
+                          donutData.push(element);
+                      }
+                  })
+                  $.plot('#lock-chart', donutData, {
+                      series: {
+                          pie: {
+                              show: true,
+                              radius: 1,
+                              innerRadius: 0.5,
+                              label: {
+                                  show: true,
+                                  radius: 3 / 4,
+                                  formatter: labelFormatter,
+                                  threshold: 0.1
+                              }
+                          }
+                      },
+                      legend: {
+                          show: false
+                      }
+                  })
+              }
+          });
+          // block status chart
+          $.ajax({
+              url: "/blockStatusReport",
+              type: 'POST',
+              success: function (data) {
+                  var donutData = []
+                  data.forEach(function (item) {
+                      if (item.enabled == '0') {
+                          var element = {};
+                          element.label = 'YES';
+                          element.data = item.count;
+                          element.color = '#cf5d5d'
+                          donutData.push(element);
+                      } else if (item.enabled == '1') {
+                          var element = {};
+                          element.label = 'NO';
+                          element.data = item.count;
+                          element.color = '#3ba03e'
+                          donutData.push(element);
+                      }
+                  })
+                  $.plot('#block-chart', donutData, {
+                      series: {
+                          pie: {
+                              show: true,
+                              radius: 1,
+                              innerRadius: 0.5,
+                              label: {
+                                  show: true,
+                                  radius: 3 / 4,
+                                  formatter: labelFormatter,
+                                  threshold: 0.1
+                              }
+                          }
+                      },
+                      legend: {
+                          show: false
+                      }
+                  })
+              }
+          });
+          loadUtilityCategory("Airtime", "count")
+          loadUtilities("count");
+          loadTransactions("count");
+          $('#utilities-chart').UseTooltip();
+          $('#transaction-chart').UseTooltip();
+          $("#utility-pie-chart").showPieData();
+      })
+
+      $("#count_check").click(function (e) {
+          if($("#count_check").is(":checked")) {
+              loadTransactions("count");
+          }
+      })
+
+      $("#cash_check").click(function (e) {
+          if ($("#cash_check").is(":checked")) {
+              loadTransactions("cash");
+          }
+      })
+
+      $("#count_check_1").click(function (e) {
+          if ($("#count_check_1").is(":checked")) {
+              if ($('#airtime-tab').hasClass('active'))
+                  loadUtilityCategory("airtime", "count");
+              else
+                  loadUtilityCategory("tv", "count");
+          }
+      })
+
+      $("#cash_check_1").click(function (e) {
+          if ($("#cash_check_1").is(":checked")) {
+              if ($('#airtime-tab').hasClass('active'))
+                  loadUtilityCategory("airtime", "cash");
+              else
+                  loadUtilityCategory("tv", "cash");
+          }
+      })
+
+      $('#count-tab').click(function (e) {
+          loadUtilities("count");
+      })
+
+      $('#cash-tab').click(function (e) {
+          loadUtilities("cash");
+      })
+
+      $('#tv-tab').click(function (e) {
+          loadUtilityCategory("TV", "count");
+      })
+
+      $('#airtime-tab').click(function (e) {
+          loadUtilityCategory("Airtime", "count");
+      })
+
+      function showTooltip(x, y, contents) {
+          $('<div id="tooltip">' + contents + '</div>').css({
+              position: 'absolute',
+              display: 'none',
+              top: y + 5,
+              left: x + 20,
+              border: '2px solid #4572A7',
+              padding: '2px',
+              size: '10',
+              'border-radius': '6px 6px 6px 6px',
+              'background-color': '#fff',
+              opacity: 0.80
+          }).appendTo("body").fadeIn(200);
+      }
+
+      function loadTransactions(type) {
+          $.ajax({
+              url: "/getAgencyTransactionsReport",
+              type: 'POST',
+              success: function (res) {
+                  var dataArr = [];
+                  var ticks = [];
+                  if (type == "count") {
+                      res.forEach(function (item, index) {
+                          dataArr.push([index, item.count]);
+                          ticks.push([index, item.name]);
+                      })
+                      categories = ticks;
+                      categoryOption = 'count';
+                  } else {
+                      res.forEach(function (item, index) {
+                          dataArr.push([index, item.total]);
+                          ticks.push([index, item.name]);
+                      })
+                      categories = ticks;
+                      categoryOption = 'cash';
+                  }
+                  var bar_data = [{
+                      data: dataArr,
+                      bars: { show: true }
+                  }]
+                  $.plot('#transaction-chart', bar_data, {
+                      grid: {
+                          borderWidth: 1,
+                          borderColor: '#f3f3f3',
+                          tickColor  : '#f3f3f3',
+                          hoverable: true
+                      },
+                      series: {
+                          bars: {
+                              show: true, barWidth: 0.5, align: 'center', lineWidth: 0, fill: true,
+                          },
+                      },
+                      colors: ['#3BA03E','#1ECBE1','#E1341E','#F20D6E','#0DF291','#E5CB1A'],
+                      xaxis: {
+                          mode: "categories",
+                          ticks: ticks,
+                      }
+                  });
+              }
+          });
+      }
+
+      function loadUtilities(type) {
+          $.ajax({
+              url: "/utilitiesReport",
+              type: 'POST',
+              success: function (res) {
+                  var dataArr = [];
+                  var ticks = [];
+                  if (type == "count") {
+                      res.forEach(function (item, index) {
+                          //dataArr.push([item.count, index]);
+                          dataArr.push([index, item.count]);
+                          ticks.push([index, item.category]);
+                      })
+                      categories = ticks;
+                      categoryOption = 'count';
+                  } else {
+                      res.forEach(function (item, index) {
+                          //dataArr.push([item.total, index]);
+                          dataArr.push([index, item.total]);
+                          ticks.push([index, item.category]);
+                      })
+                      categories = ticks;
+                      categoryOption = 'cash';
+                  }
+                  var bar_data = [{
+                      data: dataArr,
+                      bars: { show: true }
+                  }]
+                  $.plot('#utilities-chart', bar_data, {
+                      grid: {
+                          borderWidth: 1,
+                          borderColor: '#f3f3f3',
+                          tickColor: '#f3f3f3',
+                          hoverable: true
+                      },
+                      series: {
+                          bars: {
+                              //barWidth: 0.6, align: "center", horizontal: true
+                              show: true, barWidth: 0.5, align: 'center', lineWidth: 0, fill: true,
+                          },
+                      },
+                      colors: ['#3BA03E','#1ECBE1','#E1341E','#F20D6E','#0DF291','#E5CB1A'],
+                      xaxis: {
+                          mode: "categories",
+                          ticks: ticks,
+                      }
+                  });
+              }
+          });
+      }
+
+      function loadUtilityCategory(category, type) {
+          // utility category chart
+          if (category == "TV")
+              dataUrl = "/tvReport";
+          else if (category == "Airtime")
+              dataUrl = "/airtimeReport";
+          $.ajax({
+              url: dataUrl,
+              type: 'POST',
+              success: function (data) {
+                  var pieData = []
+                  data.forEach(function (item) {
+                      var element = {};
+                      element.label = item.txn_type;
+                      if (type == "count") {
+                          element.data = item.count;
+                      } else {
+                          element.data = item.total;
+                      }
+                      if (item.txn_type == 'AZAM') {
+                          element.color = '#ED1C24'
+                          pieData.push(element);
+                      } else if (item.txn_type == 'DSTV') {
+                          element.color = '#0099DC'
+                          pieData.push(element);
+                      } else if (item.txn_type == 'STARTIMES') {
+                          element.color = '#E96925'
+                          pieData.push(element);
+                      } else if (item.txn_type == 'VODA-AIRTIME') {
+                          element.color = '#DF0000'
+                          pieData.push(element);
+                      } else if (item.txn_type == 'TIGO-AIRTIME') {
+                          element.color = '#4D4399'
+                          pieData.push(element);
+                      } else if (item.txn_type == 'AIRTIME-AIRTEL') {
+                          element.color = '#ED1D24'
+                          pieData.push(element);
+                      } else if (item.txn_type == 'HALOTEL-AIRTIME') {
+                          element.color = '#F26522'
+                          pieData.push(element);
+                      } else if (item.txn_type == 'ZANTEL-AIRTIME') {
+                          element.color = '#96BE23'
+                          pieData.push(element);
+                      }
+                  })
+                  $.plot('#utility-pie-chart', pieData, {
+                      series: {
+                          pie: {
+                              show: true,
+                              radius: 0.8,
+                              formatter: function (label, series) {
+                                  return '<div style="border:1px solid grey;font-size:8pt;text-align:center;padding:5px;color:white;">' +
+                                  label + ' : ' +
+                                  Math.round(series.percent) +
+                                  '%</div>';
+                              },
+                              background: {
+                                  opacity: 0.8,
+                                  color: '#000'
+                              }
+                          }
+                      },
+                      grid: {
+                          hoverable: true
+                      },
+                      legend: {
+                          show: false
+                      }
+                  })
+              }
+          });
+      }
+
+      /*
+       * Custom Label formatter
+       * ----------------------
+       */
+      function labelFormatter(label, series) {
+          return '<div style="font-size:13px; text-align:center; padding:2px; color: #fff; font-weight: 600;">'
+          + label
+          + '<br>'
+          + Math.round(series.percent) + '%'
+          + '<br>'
+          + series.data[0][1] + '</div>'
+      }
+  </script>
+</div>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/main_layout}">
+    <head>
+        <title>RTGS/EFT Transaction Report</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div layout:fragment="pageStyle" th:remove="tag">
+            <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+
+            <link th:href="@{/assets/plugins/bootstrap-tagsinput/css/bootstrap-tagsinput.css}" rel="stylesheet" />
+            <link rel="stylesheet" th:href="@{/assets/plugins/switchery/switchery.min.css}">
+            <link th:href="@{/assets/plugins/select2/css/select2.min.css}" rel="stylesheet" type="text/css" />
+            <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/clockpicker/css/bootstrap-clockpicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.css}" rel="stylesheet">
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div layout:fragment="contents" id="reconData">
+                    <div class="panel panel-default panel-fill"  >
+                        <div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <form role="form" name="getRemittanceReport">
+                                    <div class="form-group col-md-3">
+                                        <label for="exampleInputEmail1">Transaction Type </label>
+                                        <select class="form-control" id="txnType" name="txnType" style="width: 250px" >
+                                            <option value="">Select Txn Type ....</option>
+                                            <option th:each="txn_type: ${transfer_types}" th:value="${txn_type.code}" th:text="${txn_type.name}"> TISS  </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="exampleInputEmail1">Direction</label>
+                                        <select class="form-control" id="direction" name="direction" style="width: 250px" >
+                                            <option value="Outgoing">Outgoing</option>
+                                            <option value="Incoming">Incoming</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="date" >From Date</label>
+                                        <input name="fromdate" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose" data-date-format="yyyy-mm-dd" type="text" placeholder="yyyy-mm-dd" autocomplete="off"/>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="date" >To Date</label>
+                                        <input name="todate" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose" data-date-format="yyyy-mm-dd" type="text" placeholder="yyyy-mm-dd" autocomplete="off"/>
+                                    </div>
+                                    <div class="form-group col-md-3 text-right m-b-0" style="margin-top: 2%;margin-left: -10%" >
+                                        <button  type="button" class="btn btn-info btn-submit-getRemittance-Report">Search</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                            <div class="row">
+                                <p class="pull-right"> <button class="btn btn-primary">More</button></p>
+                            </div>
+                            <hr/>
+                            <div class="row" id="preloader2"> 
+                                <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+                            </div>
+                            <div class="col-sm-12">
+                                <table id="remittanceReport"  class="table table-striped table-bordered"  style="width: 100%; font-size: 8.5px !important;">
+                                    <thead>
+                                        <tr>
+                                            <th>S/N</th>
+                                            <th>Initiated Date</th>
+                                            <th>Reference</th>
+                                            <th>Sender Acct</th>
+                                            <th>Sender Name</th>
+                                            <th>Beneficiary Acct</th>
+                                            <th>Beneficiary Name</th>
+                                            <th>Beneficiary BIC</th>
+                                            <th>Amount</th>  
+                                            <th>Currency</th>
+                                            <th>Source Branch</th>
+                                            <th>Narrations</th>
+                                            <th>Initiated By</th>
+                                            <th>Branch Approved By</th>
+                                            <th>Branch Approved Date</th>
+                                            <th>IBD Authorized By</th>
+                                            <th>IBD Approved Date</th>
+                                            <th>Status</th>
+                                            <th>cbs Status</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div layout:fragment="pageScript" th:remove="tag">
+            <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+            <!-- init -->
+            <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+            <!-- App Js -->
+            <script th:src="@{/assets/js/jquery.app.js}"></script>
+            <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+
+
+            <script th:src="@{/assets/plugins/bootstrap-tagsinput/js/bootstrap-tagsinput.min.js}"></script>
+            <script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
+            <script th:src="@{/assets/plugins/bootstrap-filestyle/js/bootstrap-filestyle.min.js}" type="text/javascript"></script>
+            <script th:src="@{/assets/plugins/switchery/switchery.min.js}"></script>
+            <script type="text/javascript" th:src="@{/assets/plugins/parsleyjs/parsley.min.js}"></script>
+            <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+            <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+            <script th:src="@{/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js}"></script>
+            <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+            <script th:src="@{/assets/plugins/clockpicker/js/bootstrap-clockpicker.min.js}"></script>
+            <script th:src="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.js}"></script>
+
+            <script th:src="@{/assets/scripts/reconDashboard.js}"></script>
+            <script th:src="@{/assets/scripts/transactions.js}"></script>
+            <script th:src="@{/assets/scripts/teller.js}"></script>
+            <!--<script th:src="@{/assets/plugins/summernote/summernote-bs.min.js}"></script>-->
+            <script>
+                $(document).ready(function () {
+                    $("#loading").hide();
+                    $("#loading2").hide();
+                    $("#preloader2").hide();
+                    $("#select2").select2();
+                    $('input[id$=datepicker-autoclose]').datepicker({dateFormat: 'yy-mm-dd'});
+
+                    $('.btn-submit-getRemittance-Report').click(function () {
+                        $('#remittanceReport').DataTable().ajax.reload();
+                    });
+                    var token = $("meta[name='_csrf']").attr("content");
+                    var header = $("meta[name='_csrf_header']").attr("content");
+                    var b = 1;
+                    var i = 0;
+                    var table = $('#remittanceReport').DataTable({
+                        dom: 'Blfrtip',
+                        scrollY: "300px",
+                        scrollX: true,
+                        lengthChange: true,
+                        pageLength: 5,
+                        lengthMenu: [
+                            [5, 10, 25, 50, 100, 500, -1],
+                            [5, 10, 25, 50, 100, 500, 'Show all']
+                        ],
+                        responsive: false,
+                        processing: true,
+                        serverSide: true,
+                        serverMethod: 'post',
+                        order: [1, "desc"],
+                        ajax: {
+                            'url': '/getRremittanceReportAjax',
+                            'beforeSend': function (request) {
+                                request.setRequestHeader(header, token);
+                            },
+                            "data": function (d) {
+                                return $.extend({}, d, {
+                                    "txnType": $("select[name='txnType']").val(),
+                                    "fromdate": $("input[name='fromdate']").val(),
+                                    "todate": $("input[name='todate']").val(),
+                                    "direction": $("select[name='direction']").val()
+                                });
+                            }
+                        },
+                        "columns": [
+                            {"data": "id"},
+                            {"data": "create_dt"},
+                            {"data": "reference"},
+                            {"data": "sourceAcct"},
+                            {"data": "sender_name"},
+                            {"data": "destinationAcct"},
+                            {"data": "beneficiaryName"},
+                            {"data": "beneficiaryBIC"},
+                            {"data": 'amount',
+                                "render": function (data) {
+                                    var amount = addCommas(data);
+                                    return amount;
+                                }},
+                            {"data": "currency"},
+                            {"data": "branch"},
+                            {"data": "purpose"},
+                            {"data": 'initiated_by'},
+                            {"data": 'branch_approved_by'},
+                            {"data": 'branch_approved_dt'},
+                            {"data": 'hq_approved_by'},
+                            {"data": 'hq_approved_dt'},
+                            {"data": 'status',
+                                "orderable": false,
+                                "searchable": false,
+                                "render": function (data, type, row, meta) {
+                                    var a = '';
+                                    if (row.status === "I") {
+                                        a = "Submitted"
+                                    }
+                                    if (row.status === "P") {
+                                        a = "Pending"
+                                    }
+                                    if (row.status === "C") {
+                                        a = "Completed"
+                                    }
+                                    return a;
+                                }},
+                            {"data": 'cbs_status',
+                                "orderable": false,
+                                "searchable": false,
+                                "render": function (data, type, row, meta) {
+                                    var a = '';
+                                    if (row.cbs_status === "I") {
+                                        a = "Pending"
+                                    }
+                                    if (row.cbs_status === "P") {
+                                        a = "Pending"
+                                    }
+                                    if (row.cbs_status === "C") {
+                                        a = "Completed"
+                                    }
+                                    return a;
+                                }},
+                            {"data": 'id',
+                                "orderable": false,
+                                "searchable": false,
+                                "render": function (data, type, row, meta) {
+                                    //                     authorizePayment.png      a = '<a type="button" href="/downloadSupportingDoc?reference=' + row.reference + '"><button type="button"><img src="/assets/images/supportingDoc.png" style="width:20px;" title="Download Supporting Document"></button></a>
+                                    //a = '<button type="button"><img src="/assets/images/supportingDoc.png" style="width:20px;" title="Download Supporting Document" onclick="previewSupportingDocuments(\'' + row.reference + '\')"></button><button type="button" onclick="ibdPreviewSwiftMsg(\'' + row.reference + '\')"><img src="/assets/images/previewSwift.png" style="width:20px;" title="Preview swift Message"></button><button type="button" class="-authorize-payments" disabled><img src="/assets/images/authorizePayment.png" style="width:20px;" title="Authorize Payments" onclick="ibdApproveRTGSBranch(\'' + row.reference + '\')"></button><button type="button"><img src="/assets/images/amendment.png" style="width:20px;" title="Return for Ammendment" onclick="requireAmendmend(\'' + row.reference + '\')"></button><button type="button"><img src="/assets/images/decline.png" style="width:20px;" title="Decline Payment" onclick="declinePayment(\'' + row.reference + '\')"></button>';
+                                    a = '<button type="button" onclick="previewMsgAndDocs(\'' + row.reference + '\')"><img src="/assets/images/previewSwift.png" style="width:20px;" title="Preview swift Message"></button>';
+
+                                    return a;
+                                }}
+                        ], aoColumnDefs: [
+                            {
+                                bSortable: false,
+                                aTargets: [-1]
+                            }
+                        ], buttons: [{
+                                extend: "copy",
+                                title: 'TISS/TT Transactions Report',
+                                className: "btn-sm"
+                            }, {
+                                extend: "csv",
+                                title: 'TISS/TT Transactions Report',
+                                className: "btn-sm"
+                            }, {
+                                extend: "excel",
+                                title: 'TISS/TT Transactions Report',
+                                className: "btn-sm"
+                            }, {
+                                extend: "pdf",
+                                title: 'TISS/TT Transactions Report',
+                                className: "btn-sm"
+                            }, {
+                                extend: "print",
+                                title: 'TISS/TT Transactions Report',
+                                className: "btn-sm"
+                            }],
+                        "preDrawCallback": function (settings) {
+                            if ($("select[name='txnType']").val() == '') {
+                                return false;
+                            }
+                        }
+                    });
+                    table.on('order.dt search.dt', function () {
+                        table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                            cell.innerHTML = i + 1;
+                        });
+                    }).draw();
+                });
+                function reloadDatatable() {
+                    $('#remittanceReport').DataTable().ajax.reload();
+                }
+            </script>
+        </div>
+    </body>
+</html>

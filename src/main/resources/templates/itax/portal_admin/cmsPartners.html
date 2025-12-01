@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/main_layout}">
+<head>
+    <title>CMS|Partners</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div layout:fragment="pageStyle" th:remove="tag">
+    <link th:href="@{/assets/plugins/bootstrap-tagsinput/css/bootstrap-tagsinput.css}" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/assets/plugins/switchery/switchery.min.css}">
+    <link th:href="@{/assets/plugins/select2/css/select2.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/clockpicker/css/bootstrap-clockpicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div layout:fragment="contents" id="reconData">
+            <div class="panel panel-default panel-fill"  >
+                <div class="panel-heading"> <h4 class="panel-title">CMS PARTNERS</h4></div>
+                <div class="panel-body">
+                    <div class="row" id="preloader2">
+                        <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+                    </div>
+                    <!--- success start--->
+                    <div class="col-md-12" id="successFlag"></div>
+                    <!------ End ------->
+                    <div class="row align-items-center">
+                        <div class="col-md-4 col-lg-4">
+                            <div>
+                                <button class="btn btn-primary mx-2" id="addDiv" >Create New Partner</button>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <!--- FORM START ----->
+                    <div class="row" id="another-element" style="display: none;">
+                        <form id="form">
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="partner_name" style="margin-left: 1% ! important;" >Partner Name<i class="text-danger">*</i></label>
+                                    <input type="text" name="partner_name" class="form-control" id="partner_name" placeholder="Partner Name" >
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="partner_type" style="margin-left: 1% ! important;">Partner Type<i class="text-danger">*</i></label>
+                                    <select id="partner_type" name="partner_type" class="form-control select2">
+                                        <option selected disabled value>Choose type</option>
+                                        <option value="Bank">Financial Institution</option>
+                                        <option value="School">Learning Institution</option>
+                                        <option value="Other">Other Institution</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="partner_code" style="margin-left: 1% ! important;">Partner Code<i class="text-danger">*</i></label>
+                                    <input type="text" name="partner_code" class="form-control" id="partner_code" placeholder="Partner Code" >
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="currency" style="margin-left: 1% ! important;">Currency<i class="text-danger">*</i></label>
+                                    <select id="currency" name="currency" class="form-control select2">
+                                        <option selected disabled value>Choose type</option>
+                                        <option value="TZS">TZS</option>
+                                        <option value="USD">USD</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="acct_no" style="margin-left: 1% ! important;">Main Account Number<i class="text-danger">*</i></label>
+                                    <input type="text" name="acct_no" class="form-control" id="acct_no" placeholder="Account Number" >
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="purpose" style="margin-left: 1% ! important;">Purpose<i class="text-danger">*</i></label>
+                                    <select id="purpose" name="purpose" class="form-control select2">
+                                        <option selected disabled value>Choose type</option>
+                                        <option value="Collection">Collection</option>
+                                        <option value="Accomodation">Accomodation/Meals</option>
+                                        <option value="Fees">Fees</option>
+                                        <option value="Others">Others</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="bot_acct" style="margin-left: 1% ! important;">BOT Acct<i class="text-danger">*</i></label>
+                                    <input type="text" name="bot_acct" class="form-control" id="bot_acct" placeholder="BOT Account" >
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-3">
+                                    <div class="form-group col-md-3 text-right m-b-0" style="margin: 10%;">
+                                        <button  type="button" class="btn btn-info" onclick="postRecord()">Save partner</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                    <!----- FORM END ------->
+
+                    <div class="col-sm-12">
+                        <table id="cms-partners-table" class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>NAME</th>
+                                <th>PARTNER TYPE</th>
+                                <th>ACCT NO</th>
+                                <th>PARTNER CODE</th>
+                                <th>BOT ACCT NO</th>
+                                <th>PURPOSE</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/clockpicker/js/bootstrap-clockpicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/reconDashboard.js}"></script>
+    <script>
+       $('#addDiv').click(function () {
+           $('#another-element').toggle('slide');
+       });
+       function postRecord(){
+            //get form data
+              var token = $("meta[name='_csrf']").attr("content");
+              var header = $("meta[name='_csrf_header']").attr("content");
+              var formdata = new FormData($('#form')[0]);
+               $.ajax({
+                    url: "/addCMSPartner",
+                    type: 'POST',
+                    data: formdata,
+                    enctype: 'multipart/form-data',
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                                     console.log(response);
+                                     $('.error').html('');
+                                if(response.status === "SUCCESS"){
+                                    $("#successFlag").html('<div class="alert alert-success" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>CMS Partner Added Successfuly</strong></div>');
+
+                                    $('.error').html(''); //clear error
+                                    $("#form").trigger("reset");//reset form
+                                    $('#another-element').hide();
+                                    $('#cms-partners-table').DataTable().ajax.reload(); //reload
+                                }else if(response.status === "ERROR"){
+                                    $("#successFlag").html('<div class="alert alert-danger" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>Response error</strong></div>');
+                                }
+                                else{
+                                 $.each(response.result, function (key, value) {
+                                    $('[name=' + key + ']').after('<span class="error text-danger">' + value + '</span>');
+                                });
+
+                                }
+                            },
+                    error: function(error){
+                        console.log(error);
+                    }
+               });
+
+            }
+
+                $(document).ready(function () {
+
+
+                    $("#loading").hide();
+                    $('#preloader').hide();
+                    $('#preloader2').hide();
+                    var token = $("meta[name='_csrf']").attr("content");
+                    var header = $("meta[name='_csrf_header']").attr("content");
+                    var i = 0;
+                    var table = $('#cms-partners-table').DataTable({
+                        dom: 'Blfrtip',
+                        lengthChange: true,
+                        lengthMenu: [10, 25, 50, 100, 200, 300, 500],
+                        responsive: true,
+                        serverMethod: 'post',
+                        ajax: {
+                            'url': '/fireCMSPartnersAjax',
+                            'beforeSend': function (request) {
+                                request.setRequestHeader(header, token);
+                            }
+                        },
+                        "columns": [
+                            {"data": 'id',
+                                "render": function (data) {
+                                    i = i + 1;
+                                    return i;
+                                }},
+                            {data: 'partner_name'},
+                            {data: 'partner_type'},
+                            {data: 'acct_no'},
+                            {data: 'partner_code'},
+                            {data: 'bot_acct'},
+                            {data: 'purpose'}
+                        ], aoColumnDefs: [
+                            {
+                                bSortable: false,
+                                aTargets: [-1]
+                            }
+                        ], buttons: [{
+                                extend: "copy",
+                                title: 'CMS eGA-PARTNERS',
+                                className: "btn-sm"
+                            }, {
+                                extend: "csv",
+                                title: 'CMS eGA-PARTNERS',
+                                className: "btn-sm"
+                            }, {
+                                extend: "excel",
+                                title: 'CMS eGA-PARTNERS',
+                                className: "btn-sm"
+                            }, {
+                                extend: "pdf",
+                                title: 'CMS eGA-PARTNERS',
+                                className: "btn-sm"
+                            }, {
+                                extend: "print",
+                                title: 'CMS eGA-PARTNERS',
+                                className: "btn-sm"
+                            }]
+                    });
+                    table.on('order.dt search.dt', function () {
+                        table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                            cell.innerHTML = i + 1;
+                        });
+                    }).draw();
+                });
+                function reloadDatatable() {
+                    $('#cms-partners-table').DataTable().ajax.reload();
+                }
+            </script>
+</div>
+</body>
+</html>
+
+

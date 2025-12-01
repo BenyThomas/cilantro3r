@@ -1,0 +1,290 @@
+<div layout:fragment="pageStyle" th:remove="tag" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+
+    <!-- iziToast -->
+    <link rel="stylesheet" th:href="@{/assets/plugins/iziman/dist/css/iziToast.min.css}" type="text/css"/>
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContents"><div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+
+            <div id="successFlag">
+            </div>
+            <div  id="loading" hidden=""> </div>
+            <!--- FORM START ----->
+            <div class="row" id="another-element">
+                <form id="form2" role="form">
+                    <div class="row">
+                        <div class="form-row" >
+                            <div class="form-group col-md-4">
+                                <label style="margin-left:1px; importrant;">MONTH</label>
+                                <label for="month"></label>
+                                <select class="form-control select2" id="month" name="month" selected="selected" style="width: 550px">
+                                    <option disabled selected value="">CHOOSE...</option>
+                                    <option th:text="JANUARY" th:value="JANUARY"></option>
+                                    <option th:text="FEBRUARY" th:value="FEBRUARY"></option>
+                                    <option th:text="MARCH" th:value="MARCH"></option>
+                                    <option th:text="APRIL" th:value="APRIL"></option>
+                                    <option th:text="MAY" th:value="MAY"></option>
+                                    <option th:text="JUNE" th:value="JUNE"></option>
+                                    <option th:text="JULY" th:value="JULY"></option>
+                                    <option th:text="AUGUST" th:value="AUGUST"></option>
+                                    <option th:text="SEPTEMBER" th:value="SEPTEMBER"></option>
+                                    <option th:text="OCTOBER" th:value="OCTOBER"></option>
+                                    <option th:text="NOVEMBER" th:value="NOVEMBER"></option>
+                                    <option th:text="DECEMBER" th:value="DECEMBER"></option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label style="margin-left: 1% ! important;">YEAR <i class="text-danger">*</i></label>
+                                <label for="year"></label>
+                                <select class="form-control select2" id="year" name="year" selected="selected" style="width: 550px">
+                                    <option th:each="data : ${years}" th:text="${data}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <div class="form-group col-md-3 text-right m-b-0" style="margin-top: 25px; ">
+                                    <button type="button" class="btn btn-primary" id="searchBtn" style="background-color: #769b77!important">Search</button>
+                                </div>
+                            </div>
+                        </div>
+                </form>
+            </div>
+            <!--- FORM END ---->
+            <div class="row">
+                <table id="staff-salary-table" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 7.5px !important;">
+                    <thead>
+                    <tr>
+                        <th>S/N</th>
+                        <th>MONTH</th>
+                        <th>YEAR</th>
+                        <th>NO OF EMPLOYEES</th>
+                        <th>PAYROLL AMOUNT</th>
+                        <th>IN-QUEUE COUNT</th>
+                        <th>IN-QUEUE VOLUME</th>
+                        <th>SUCCESS COUNT</th>
+                        <th>SUCCESS VOLUME</th>
+                        <th>FAILED COUNT</th>
+                        <th>FAILED VOLUME</th>
+                        <th>ACTION</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                    <tfoot style="background-color: #005a02;color:white;border-color:white">
+                    <tr>
+                        <th colspan="2" style="text-align:right">Totals</th>
+                        <th style="text-align:right"></th>
+                        <th style="text-align:right"></th>
+                        <th style="text-align:right"></th>
+                        <th style="text-align:right"></th>
+                        <th style="text-align:right"></th>
+                        <th style="text-align:right"></th>
+                        <th style="text-align:right"></th>
+                        <th style="text-align:right"></th>
+                        <th style="text-align:right"></th>
+                        <th style="text-align:right"></th>
+                    </tr>
+                    </tfoot>
+                </table>
+                <!--</form>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/transactions.js}"></script>
+    <!-- iziToast -->
+    <script th:src="@{/assets/plugins/iziman/dist/js/iziToast.min.js}" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#preloader2").hide();
+
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            $('#searchBtn').click(function(){
+                var formData = new FormData($('#form2')[0]);
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var count = 0;
+            iziToast.success({ title: 'PROCESSING', message: 'Fetching data, please wait', color:'green',position:'topRight', timeout: 5000 });
+
+               //ajax start
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: "POST",
+                    'url': '/fireGetCurrentMonthStaffSalaryAjax',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#preloader2").show();
+                    },
+
+                    success: function (response) {
+                            var table = $('#staff-salary-table').DataTable({
+                                dom: 'Blfrtip',
+                                "info": true,
+                                "bDestroy": true,
+                                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                                scrollX: true,
+                                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                "data": response.result,
+                            columns: [
+                            {"data": "id", "width": "5%",
+                             "render": function(data){
+                                          count +=1;
+                                          return count;
+                             }},
+                            {"data": "month", "width": "5%", },
+                            {"data": "year", "width": "5%", },
+                            {"data": "no_of_employees", "width": "5%", },
+                            {"data": "payroll_amount", "width": "5%",
+                                "render": function numberWithCommas(payroll_amount) {
+                                    return payroll_amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                 }
+                            },
+                            {"data": "inQueueTotalAmt", "width": "5%",
+                                "render": function numberWithCommas(inQueueTotalAmt) {
+                                    return inQueueTotalAmt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                 }
+                            },
+                           {"data": "inQueueTotal", "width": "5%", },
+                            {"data": "successTotalAmt", "width": "5%",
+                                "render": function numberWithCommas(successTotalAmt) {
+                                    return successTotalAmt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                 }
+                            },
+                            {"data": "successTotal", "width": "5%", },
+                            {"data": "failedTotalAmt", "width": "5%",
+                                "render": function numberWithCommas(failedTotalAmt) {
+                                    return failedTotalAmt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                 }
+                            },
+                            {"data": "failedTotal", "width": "5%", },
+                            {"data": 'senderBIC',
+                                "orderable": false,
+                                "searchable": false,
+                                "width": "25%",
+                                "render": function (data, type, row, meta) {
+                                   var a = '<button type="button" onclick="previewStaffSalary(\'' + row.batch_reference + '\',\'/firePreviewPayrollMonthlySalary\')"><img src="/assets/images/previewSwift.png" style="width:20px;" title="Preview Staff Transactions"></button>';
+                                    a += '<button type="button" onclick="previewStaffSalary(\'' + row.batch_reference + '\',\'/firePreviewSuccessfullyMonthlySalary\')"><img src="/assets/images/accepted.png" style="width:20px;" title="Preview Successfully Salary transactions"></button>';
+                                    a += '<button type="button" onclick="previewStaffSalary(\'' + row.batch_reference + '\',\'/firePreviewRejectedMonthlySalary\')"><img src="/assets/images/rejection.png" style="width:20px;" title="Preview Rejected Salary Transactions"></button>';
+                                    a += '<button type="button" onclick="previewStaffSalary(\'' + row.batch_reference + '\',\'/firePreviewInQueueMonthlySalary\')"><img src="/assets/images/in-queue.png" style="width:20px;" title="Salary Transactions in queue"></button>';
+                                    return a;
+                                }}
+                        ],
+                        footerCallback: function (row, data, start, end, display) {
+                                var api = this.api();
+
+                                // Remove the formatting to get integer data for summation
+                                var intVal = function (i) {
+                                    return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+                                };
+
+                                // Total over all pages
+                                total = api
+                                    .column(4)
+                                    .data()
+                                    .reduce(function (a, b) {
+                                        return intVal(a) + intVal(b);
+                                    }, 0);
+
+                                // Total over this page
+                                pageTotal = api
+                                    .column(5, { page: 'current' })
+                                    .data()
+                                    .reduce(function (a, b) {
+                                        return intVal(a) + intVal(b);
+                                    }, 0);
+
+                                // Update footer
+                                $(api.column(4).footer()).html('' + addCommas(pageTotal) + ' TZS / ('+  addCommas(total) + ' TZS)');
+                            },
+                    aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+                buttons: [{
+                        extend: "copy",
+                        title: 'Staff',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'Staff',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'Staff',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'Staff',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'Staff',
+                        className: "btn-sm"
+                    }],
+                            });
+                 table.buttons().container().appendTo('#dataTebo-buttons_wrapper .col-md-6:eq(0)');
+                    },
+                    error: function (e) {
+                        $("#preloader2").hide();
+                        console.log(e);
+                    }
+                }); //end ajax
+
+            }); //end click function
+
+        }); //END DOCUMENT READY
+
+    </script>
+</div>

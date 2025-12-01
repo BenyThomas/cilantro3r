@@ -1,0 +1,274 @@
+<xsd:schema xmlns:ns0="http://ach.PHilae/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ach.PHilae/">
+    <xsd:complexType name="confirmOutwardTransfer">
+        <xsd:sequence>
+            <xsd:element name="transfer" type="ns0:taTransfer" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="confirmOutwardTransferResponse">
+        <xsd:sequence>
+            <xsd:element name="return" type="ns0:taResponse" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="loginUser">
+        <xsd:sequence>
+            <xsd:element name="request" type="ns0:ulRequest" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="loginUserResponse">
+        <xsd:sequence>
+            <xsd:element name="return" type="ns0:ulResponse" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="postInwardTransfer">
+        <xsd:sequence>
+            <xsd:element name="transfer" type="ns0:taTransfer" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="postInwardTransferResponse">
+        <xsd:sequence>
+            <xsd:element name="return" type="ns0:taResponse" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="processOutwardEftTransfer">
+        <xsd:sequence>
+            <xsd:element name="transfer" type="ns0:taTransfer" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="processOutwardEftTransferResponse">
+        <xsd:sequence>
+            <xsd:element name="return" type="ns0:taResponse" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="processOutwardRtgsTransfer">
+        <xsd:sequence>
+            <xsd:element name="transfer" type="ns0:taTransfer" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="processOutwardRtgsTransferResponse">
+        <xsd:sequence>
+            <xsd:element name="return" type="ns0:taResponse" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="queryDepositAccount">
+        <xsd:sequence>
+            <xsd:element name="query" type="ns0:acQuery" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="queryDepositAccountResponse">
+        <xsd:sequence>
+            <xsd:element name="return" type="ns0:taAccount" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="queryOutwardTransfers">
+        <xsd:sequence>
+            <xsd:element name="query" type="ns0:taQuery" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="queryOutwardTransfersResponse">
+        <xsd:sequence>
+            <xsd:element name="return" type="ns0:trList" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="taTransfer">
+        <xsd:complexContent>
+            <xsd:extension base="ns0:taRequest">
+                <xsd:sequence>
+                    <xsd:element name="txnRef" type="xsd:string"/>
+                    <xsd:element name="createDate" type="xsd:dateTime"/>
+                    <xsd:element name="employeeId" type="xsd:long" minOccurs="0"/>
+                    <xsd:element name="supervisorId" type="xsd:long" minOccurs="0"/>
+                    <xsd:element name="transferType" type="xsd:string"/>
+                    <xsd:element name="currency" type="xsd:string"/>
+                    <xsd:element name="amount" type="xsd:decimal"/>
+                    <xsd:element name="exchangeRate" type="xsd:decimal" nillable="true"/>
+                    <xsd:element name="receiverBank" type="xsd:string"/>
+                    <xsd:element name="receiverAccount" type="xsd:string"/>
+                    <xsd:element name="receiverName" type="xsd:string" nillable="true"/>
+                    <xsd:element name="senderBank" type="xsd:string"/>
+                    <xsd:element name="senderAccount" type="xsd:string"/>
+                    <xsd:element name="senderName" type="xsd:string" nillable="true"/>
+                    <xsd:element name="description" type="xsd:string"/>
+                    <xsd:element name="scheme" type="xsd:string"/>
+                    <xsd:element name="txnId" type="xsd:long" minOccurs="0"/>
+                    <xsd:element name="contraAccount" type="xsd:string"/>
+                    <xsd:element name="reversal" type="xsd:boolean" nillable="true"/>
+                    <xsd:element name="userRole" type="ns0:usRole" nillable="true"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="taRequest">
+        <xsd:sequence>
+            <xsd:element name="reference" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="usRole">
+        <xsd:sequence>
+            <xsd:element name="limits" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="limit" type="ns0:urLimit" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="drawers" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="drawer" type="ns0:tlDrawer" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="branchCode" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="branchId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="branchName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="buRoleId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="role" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="roleId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="supervisor" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="userId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="userName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="userRoleId" type="xsd:long" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="urLimit">
+        <xsd:sequence>
+            <xsd:element name="creditLimit" type="xsd:decimal" minOccurs="0"/>
+            <xsd:element name="currency" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="debitLimit" type="xsd:decimal" minOccurs="0"/>
+            <xsd:element name="role" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="roleId" type="xsd:long" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="tlDrawer">
+        <xsd:sequence>
+            <xsd:element name="currencies" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="currency" type="ns0:cnCurrency" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="drawerAccount" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="drawerId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="drawerNumber" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="openDate" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:element name="status" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="cnCurrency">
+        <xsd:sequence>
+            <xsd:element name="code" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="points" type="xsd:int" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="taResponse">
+        <xsd:sequence>
+            <xsd:element name="result" type="xsd:int"/>
+            <xsd:element name="reference" type="xsd:string" nillable="true"/>
+            <xsd:element name="message" type="xsd:string" nillable="true"/>
+            <xsd:element name="availableBalance" type="xsd:decimal" nillable="true"/>
+            <xsd:element name="ledgerBalance" type="xsd:decimal" nillable="true"/>
+            <xsd:element name="txnId" type="xsd:long" nillable="true"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="ulRequest">
+        <xsd:complexContent>
+            <xsd:extension base="ns0:taRequest">
+                <xsd:sequence>
+                    <xsd:element name="userName" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="password" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="ulResponse">
+        <xsd:complexContent>
+            <xsd:extension base="ns0:taResponse">
+                <xsd:sequence>
+                    <xsd:element name="user" type="ns0:bnUser" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="bnUser">
+        <xsd:sequence>
+            <xsd:element name="roles" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="role" type="ns0:usRole" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="branchId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="branchName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="role" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="roleId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="staffName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="staffNumber" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="userId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="userName" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="acQuery">
+        <xsd:complexContent>
+            <xsd:extension base="ns0:taRequest">
+                <xsd:sequence>
+                    <xsd:element name="accountNumber" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="taAccount">
+        <xsd:complexContent>
+            <xsd:extension base="ns0:taResponse">
+                <xsd:sequence>
+                    <xsd:element name="accountNumber" type="xsd:string" nillable="true"/>
+                    <xsd:element name="accountType" type="xsd:string" nillable="true"/>
+                    <xsd:element name="accountName" type="xsd:string" nillable="true"/>
+                    <xsd:element name="currency" type="xsd:string" nillable="true"/>
+                    <xsd:element name="status" type="xsd:string" nillable="true"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="taQuery">
+        <xsd:complexContent>
+            <xsd:extension base="ns0:taRequest">
+                <xsd:sequence>
+                    <xsd:element name="transferType" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="trList">
+        <xsd:complexContent>
+            <xsd:extension base="ns0:taResponse">
+                <xsd:sequence>
+                    <xsd:element name="transfers" minOccurs="0">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="transfer" type="ns0:taTransfer" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="confirmOutwardTransfer" type="ns0:confirmOutwardTransfer"/>
+    <xsd:element name="confirmOutwardTransferResponse" type="ns0:confirmOutwardTransferResponse"/>
+    <xsd:element name="loginUser" type="ns0:loginUser"/>
+    <xsd:element name="loginUserResponse" type="ns0:loginUserResponse"/>
+    <xsd:element name="postInwardTransfer" type="ns0:postInwardTransfer"/>
+    <xsd:element name="postInwardTransferResponse" type="ns0:postInwardTransferResponse"/>
+    <xsd:element name="processOutwardEftTransfer" type="ns0:processOutwardEftTransfer"/>
+    <xsd:element name="processOutwardEftTransferResponse" type="ns0:processOutwardEftTransferResponse"/>
+    <xsd:element name="processOutwardRtgsTransfer" type="ns0:processOutwardRtgsTransfer"/>
+    <xsd:element name="processOutwardRtgsTransferResponse" type="ns0:processOutwardRtgsTransferResponse"/>
+    <xsd:element name="queryDepositAccount" type="ns0:queryDepositAccount"/>
+    <xsd:element name="queryDepositAccountResponse" type="ns0:queryDepositAccountResponse"/>
+    <xsd:element name="queryOutwardTransfers" type="ns0:queryOutwardTransfers"/>
+    <xsd:element name="queryOutwardTransfersResponse" type="ns0:queryOutwardTransfersResponse"/>
+</xsd:schema>

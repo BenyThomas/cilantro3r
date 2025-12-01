@@ -1,0 +1,108 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+
+    </style>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}">
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentsss">
+        <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+
+            <div hidden="" id="loading"></div>
+
+            <div class="row">
+                <div class="panel-body">
+                    <div class="row" id="preloader2" style="display: none;">
+                        <img alt="please wait" src="/assets/images/please_wait.gif">
+                    </div>
+                    <!--- success start--->
+                    <div id="customAlert"></div>
+                    <!------ End ------->
+
+                    <br>
+                    <!--- FORM START ----->
+                    <div class="row" id="another-element" >
+                        <form role="form" id="tipsMissing">
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <input type="text"  placeholder="Enter transaction reference" name="reference" id="reference" class="form-control"/>
+                                </div>
+
+                                <div class="form-group col-md-3">
+                                    <div class="form-group col-md-3 text-right m-b-0" style="margin: 2%;">
+                                        <button  type="button" class="btn btn-success btn-submit-inwardEft-Summary" id="validateTipsBtn" onclick="validateMissingTipsTrans()">Validate transaction</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!----- FORM END ------->
+
+
+                    <div class="col-sm-12">
+                        <table class="table table-striped table-bordered" id="fsp-frauds-table" style="display:none;">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>FSP</th>
+                                <th>Full Name</th>
+                                <th>Identity Type</th>
+                                <th>Identity Value</th>
+                                <th>Identifier Type</th>
+                                <th>Identifier Value</th>
+                                <th>Reasons</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div layout:fragment="pageScript" th:remove="tag">
+        <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+        <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+        <!-- init -->
+        <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+        <!-- App Js -->
+        <script th:src="@{/assets/js/jquery.app.js}"></script>
+        <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+        <script th:src="@{/assets/scripts/tips.js}"></script>
+    </div>

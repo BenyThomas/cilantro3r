@@ -1,0 +1,131 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+</div>
+<div class="panel panel-default panel-fill">
+    <div class="panel-heading" style="background-color: #04ab18 ! important; "> <h3 class="panel-title" style="color: #ffffff !important;" th:text="${pageTitle}"></h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div id="successFlag"></div>
+        </div>
+        <div class="row" id="preloader2" hidden=""> 
+            <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+        </div>
+        <div class="row" id="messageData">
+            <div class="col-md-8">
+                <form class="form-horizontal" role="form" id="specialRates">
+                    <input hidden="" th:value="${reference}" name="reference">
+                    <table  class="table table-striped table-bordered"  style="width: 100%; font-size: 12.5 px !important;">
+                        <tbody>
+                            <tr th:each="deal:${dealNumberDetails}" style="background-color: #a4c0a4 !important;">
+                                <td>DEAL NUMBER </td>
+                                <td th:text="${deal.fxToken}"> </td>
+                            </tr>
+                            <tr th:each="deal:${dealNumberDetails}">
+                                <td>FX TYPE</td>
+                                <td  th:text="${deal.fxtype}"> </td>
+                            </tr>
+                            <tr th:each="deal:${dealNumberDetails}" style="background-color: #a4c0a4 !important;">
+                                <td>SENDER ACCOUNT</td>
+                                <td th:text="${deal.senderAcct}"> </td>
+                            </tr>
+                            <tr th:each="deal:${dealNumberDetails}">
+                                <td>ACCOUNT NAME</td>
+                                <td  th:text="${deal.senderName}"> </td>
+                            </tr>
+                            <tr th:each="deal:${dealNumberDetails}" style="background-color: #a4c0a4 !important;">
+                                <td>CONVERSION </td>
+                                <td  th:text="${deal.currency_conversion}"> </td>
+                            </tr>
+                            <tr th:each="deal:${dealNumberDetails}">
+                                <td>AMOUNT</td>
+                                <td th:text="${deal.amount}"> </td>
+                            </tr>
+                            <tr th:each="deal:${dealNumberDetails}" style="background-color: #a4c0a4 !important;">
+                                <td>RUBIKON DEBIT RATE</td>
+                                <td  th:text="${deal.rubikon_debit_rate}"> </td>
+                            </tr>
+                            <tr th:each="deal:${dealNumberDetails}">
+                                <td>RUBIKON CREDIT RATE</td>
+                                <td  th:text="${deal.rubikon_credit_rate}"> </td>
+                            </tr>
+                            <tr th:each="deal:${dealNumberDetails}" style="background-color: #a4c0a4 !important;">
+                                <td>PROPOSED DEBIT RATE</td>
+                                <td th:text="${deal.approved_debit_rate}"> </td>
+                            </tr><!-- comment -->
+                            <tr th:each="deal:${dealNumberDetails}">
+                                <td>PROPOSED CREDIT RATE</td>
+                                <td  th:text="${deal.approved_credit_rate}"> </td>
+                            </tr>
+                            <tr th:each="deal:${dealNumberDetails}" style="background-color: #a4c0a4 !important;">
+                                <td>INITIATED BY</td>
+                                <td th:text="${deal.initiated_by}"> </td>
+                            </tr>
+                            <tr th:each="deal:${dealNumberDetails}">
+                                <td>RATE VALIDS TO</td>
+                                <td  th:text="${deal.valid_to}"> </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="modal-footer">
+
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                        <button type="button" th:onclick="rejectDealNumber([[${reference}]])" class="btn btn-danger pull-right col-md-3">Reject</button>
+                        <button type="button" th:onclick="approveDealNumber([[${reference}]])" class="btn btn-primary pull-right col-md-3" th:disabled="${txn_type}">Approve</button>   
+
+                    </div>                
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/scripts/teller.js}"></script>
+</div>
+<div class="row" id="preloader333" hidden=""> 
+    <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+</div>
+<!--</div>-->
+<script>
+    $(document).ready(function () {
+        $('.special-rate').click(function (e) {
+//            $('.special-rate').attr('disabled', 'disabled');
+            $("#loading").show();
+            var approvedRate = $("input[name='approvedRate']").val();
+            var remarks = $("textarea[name='remarks']").val();
+            var reference = $("input[name='reference']").val();
+
+            if (approvedRate.length != 0) {
+                $.ajax({
+                    url: "/approveSpecialRate",
+                    type: 'POST',
+                    data: {approvedRate: approvedRate, remarks: remarks, reference: reference},
+                    dataType: "json",
+                    success: function (res) {
+                        $("#loading").hide();
+                        $('.error').html('');
+                        if (res.result == 0) {
+                            $("#successFlag").html('<div class="alert alert-success" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>' + res.message + '</strong></div>');
+                        } else {
+                            $("#successFlag").html('<div class="alert alert-danger" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>' + res.message + '</strong></div>');
+
+                        }
+                    }
+                });
+            } else {
+                $("#loading").hide();
+                $("#successFlag").after('<div class="alert alert-danger" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>Negotiated Rate cant be left empty</strong></div>');
+            }
+        });
+    });
+</script>

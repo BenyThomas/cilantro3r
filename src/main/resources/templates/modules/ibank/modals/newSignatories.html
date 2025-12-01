@@ -1,0 +1,403 @@
+<div layout:fragment="pageStyle" th:remove="tag" xmlns:layout="http://www.w3.org/1999/xhtml">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+        .panel-title {
+            max-width:calc(100% - 120px);
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/select2/css/select2.min.css}" rel="stylesheet" type="text/css" />
+</div>
+<div  id="loading"> </div>
+
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentsss">
+        <div class="panel-heading">
+            <div class="panel-title" th:text="${pageTitle}"></div>
+            <div>
+<!--                <a style="background-color: #b1e501 !important; border: 1px solid #b1e501 !important;margin-top: -22px !important;" class="btn btn-primary pull-right" id="submitForApproval" th:onclick="initiatorSubmitProfileForApproval([[${profile_reference}]],[[${client_name}]])">Submit for Approval</a>-->
+                <a style="background-color: #750a0a !important; border: 1px solid #b1e501 !important;margin-top: -22px !important;" class="btn btn-primary pull-right" id="addNewSignatory">New Signatory</a></div>
+            </div>
+        <div class="panel-body">
+            <div hidden="" class="row" id="newAccountForm">
+
+                <div class="col-md-12" id="successFlag"></div>
+                <div class="col-md-12" id="rtgsTransferFormDiv">
+                    <div id="errorMessage"></div>
+                    <div hidden="" id="erroMessage">
+                        <div class="alert alert-danger " role="alert">
+                            <strong>No record found!</strong> Please check if the RIM number is correct
+                        </div>
+                    </div>
+                    <form class="form-horizontal" role="form" id="addSignatoryToIBProfile">
+                        <input hidden type="text" readonly="" id="client_name" name="client_name" th:value="${client_name}" >
+                        <input hidden type="text" readonly="" id="profile_reference" name="profile_reference" th:value="${profile_reference}" >
+                        <table  class="table table-striped table-bordered"  style="width: 100%; font-size: 8.5px !important;">
+                            <tbody>
+                                <tr>
+                                    <td>Rim No</td>
+                                    <td><input type="text" id="rimNo" name="rimNo"  class="form-control form-control-sm" autocomplete="off" style="font-size: 10px !important;" placeholder="Customer RIM"><button type="button" class="btn btn-primary btn-submit" style="font-size: 9px !important;" onclick="queryAccDetailsByRim()">Query Details</button></td>
+                                    <td>Full Name</td>
+                                    <td><input type="text"  id="fullName" name="fullName" readonly class="form-control form-control-sm" autocomplete="off" style="font-size: 10px !important;" placeholder="Customer Name"></td>
+                                    <td>Username</td>
+                                    <td><input type="text"  id="username" name="username" readonly class="form-control form-control-sm" autocomplete="off" style="font-size: 10px !important;" placeholder="username"></td>
+                                    <td>customer Id</td>
+                                    <td><input type="text"  id="customerId" name="customerId" readonly class="form-control form-control-sm" autocomplete="off" style="font-size: 10px !important;" placeholder="Customer Id"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong style='color:red'>Contact details</strong></td>
+                                    <td><input type="text" id="phoneNumber" name="phoneNumber" class="form-control form-control-sm" autocomplete="off" style="font-size: 10px !important;" placeholder="255 ___ ___ ___" maxlength="12"><br/>
+                                        <input type="text" id="email" name="email" class="form-control form-control-sm" autocomplete="off" style="font-size: 10px !important;" placeholder="Email Address">
+                                    </td>
+                                    <td><strong style='color:red'>Accounts</strong></td>
+                                    <td colspan="3"><strong th:each="account:${accounts}"><h7 th:text="${#strings.toUpperCase(account.account_no+'  :  '+account.account_type+'   ')}"></h7>&nbsp;
+                                            <input type="checkbox" name="transferAccess" style="color: red" th:value="${account.id+'==A'}" th:text="${'Transfer access '}">
+                                            <input style="color:green" readonly="" type="checkbox" name="viewAccess" checked th:value="${account.id}" th:text="${'View access'}">
+                                            <input type="text"  id="accountLimit" name="accountLimit"  class="form-control-sm" autocomplete="off" style="font-size: 10px !important;" placeholder="Account Limit">
+                                            <hr style="border-top: 1px solid #0dbe55 !important;"/></strong></td>
+                                    <td><strong style='color:red'>Role</strong></td>
+                                    <td><strong th:each="role:${roles}"><input type="checkbox" name="role" th:value="${role.id}" th:id="${role.id}" th:text="${role.name}"><hr style="border-top: 1px solid #0dbe55 !important;    margin-top: 8px !important;margin-bottom: 2px !important;"/></strong></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <button type="button" class="btn btn-primary add-signatory-to-ib-profile" onclick="addSignatoryToIBProfile()">Save Account</button>   
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+            <div hidden="" class="row" id="viewAccess">
+                <div class="row">
+                    <div class="panel-heading"> <h4 class="panel-title" >ROLES ACCESS</h4></div>
+                    <table id="rolesAccess" class="display nowrap table table-striped table-bordered" >
+                        <thead>
+                            <tr>
+                                <th>Full Name</th>
+                                <th>username</th>
+                                <th>Role </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <!--</form>-->
+                </div>
+                <div class="row">
+                    <div class="panel-heading"> <h4 class="panel-title" >ACCOUNT ACCESS</h4></div>
+                    <table id="accountAccess" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 7.5px !important;">
+                        <thead>
+                            <tr>
+                                <!--<th>S/N</th>-->
+                                <th>Account No</th>
+                                <th>Old Account</th>
+                                <th>Account Name</th>
+                                <th>Currency</th>
+                                <th>Prod code</th>
+                                <th>Account Type</th>
+                                <th>Account Category</th>
+                                <th>Account Limit</th>
+                                <th>Signatory Limit</th>
+                                <th>Transfer Access</th>
+                                <th>View Access</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <!--</form>-->
+                </div>
+            </div>
+            <div class="row" id="separator" hidden="">
+                <hr/>
+            </div>
+
+            <div id="successFlag">
+            </div>
+            <div  id="loading" hidden=""> </div>
+            <div class="row" id="listOfSignatories">
+                <div class="panel-heading"> <h4 class="panel-title" >LIST OF SIGNATORIES</h4></div>
+                <table id="accountsIBProfile" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 7.5px !important;">
+                    <thead>
+                        <tr>
+                            <th>S/N</th>
+                            <th>Rim No</th>
+                            <th>Full Name</th>
+                            <th>Username</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Initiated By</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!--</form>-->
+            </div>
+        </div>
+    </div>
+</div>
+<!--<div class="form-group col-md-9">-->
+<div class="row"></div>
+<div class="row">
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+
+<!--    init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+<!--    App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
+    <script th:src="@{/assets/scripts/ibank.js}"></script>
+    <script>
+        $(document).ready(function () {
+//                    $('#accountAccess').DataTable().ajax.reload();
+
+            //ADD NEW CLIENT TOGGLE MENU
+            $('#addNewSignatory').click(function () {
+                $('#newAccountForm').toggle('slide');
+                $('#separator').show();
+            });
+            $('.select2').select2();
+            $("#loading").hide();
+//            rtgsTransferForm
+
+//add the number of files to be attached
+            var max_fields = 4;
+            var wrapper = $("#supportingDocument");
+            var add_button = $("#addField");
+
+            var x = 1;
+            $(add_button).click(function (e) {
+                e.preventDefault();
+                if (x < max_fields) {
+                    x++;
+                    $(wrapper).append('<input type="file" name="supportingDoc" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Supporting Document">'); //add input box
+                } else {
+                    alert('You Reached the limits');
+                }
+            });
+
+            $(wrapper).on("click", ".delete", function (e) {
+                e.preventDefault();
+                $(this).parent('div').remove();
+                x--;
+            });
+            //ON SELECTING DESTINATION BANK CHECK IF ITS INTERNATIONAL AND ADD AN INPUT FIELD FOR INTERMEDIARY BANK
+            $('#intermediary').html("");
+            $("#destinationBank").on('change', function () {
+                var benBic = $("select[name='beneficiaryBIC']").val();
+                var identifier = benBic.split('==');
+                if (identifier[1] === 'INTERNATIONAL') {
+                    /*
+                     * ADD AN INPUT FOR INTERMEDIARY SWIFT CODE
+                     */
+                    $('#intermediary').append('<input type="text" id="intermediaryBank" name="intermediaryBank" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Intermediary Bank Swift Code (IF APPLICABLE)">');
+
+                }
+            });
+            $("#mno").on('change', function () {
+                $('#accountsIBProfile').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $('#accountsIBProfile').DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [2, "desc"],
+                ajax: {
+                    'url': '/getSignatoriesAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    },
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "profile_reference": $("input[name='profile_reference']").val()
+                        });
+                    }
+                },
+                "columns": [
+                    {"data": "profile_reference"},
+                    {"data": "cust_rim_no"},
+                    {"data": "fullname"},
+                    {"data": "username"},
+                    {"data": "phone"},
+                    {"data": "email_address"},
+                    {"data": "created_by"},
+
+                    {"data": 'profile_reference',
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            var a = '';
+//                     authorizePayment.png      a = '<a type="button" href="/downloadSupportingDoc?reference=' + row.reference + '"><button type="button"><img src="/assets/images/supportingDoc.png" style="width:20px;" title="Download Supporting Document"></button></a>
+                            a += '<button style="background-color: green !important; color: white !important; font-size: 11px !important;"  type="button" onclick="viewSignatoryAccess(\'' + row.id + '\',\'' + row.profile_reference + '\')"> View Access </button>';
+                            a += '<button style="background-color: green !important; color: white !important; font-size: 11px !important;"  type="button" onclick="removeSignatoryFromProfile(\'' + row.profile_reference + '\',\'' + row.cust_rim_no + '\')"> Remove </button>';
+
+                            return a;
+                        }}
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+//                fixedColumns: true,
+                buttons: [{
+                        extend: "copy",
+                        title: 'Authorize RTGS Remittance Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='mno']").val() == '') {
+                        return false;
+                    }
+                }
+            });
+
+        });
+        function getAccountDetails() {
+            $("#loading").show();
+            var accountNo = $("input[name='accountNo']").val();
+            $.ajax({
+                url: "/queryClientAccountDetails",
+                type: 'GET',
+                data: {accountNo: accountNo, code: "searchAccount"},
+                dataType: "json",
+                success: function (res) {
+                    $("#loading").hide();
+                    $("#accountName").val(res[0].CUST_NM);
+                    $("#oldAccount").val(res[0].OLD_ACCT_NO);
+                    $("#accountCurrency").val(res[0].CRNCY_CD_ISO);
+                    $("#acctProdCode").val(res[0].PROD_CD);
+                    $("#acctDescription").val(res[0].PROD_DESC);
+                    $("#acctCategory").val(res[0].PROD_CAT_TY);
+                    $("#acctStatus").val(res[0].REC_ST);
+                    $("#address2").val(res[0].ADDR_LINE_2);
+                    $("#address3").val(res[0].ADDR_LINE_3);
+                    $("#address4").val(res[0].ADDR_LINE_4);
+                    $("#city").val(res[0].CITY);
+                    $("#email").val("not set");
+                    $("#branchId").val(res[0].MAIN_BRANCH_ID);
+                    $("#branchCode").val(res[0].MAIN_BRANCH_ID);
+                    $("#state").val(res[0].STATE);
+                    console.log(res)
+                },
+                error: function (res) {
+                    $("#loading").hide();
+                    $('#senderAccount').after('<h4 class="error" style="color:red     font-size: 8px !important;"> Error: Please Try Again. Please contact IT Helpdesk / Database Administrator: RUBIKON NOT FOUND</h4>');
+                    console.log(res);
+                }
+            })
+        }
+
+
+        function queryAccDetailsByRim() {
+            $("#loading").show();
+            var rimNo = $("input[name='rimNo']").val();
+            $.ajax({
+                url: "/queryAccDetailsByRim",
+                type: 'GET',
+                data: {rimNo: rimNo, code: "searchAccount"},
+                dataType: "json",
+                success: function (res) {
+                    $("#loading").hide();
+                    if(res.responseCode==="99"){
+                        $('#erroMessage').show();
+                        $("#fullName").val('');
+                        $("#username").val('');
+                        $("#customerId").val('');
+                    }else {
+                        $('#erroMessage').hide();
+                        $("#fullName").val(res.fullName);
+                        $("#username").val(res.username);
+                        $("#customerId").val(res.customerId);
+                    }
+                    console.log(res)
+                },
+                error: function (res) {
+                    $("#loading").hide();
+                    $('#senderAccount').after('<h4 class="error" style="color:red     font-size: 8px !important;"> Error: Please Try Again. Please contact IT Helpdesk / Database Administrator: RUBIKON NOT FOUND</h4>');
+                    console.log(res);
+                }
+            })
+        }
+
+        function addCommas(nStr) {
+            nStr += '';
+            x = nStr.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            }
+            return x1 + x2;
+        }
+    </script>
+</div>

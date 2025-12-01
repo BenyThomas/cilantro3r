@@ -1,0 +1,23 @@
+TEST PARAMETERS FOR TCB
+
+Endpoints
+http://10.254.224.74:7575/zanid/demographic
+http://10.254.224.74:7575/zanid /biometrics/verify
+
+
+Client Test Keys
+zanidtestprivate.pfx - Sign Payload using this key
+
+
+alias - zanid
+password - Zcsra@2023
+
+
+ZCSRA Public key
+
+zcsrapublic.pfx - Verify payload after request using this.
+password - zcsra@2022
+
+
+Testing API Key
+2E30C7E0FA84D67FAC19177963F843E189A12310D5622A6EF55E56CBDA61550A

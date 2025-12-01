@@ -1,0 +1,19 @@
+GEPG TEAM 
+1. augustino mwageni
+2. Salum Shomvi
+3. Salama pongo
+4. Mayala Mwendesha
+
+TPB BANK
+1. Richard kombole
+2. David Nghambi
+3. Lilian Ihema
+4. Nobert Mbarok
+5. Michael Kazimoto
+6. Melleji Mollel
+
+issues:
+1. Issue a retry to GePG when the there is no acknowledgement received on payment advice.
+2. Ensure the callback has been received
+3. Amendmend on the transactions flow to GePG incase the transaction acknowledgment is not received
+ we have to replay the Transaction to GePG

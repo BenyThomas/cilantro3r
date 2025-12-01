@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/main_layout}">
+    <head>
+        <title>Search Transactions</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div layout:fragment="pageStyle" th:remove="tag">
+            <link th:href="@{/assets/plugins/bootstrap-tagsinput/css/bootstrap-tagsinput.css}" rel="stylesheet" />
+            <link rel="stylesheet" th:href="@{/assets/plugins/switchery/switchery.min.css}">
+            <link th:href="@{/assets/plugins/select2/css/select2.min.css}" rel="stylesheet" type="text/css" />
+            <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/clockpicker/css/bootstrap-clockpicker.min.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.css}" rel="stylesheet">
+            <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+            <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div layout:fragment="contents" id="reconData">
+                    <div class="panel panel-default panel-fill"  >
+                        <div class="panel-heading"> <h4 class="panel-title">SEARCH TRANSACTION</h4></div>
+                        <div class="panel-body">
+                            <form role="form" name="getAuditTrailReport">
+                                <div class="row">
+                                    <div class="form-group col-md-3">
+                                        <label for="date" >From Date</label>
+                                        <input name="fromdate" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose" data-date-format="yyyy-mm-dd" type="text" placeholder="yyyy-mm-dd" autocomplete="off"/>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="date" >To Date</label>
+                                        <input name="todate" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose" data-date-format="yyyy-mm-dd" type="text" placeholder="yyyy-mm-dd" autocomplete="off"/>
+                                    </div>
+                                    <div class="form-group col-md-3 text-right m-b-0" style="margin-top: 2%;margin-left: -10%" >
+                                        <button  type="submit" class="btn btn-info btn-submit">Search</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="row" id="preloader2"> 
+                                <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+                            </div>
+                            <div class="col-sm-12">
+                                <table id="auditTrails"  class="table table-striped table-bordered"  style="width: 100%; font-size: 8.5px !important;">
+                                    <thead>
+                                        <tr>
+                                            <th>S/N</th>
+                                            <th>Log Date</th>
+                                            <th>Accessed By</th>
+                                            <th>Role</th>
+                                            <th>IP address</th>
+                                            <th>Accessed Url</th>
+                                            <th>Comments</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div layout:fragment="pageScript" th:remove="tag">
+            <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+            <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>      
+            <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+            <script th:src="@{/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js}"></script>
+            <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+            <script th:src="@{/assets/plugins/clockpicker/js/bootstrap-clockpicker.min.js}"></script>
+            <script th:src="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.js}"></script>
+            <!-- init -->
+            <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+            <!-- App Js -->
+            <script th:src="@{/assets/js/jquery.app.js}"></script>
+            <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+            <script th:src="@{/assets/scripts/reconDashboard.js}"></script>
+            <!--            <script>
+            
+                            $(document).ready(function () {
+                                $('#preloader').hide();
+                                $('#preloader2').hide();
+                                $('input[id$=datepicker-autoclose]').datepicker({dateFormat: 'yy-mm-dd'});
+                                /*  Submit form using Ajax */
+                                $('button[type=submit]').click(function (e) {
+                                    $('#preloader2').show();
+                                    //Prevent default submission of form
+                                    e.preventDefault();
+                                    //Remove all errors
+                                    $('input').next().remove();
+                                    var fromdate = $("input[name='fromdate']").val();
+                                    var todate = $("input[name='todate']").val();
+                                    console.log(fromdate);
+                                    $.ajax({
+                                        url: "/getAuditTrailAjax",
+                                        type: 'GET',
+                                        data: {fromdate: fromdate, todate: todate},
+                                        dataType: "json",
+                                        success: function (res) {
+                                            var i = 0;
+                                            $('.error').html('');
+                                            if (res.validated) {
+                                                $('#preloader2').hide();
+                                                $('#cbsTxnsReport').show();
+                                                $('#cbsTxnsReport').DataTable({
+                                                    "info": true,
+                                                    "bDestroy": true,
+                                                    dom: "Bfrtip",
+                                                    "data": JSON.parse(res.jsonString),
+                                                    lengthChange: false,
+                                                    "columns": [
+                                                        {"data": 'id',
+                                                            "render": function (data) {
+                                                                i = i + 1;
+                                                                return i;
+                                                                ;
+                                                            }},
+                                                        {"data": "log_date"},
+                                                        {"data": 'username'},
+                                                        {"data": "roleName"},
+                                                        {"data": "ip_address"},
+                                                        {"data": "function_name"},
+                                                        {"data": 'comments'},
+                                                    ], buttons: [{
+                                                            extend: "copy",
+                                                            title: 'Audit Trail Report',
+                                                            className: "btn-sm"
+                                                        }, {
+                                                            extend: "csv",
+                                                            title: 'Audit Trail Report',
+                                                            className: "btn-sm"
+                                                        }, {
+                                                            extend: "excel",
+                                                            title: 'Audit Trail Report',
+                                                            className: "btn-sm"
+                                                        }, {
+                                                            extend: "pdf",
+                                                            title: 'Audit Trail Report',
+                                                            className: "btn-sm"
+                                                        }, {
+                                                            extend: "print",
+                                                            title: 'Audit Trail Report',
+                                                            className: "btn-sm"
+                                                        }],
+                                                    responsive: !1,
+                                                });
+                                            } else {
+                                                $('#preloader2').hide();
+                                                $.each(res.errorMessages, function (key, value) {
+                                                    $('input[name=' + key + ']').after('<span class="error" style="color:red">' + value + '</span>');
+                                                });
+                                            }
+                                        },
+                                        error: function (data) {
+                                            console.log('error occured:' + data);
+                                        }
+                                    });
+                                });
+                                //load the tab content
+            //                    $('[data-toggle="tab"]').click(function (e) {
+            //                        $("#preloader").show();
+            //                        var $this = $(this),
+            //                                loadurl = $this.attr('data-url');
+            //                        $.ajax({
+            //                            url: loadurl,
+            //                            type: 'GET',
+            //                            success: function (res) {
+            //                                $("#tabContent").html(res);
+            //                                $("#tabContent").show();
+            //                                $("#preloader").hide();
+            //                            }
+            //                        });
+            //                        $this.tab('show');
+            //
+            //                        return true;
+            //                    });
+                            });
+                        </script>-->
+            <script>
+                $(document).ready(function () {
+                    $("#loading").hide();
+                    $('#preloader').hide();
+                    $('#preloader2').hide();
+                    $("#select2").select2();
+                    $('input[id$=datepicker-autoclose]').datepicker({dateFormat: 'yy-mm-dd'});
+
+                    $('button[type=submit]').click(function (e) {
+                        e.preventDefault();
+                        $('#auditTrails').DataTable().ajax.reload();
+                    });
+                    var token = $("meta[name='_csrf']").attr("content");
+                    var header = $("meta[name='_csrf_header']").attr("content");
+                    var b = 1;
+                    var i = 0;
+                    var table = $('#auditTrails').DataTable({
+                        dom: 'Blfrtip',
+                        lengthChange: true,
+                        lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000, 2000, 5000, 10000, 25000],
+                        responsive: true,
+                        processing: true,
+                        serverSide: true,
+                        serverMethod: 'post',
+                        order: [2, "desc"],
+                        ajax: {
+                            'url': '/getAuditTrailAjax',
+                            'beforeSend': function (request) {
+                                request.setRequestHeader(header, token);
+                            },
+                            "data": function (d) {
+                                return $.extend({}, d, {
+                                    "fromdate": $("input[name='fromdate']").val(),
+                                    "todate": $("input[name='todate']").val()
+                                });
+                            }
+                        },
+                        "columns": [
+                            {"data": 'id',
+                                "render": function (data) {
+                                    i = i + 1;
+                                    return i;
+                                    ;
+                                }},
+                            {"data": "log_date"},
+                            {"data": 'username'},
+                            {"data": "roleName"},
+                            {"data": "ip_address"},
+                            {"data": "function_name"},
+                            {"data": 'comments'},
+                        ], aoColumnDefs: [
+                            {
+                                bSortable: false,
+                                aTargets: [-1]
+                            }
+                        ], buttons: [{
+                                extend: "copy",
+                                title: 'Audit Trail Report',
+                                className: "btn-sm"
+                            }, {
+                                extend: "csv",
+                                title: 'Audit Trail Report',
+                                className: "btn-sm"
+                            }, {
+                                extend: "excel",
+                                title: 'Audit Trail Report',
+                                className: "btn-sm"
+                            }, {
+                                extend: "pdf",
+                                title: 'Audit Trail Report',
+                                className: "btn-sm"
+                            }, {
+                                extend: "print",
+                                title: 'Audit Trail Report',
+                                className: "btn-sm"
+                            }],
+                        "preDrawCallback": function (settings) {
+                            if ($("input[name='todate']").val() == '') {
+                                return false;
+                            }
+                        }
+                    });
+                    table.on('order.dt search.dt', function () {
+                        table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                            cell.innerHTML = i + 1;
+                        });
+                    }).draw();
+                });
+                function reloadDatatable() {
+                    $('#auditTrails').DataTable().ajax.reload();
+                }
+            </script>
+        </div>
+    </body>
+</html>

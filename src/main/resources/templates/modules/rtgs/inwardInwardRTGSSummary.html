@@ -1,0 +1,318 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+
+
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentsss"><div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <form role="form">
+                    <div class="form-group col-md-3">
+                        <label>From Date</label>
+                        <div class="input-group">
+                            <input name="fromDate"  class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose" data-date-format="yyyy-mm-dd" type="text" placeholder="yyyy-mm-dd" autocomplete="off"/>
+                            <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                        </div><!-- input-group -->
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>To Date</label>
+                        <div class="input-group">
+                            <input name="toDate"  class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose2" data-date-format="yyyy-mm-dd" type="text" placeholder="yyyy-mm-dd" autocomplete="off"/>
+                            <span class="input-group-addon"><i class="mdi mdi-clock"></i></span>
+                        </div><!-- input-group -->
+                    </div>
+                    <div class="form-group col-md-3">
+                        <div class="form-group col-md-3 text-right m-b-0" style="margin: 2%;">
+                            <button  type="button" class="btn btn-info btn-submit-inwardEft-Summary">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="successFlag">
+            </div>
+            <div  id="loading" hidden=""> </div>
+            <div class="row">
+                <table id="inwardRTGSSummary" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important;">
+                    <thead>
+                        <tr>
+                            <th>S/N</th>
+                            <th>Sender BIC</th>
+                            <th>No Of Txns</th>
+                            <th>Total Amount</th>
+                            <th>Success Count</th>
+                            <th>Success Volume</th>
+                            <th>Failed Count</th>
+                            <th>Failed Volume</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                    <tfoot style="background-color: #005a02;color:white;border-color:white">
+                        <tr>
+                            <th colspan="2" style="text-align:right">Totals</th>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"></th>
+                        </tr>
+                    </tfoot>
+                </table>
+                <!--</form>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+    <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/teller.js}"></script>
+
+    <script>
+        $(document).ready(function () {
+            jQuery('#fromTime').timepicker({
+                showMeridian: false
+            });
+            jQuery('#toTime').timepicker({
+                showMeridian: false
+            });
+            jQuery('#datepicker-autoclose').datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            jQuery('#datepicker-autoclose2').datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#loading").hide();
+            $("#select2").select2();
+//            $('.authorize-payments').attr('disabled', 'disabled');
+            $('.btn-submit-inwardEft-Summary').click(function () {
+                $('#inwardRTGSSummary').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $('#inwardRTGSSummary').DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "desc"],
+                ajax: {
+                    'url': '/getInwardrtgsSummaryAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    },
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "fromDate": $("input[name='fromDate']").val(),
+                            "toDate": $("input[name='toDate']").val(),
+                        });
+                    }
+                },
+                "columns": [
+                    {"data": "senderBIC"},
+                    {"data": "senderBIC"},
+//                        {"data": "bankName"},
+                    {"data": "totalCount"},
+                    {"data": 'totalAmount',
+                        "render": function (data) {
+                            var amount = addCommas(data);
+                            return amount;
+                        }},
+                    {"data": "totalSuccess"},
+                    {"data": 'totalSuccessAmt',
+                        "render": function (data) {
+                            var amount = addCommas(data);
+                            return amount;
+                        }},
+                    {"data": "totalFailed"},
+                    {"data": 'totalFailedAmt',
+                        "render": function (data) {
+                            var amount = addCommas(data);
+                            return amount;
+                        }},
+                    {"data": 'senderBIC',
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "25%",
+                        "render": function (data, type, row, meta) {
+//                     authorizePayment.png      a = '<a type="button" href="/downloadSupportingDoc?reference=' + row.reference + '"><button type="button"><img src="/assets/images/supportingDoc.png" style="width:20px;" title="Download Supporting Document"></button></a>
+//                            a = '<button type="button" onclick="previewEftBulkPayments(\'' + row.batch_reference + '\',\'' + row.totalAmount + '\')"><img src="/assets/images/previewSwift.png" style="width:20px;" title="Preview swift Message"></button>';
+                            a = '<button type="button" onclick="previewRTGSInwardSuccessTxns(\'' + row.senderBIC + '\',\'' + $("input[name='fromDate']").val() + '\',\'' + $("input[name='toDate']").val() + '\',\'' + $("input[name='toDate']").val() + '\')"><img src="/assets/images/accepted.png" style="width:20px;" title="Preview Successfully transactions"></button>';
+                            a += '<button type="button" onclick="previewRTGSInwardFailedTxns(\'' + row.senderBIC + '\',\'' + $("input[name='fromDate']").val() + '\',\'' + $("input[name='toDate']").val() + '\',\'' + $("input[name='toDate']").val() + '\')"><img src="/assets/images/rejection.png" style="width:20px;" title="Preview Rejected Transactions transactions"></button>';
+                            return a;
+                        }}
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+//                fixedColumns: true,
+                buttons: [{
+                        extend: "copy",
+                        title: 'Inward RTGS summary',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'Inward RTGS summary',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'Inward RTGS summary',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'Inward RTGS summary',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'Inward RTGS summary',
+                        className: "btn-sm"
+                    }],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='mno']").val() == '') {
+                        return false;
+                    }
+                },
+                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api(), data;
+                    // Remove the formatting to get integer data for summation
+                    var intVal = function (i) {
+                        return typeof i === 'string' ?
+                                i.replace(/[\$,]/g, '') * 1 :
+                                typeof i === 'number' ?
+                                i : 0;
+                    };
+                    // Total over all pages
+                    var totalTxns = api
+                            .column(2)
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0);
+                    var totalVoume = api
+                            .column(3)
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0);
+                    var totalSuccessTxns = api
+                            .column(4)
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0);
+                    var totalSuccessVolume = api
+                            .column(5)
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0);
+                    var totalFailedTxns = api
+                            .column(6)
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0);
+                    var totalFailedVolumeTxns = api
+                            .column(7)
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0);
+                    // Total over this page
+                    pageTotal = api
+                            .column(3, {page: 'current'})
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0);
+                    // Update footer
+                    $(api.column(0).footer()).html('TOTALS');
+                    $(api.column(2).footer()).html(addCommas(totalTxns));
+                    $(api.column(3).footer()).html(addCommas(totalVoume));
+                    $(api.column(4).footer()).html(addCommas(totalSuccessTxns));
+                    $(api.column(5).footer()).html(addCommas(totalSuccessVolume));
+                    $(api.column(6).footer()).html(addCommas(totalFailedTxns));
+                    $(api.column(7).footer()).html(addCommas(totalFailedVolumeTxns));
+                }
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+//            });
+        }
+        );
+        function reloadDatatable() {
+            $('#eftBulkPaymentsOnWorkFlow').DataTable().ajax.reload();
+        }
+    </script>
+</div>

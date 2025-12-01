@@ -1,0 +1,508 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/main_layout}">
+<head>
+  <title layout:title-pattern="Cilantro ~ Dashboard">Visa-Card-Report</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <div layout:fragment="pageStyle" th:remove="tag">
+
+  </div>
+</head>
+<body>
+
+<div layout:fragment="pageStyle" th:remove="tag">
+  <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet">
+  <link th:href="@{/assets/css/custom.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/css/icons.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/css/jquery.datetimepicker.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/css/metismenu.min.css}" rel="stylesheet" type="text/css"/>
+  <link th:href="@{/assets/css/style.css}" rel="stylesheet" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" type="text/css"/>
+</div>
+
+<div class="container no-print" layout:fragment="contents">
+  <div class="container" style="padding-left: 0;">
+    <h3 style="margin-top: 12px; margin-bottom: 7px; background-color: #2b6331; padding: 10px; color: white;">Entity Data</h3>
+  </div>
+  <div class="row">
+    <form id="orsForm" class="form-inline pull-right" style="padding-right: 20px;">
+      <div class="form-group col">
+        <input type="text" id="registrationNumber" name="registrationNumber"
+               class="form-control form-control-sm" placeholder="Reg Number" required
+               aria-label="Enter Registration Number">
+      </div>
+      <div class="form-group col">
+        <select id="entityType" name="entityType" class="form-control form-control-sm" required>
+          <option value="" disabled selected hidden>Entity Type</option>
+          <option value="1">Private Company</option>
+          <option value="3">Public Company</option>
+          <option value="2">Business Name</option>
+          <option value="4">NGO</option>
+        </select>
+      </div>
+      <div class="form-group col">
+        <button type="button" id="searchButton" class="btn btn-primary btn-sm">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Result Section -->
+  <div id="resultSection" style="margin-top: 20px; display: none;">
+    <h4>Search Result</h4>
+    <ul class="nav nav-tabs">
+      <li class="active"><a data-toggle="tab" href="#entityDetails">Entity Details</a></li>
+      <li><a data-toggle="tab" href="#businessActivity">Business Activities</a></li>
+      <li><a data-toggle="tab" href="#directors">Directors</a></li>
+      <li><a data-toggle="tab" href="#shareholders">Shareholders</a></li>
+      <li><a data-toggle="tab" href="#shareholderShares">Shareholder Shares</a></li>
+      <li><a data-toggle="tab" href="#otherDetails">More Details</a></li>
+      <li><a data-toggle="tab" href="#attachments">Attachments</a></li>
+    </ul>
+    <div class="tab-content">
+      <div id="entityDetails" class="tab-pane fade in active">
+        <div class="card-header text-white d-flex align-items-center" style="background-color: #2b6331;">
+          <h4 id="entityTitle" class="mb-0 flex-grow-1">Entity Details</h4>
+        </div>
+        <div class="row">
+          <div class="col-xs-1 col-sm-2"><strong>Certificate Number:</strong> <span id="certNumber"></span></div>
+          <div class="col-xs-1 c0l-sm-2"><strong>Company Type:</strong> <span id="companyType"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Subtype:</strong> <span id="companySubtype"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Incorporation Date:</strong> <span id="incorporationDate"></span></div>
+          <div class="col-xs-1 col-sm-1"><strong>BA Category:</strong> <span id="baCategory"></span></div>
+          <div class="col-xs-1 col-sm-1"><strong>BA Division:</strong> <span id="baDivision"></span></div>
+          <div class="col-xs-1 col-sm-1"><strong>BA Group:</strong> <span id="baGroup"></span></div>
+          <div class="col-xs-1 col-sm-1"><strong>BA Class:</strong> <span id=" "></span></div>
+        </div>
+        <div class="row" id="issuedShareCapital">
+          <div class="col-xs-1 col-sm-2"><strong>Share Issued: </strong> <span id="shareIssued"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Share Value: </strong> <span id="shareValue"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Aggregate Nominal Value : </strong> <span id="nominalValue"></span></div>
+        </div>
+        <div class="row" id="groupCompanySecretary">
+          <div class="col-xs-1 col-sm-2"><strong>Type Of Person:</strong> <span id="typeOfPerson"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Origin Natural Person:</strong> <span id="originNaturalPerson"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Birth Of Date:</strong> <span id="birthOfDate"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>National ID:</strong> <span id="nationalId"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Name:</strong> <span id="fullName"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Nationality:</strong> <span id="nationality"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Gender:</strong> <span id="gender"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Email:</strong> <span id="email"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Mobile:</strong> <span id="mobile"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Country:</strong> <span id="country"></span></div>
+        </div>
+        <div class="row" id="groupCompanyInfo">
+          <div class="col-xs-1 col-sm-2"><strong>Reg No:</strong> <span id="RegNo"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Company Name:</strong> <span id="companyName"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Company Typer:</strong> <span id="groupCompanyType"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Incorporation Date:</strong> <span id="groupIncorporationDate"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>TIN:</strong> <span id="groupTaxPayerTin"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Accounting Date:</strong> <span id="accountingDate"></span></div>
+        </div>
+        <div class="row" id="groupShareCapital">
+          <div class="col-xs-1 col-sm-2"><strong>Share Type:</strong> <span id="shareType"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Total:</strong> <span id="totalShare"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Currency:</strong> <span id="currency"></span></div>
+        </div>
+        <div class="row" id="otherCompanyInfo">
+          <div class="col-xs-1 col-sm-2"><strong>Candidate User:</strong> <span id="candidateUser"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Send to TRA?:</strong> <span id="sentToTRA"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Username:</strong> <span id="username"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Submitted Date:</strong> <span id="submittedDate"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Applicant:</strong> <span id="applicant"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Email:</strong> <span id="applicantEmail"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Mobile:</strong> <span id="applicantMobileNumber"></span></div>
+          <div class="col-xs-1 col-sm-2"><strong>Entity Name:</strong> <span id="entityName"></span></div>
+        </div>
+        <div class="row" id="download">
+
+        </div>
+      </div>
+      <div id="businessActivity" class="tab-pane fade">
+        <div class="row text-white"><h3 class="text-white p-2" style="background-color: #2b6331;">Business Activities</h3></div>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Main Activity</th>
+                  <th>Activity Category</th>
+                  <th>Activity Division</th>
+                  <th>Activity Group</th>
+                  <th>Activity Class</th>
+                </tr>
+                </thead>
+                <tbody id="businessActivitiesBody">
+                <!-- Rows will be dynamically added here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="directors" class="tab-pane fade">
+        <div class="row text-white"><h3 class="text-white p-2" style="background-color: #2b6331;">Directors</h3></div>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>First Name</th>
+                  <th>Middle Name</th>
+                  <th>Last Name</th>
+                  <th>Birth Date</th>
+                  <th>Gender</th>
+                  <th>Country</th>
+                  <th>National ID</th>
+                  <th>TIN</th>
+                  <th>Phone</th>
+                </tr>
+                </thead>
+                <tbody id="directorsTableBody">
+                <!-- Rows will be dynamically added here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="shareholders" class="tab-pane fade">
+        <div class="row text-white"><h3 class="text-white p-2" style="background-color: #2b6331;">Shareholders</h3></div>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Birth Date</th>
+                  <th>Gender</th>
+                  <th>Country</th>
+                  <th>National ID</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                </tr>
+                </thead>
+                <tbody id="shareholdersTableBody">
+                <!-- Rows will be dynamically added here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="shareholderShares" class="tab-pane fade">
+        <div class="row text-white"><h3 class="text-white p-2" style="background-color: #2b6331;">Shareholder Shares</h3></div>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Shareholder Item</th>
+                  <th>Shareholder Name</th>
+                  <th>Share Class TBL</th>
+                  <th>Number Of Share</th>
+                </tr>
+                </thead>
+                <tbody id="shareholdersSharesTableBody">
+                <!-- Rows will be dynamically added here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="attachments" class="tab-pane fade">
+        <div class="row text-white"><h3 class="text-white p-2" style="background-color: #2b6331;">Attachments</h3></div>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="table-responsive">
+              <table id="attachmentsTable" class="table table-bordered display">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Attachment ID</th>
+                  <th>Attachment Type</th>
+                  <th>File Name</th>
+                  <th>File Size</th>
+                  <th>File Type</th>
+                  <th>Action</th>
+                </tr>
+                </thead>
+                <tbody id="attachmentsTableBody">
+                <!-- Rows will be dynamically added here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="noDataSection" style="margin-top: 20px; display: none; text-align: center;">
+    <h4>No data available</h4>
+  </div>
+</div>
+
+<div layout:fragment="pageScript" th:remove="tag">
+  <script th:src="@{/assets/js/jquery-3.6.0.min.js}"></script>
+  <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+  <script th:src="@{/assets/js/moment.min.js}"></script>
+  <script th:src="@{/assets/js/sockjs.min.js}"></script>
+  <script th:src="@{/assets/js/jquery.slimscroll.min.js}"></script>
+  <script th:src="@{/assets/js/jquery.datetimepicker.min.js}"></script>
+  <script th:src="@{/assets/js/jquery.canvasjs.min.js}"></script>
+  <script th:src="@{/assets/js/canvasjs.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+  <script type="text/javascript" th:inline="javascript">
+    $(document).ready(function () {
+      // Initialize DataTable
+      // Attach click event to Search button
+      $('#searchButton').on('click', function () {
+        console.log("Search button clicked.");
+
+        // Capture form input values
+        const registrationNumber = $('#registrationNumber').val().trim(); // Trim whitespace
+        const entityType = $('#entityType').val();
+
+        // Validate inputs
+        if (!registrationNumber || !entityType) {
+          alert('Please fill in all required fields.');
+          return;
+        }
+
+        console.log("Captured inputs:", { registrationNumber, entityType });
+
+        // Prepare the payload
+        const requestData = {
+          RegistrationNumber: registrationNumber,
+          EntityType: entityType
+        };
+
+        // Make AJAX request
+        $.ajax({
+          url: '/api/getEntityDetails',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(requestData),
+          beforeSend: function (xhr) {
+            // Include CSRF token if applicable
+            const token = $('meta[name="_csrf"]').attr('content');
+            const header = $('meta[name="_csrf_header"]').attr('content');
+
+            if (token && header) {
+              xhr.setRequestHeader(header, token);
+            }
+
+            // Optional: Add loading state
+            $('#searchButton').prop('disabled', true).text('Searching...');
+          },
+          success: function (response) {
+            console.log("Response received:", response);
+
+            // Show the result section
+            $('#resultSection').show();
+
+            // Extract necessary details
+            const entityData = response.company || {};
+            const shareCapital = response.sharecapital || {};
+            const secretary = response.secretary || {};
+            const companyInfo = response.company || {};
+            const activities = response.activities || [];
+            const baseurl = response.attachmentServerUrl || ""
+            const groupShareCapital = response.groupShareCapital || []
+            const groupCompany = response.groupCompany || []
+            const groupRegOffice = response.groupRegOffice || []
+            const info = response.info || []
+
+
+            // Check if data exists before setting text
+            $('#entityTitle').text(entityData.legal_name || "N/A");
+            $('#certNumber').text(entityData.cert_number || "N/A");
+            $('#companyType').text(entityData.company_type || "N/A");
+            $('#companySubtype').text(entityData.company_subtype || "N/A");
+            $('#incorporationDate').text(entityData.incorporation_date ? new Date(entityData.incorporation_date).toLocaleDateString() : "N/A");
+            $('#baCategory').text(entityData.ba_category || "N/A");
+            $('#baDivision').text(entityData.ba_division || "N/A");
+            $('#baGroup').text(entityData.ba_group || "N/A");
+            $('#baClass').text(entityData.ba_class || "N/A");
+
+            $('#shareIssued').text(shareCapital.no_of_shares_issued || "N/A");
+            $('#shareValue').text(shareCapital.value || "N/A");
+            $('#nominalValue').text(shareCapital.aggregate_nominal_value || "N/A");
+
+            $('#typeOfPerson').text(secretary.type_of_person || "N/A");
+            $('#originNaturalPerson').text(secretary.origin_natural_person || "N/A");
+            $('#birthOfDate').text(secretary.birth_date || "N/A");
+            $('#nationalId').text(secretary.national_id || "N/A");
+            $('#fullName').text(`${secretary.first_name || ""} ${secretary.middle_name || ""} ${secretary.last_name || ""}`.trim());
+            $('#gender').text(secretary.gender || "N/A");
+            $('#nationality').text(secretary.nationality || "N/A");
+            $('#email').text(secretary.email || "N/A");
+            $('#mobile').text(secretary.mob_phone || "N/A");
+            $('#country').text(secretary.country || "N/A");
+
+            $('#RegNo').text(companyInfo.incorporation_number || "N/A");
+            $('#companyName').text(companyInfo.company_name || "N/A");
+            $('#groupCompanyType').text(companyInfo.company_type || "N/A");
+            $('#groupIncorporationDate').text(companyInfo.incorporation_date ? new Date(companyInfo.incorporation_date).toLocaleDateString() : "N/A");
+            $('#groupTaxPayerTin').text(companyInfo.tax_payer_tin || "N/A");
+            $('#accountingDate').text(companyInfo.accounting_date || "N/A");
+            $('#accountingDate').text(companyInfo.accounting_date || "N/A");
+            $('#download').html('<a href="'+baseurl+'/'+entityData.local_file_id+'">Download</a>');
+
+            // Displaying Activities (Assumes the first one is the main activity)
+            console.log("ACTIVITIES: ",activities)
+            const activityBody = document.getElementById("businessActivitiesBody");
+            activityBody.innerHTML = ''; // Clear previous data
+            activities.forEach((activity, index) => {
+              const row = document.createElement("tr");
+              row.innerHTML =`
+              <td>${index+1}</td>
+              <td>${activity.main_activity || "N/A"}</td>
+              <td>${activity.name_of_activity_category || "N/A"}</td>
+              <td>${activity.name_of_activity_division || "N/A"}</td>
+              <td>${activity.name_of_activity_group || "N/A"}</td>
+              <td>${activity.name_of_activity_class || "N/A"}</td>
+              `;
+              activityBody.appendChild(row);
+            });
+
+            // Populate directors table
+            const directors = response.directors || [];
+            const directorsTableBody = document.getElementById("directorsTableBody");
+            directorsTableBody.innerHTML = ''; // Clear previous data
+
+            directors.forEach((director, index) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${director.first_name || "N/A"}</td>
+                <td>${director.middle_name || "-"}</td>
+                <td>${director.last_name || "N/A"}</td>
+                <td>${director.birth_date ? new Date(director.birth_date).toLocaleDateString() : "N/A"}</td>
+                <td>${director.gender || "N/A"}</td>
+                <td>${director.country || "N/A"}</td>
+                <td>${director.national_id || "N/A"}</td>
+                <td>${director.tin || "N/A"}</td>
+                <td>${director.mob_phone || "N/A"}</td>
+            `;
+              directorsTableBody.appendChild(row);
+            });
+
+            // Populate shareholders table
+            const shareholders = response.shareholders || [];
+            const shareholdersTableBody = document.getElementById("shareholdersTableBody");
+            shareholdersTableBody.innerHTML = ''; // Clear previous data
+
+            shareholders.forEach((shareholder, index) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${shareholder.first_name || "N/A"} ${shareholder.middle_name || "-"} ${shareholder.last_name || "N/A"}</td>
+                <td>${shareholder.birth_date ? new Date(shareholder.birth_date).toLocaleDateString() : "N/A"}</td>
+                <td>${shareholder.gender || "N/A"}</td>
+                <td>${shareholder.country || "N/A"}</td>
+                <td>${shareholder.national_id || "N/A"}</td>
+                <td>${shareholder.email || "N/A"}</td>
+                <td>${shareholder.mob_phone || "N/A"}</td>
+            `;
+              shareholdersTableBody.appendChild(row);
+            });
+
+            // Populate shareholder shares table
+            const shares = response.shareholderShares || [];
+            const sharesTableBody = document.getElementById("shareholdersSharesTableBody");
+            sharesTableBody.innerHTML = ''; // Clear previous data
+
+            shares.forEach((share, index) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${share.shareholder_item || "N/A"}</td>
+                <td>${share.shareholder_name || "N/A"}</td>
+                <td>${share.share_class_tbl || "N/A"}</td>
+                <td>${share.number_of_shares || "N/A"}</td>
+            `;
+              sharesTableBody.appendChild(row);
+            });
+
+            const attachments = response.attachments || []
+            const attachmentTableBody = document.getElementById("attachmentsTableBody")
+            attachmentTableBody.innerHTML = '';
+            attachments.forEach((attachment, index) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${attachment.attachment_id || "N/A"}</td>
+                <td>${attachment.attachment_type || "N/A"}</td>
+                <td>${attachment.file_name || "N/A"}</td>
+                <td>${attachment.file_size || "N/A"}</td>
+                <td>${attachment.file_type || "N/A"}</td>
+                <td><a href="${baseurl}/${entityData.local_file_id}" target="_blank" class="btn btn-primary btn-sm">
+                <i class="fa fa-download"></i> Download
+                </a></td>
+            `;
+              attachmentTableBody.appendChild(row);
+            })
+
+            // Enable the Search button after request completion
+            $('#searchButton').prop('disabled', false).text('Search');
+          },
+          error: function (xhr, status, error) {
+            console.error("Request failed: " + error);
+            $('#searchButton').prop('disabled', false).text('Search');
+          }
+        });
+
+      });
+    });
+
+    document.getElementById('downloadPdf').addEventListener('click', function () {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Set PDF title
+      doc.setFontSize(18);
+      doc.text('Entity Details', 10, 10);
+
+      // Add data to the PDF
+      const entityDetails = {
+        "Entity Title": document.getElementById('entityTitle').innerText,
+        "Certificate Number": document.getElementById('certNumber').innerText,
+        "Company Type": document.getElementById('companyType').innerText,
+        "Company Subtype": document.getElementById('companySubtype').innerText,
+        "Incorporation Date": document.getElementById('incorporationDate').innerText,
+        "BA Category": document.getElementById('baCategory').innerText,
+        "BA Division": document.getElementById('baDivision').innerText,
+        "BA Group": document.getElementById('baGroup').innerText,
+        "BA Class": document.getElementById('baClass').innerText,
+      };
+
+      let yOffset = 20; // Vertical offset for adding text
+      Object.keys(entityDetails).forEach((key) => {
+        doc.setFontSize(12);
+        doc.text(`${key}: ${entityDetails[key]}`, 10, yOffset);
+        yOffset += 10;
+      });
+
+      // Download PDF
+      doc.save('Entity_Details.pdf');
+    });
+  </script>
+</div>
+
+
+</body>
+</html>

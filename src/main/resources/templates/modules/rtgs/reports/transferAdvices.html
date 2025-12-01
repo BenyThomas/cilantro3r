@@ -1,0 +1,354 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+        .btn{
+            border-radius: 0px !important;
+        }
+        .btn-dark {
+            background-color: #000000!important;
+            border: 1px solid #ffffff!important;
+        }
+        .btn:hover {
+            color: #ffffff !important;
+            text-decoration: none;
+        }
+        .btn-dark.active, .btn-dark.focus, .btn-dark:active, .btn-dark:focus, .btn-dark:hover, .open>.dropdown-toggle.btn-dark {
+            background-color: #3db9dc!important;
+            border: 1px solid #3db9dc!important;
+        }
+        .button.selected{
+            background-color: #3db9dc!important;
+            border: 1px solid #3db9dc!important;
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentsss"><div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('102')">102</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('103')">103</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('192')">192</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('195')">195</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('196')">196</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('199')">199</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('202')">202</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('292')">292</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('295')">295</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('296')">296</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('299')">299</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('300')">300</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('320')">320</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('399')">399</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('671')">671</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('700')">700</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('730')">730</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('734')">734</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('750')">750</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('754')">754</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('756')">756</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('759')">759</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('760')">760</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('791')">791</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('799')">799</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('900')">900</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('910')">910</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('940')">940</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('950')">950</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('992')">992</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('995')">995</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('996')">996</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('998')">998</button>
+                <button type="button" class="btn btn-dark" onclick="getAdvicesReportsPerClickedMessageType('999')">999</button>
+            </div>
+            <hr/>
+            <div class="row" id="searchFieldsOnSwiftAdvice" hidden="">
+                <form role="form">
+                    <div class="row">
+                        <!--                                                <div class="form-group col-md-3">
+                                                                            <label>Select Type</label>
+                                                                            <div class="input-group">
+                                                                            <select class="form-control col-sm-12 select2" id="messageType" name="messageType"  style="font-size: 10px !important;"> 
+                                                                                <option value="">Select Message Type</option>
+                                                                                <option value="all">All</option>
+                                                                                <option value="103">103</option>
+                                                                                <option value="202">202</option>
+                                                                                <option value="204">204</option>
+                                                                                <option value="205">205</option>
+                                                                                <option value="999">999</option>
+                                                                                <option value="950">950</option>
+                                                                            </select>  
+                                                                            </div>
+                                                                        </div>-->
+                        <div class="form-group col-md-3">
+                            <!--<label>Select Type</label>-->
+                            <!--<div class="input-group">-->
+                            <select class="form-control col-sm-12 select2" id="direction" name="direction"  style="font-size: 10px !important;">
+                                <option value="">Select Direction[optional]</option>
+                                <option value="all">all</option>
+                                <option value="INCOMING">INCOMING</option>
+                                <option value="OUTGOING">OUTGOING</option>
+                            </select>  
+                            <!--</div>-->
+                        </div>
+                        <div class="form-group col-md-3">
+                            <!--<label>From Date</label>-->
+                            <!--<div class="input-group">-->
+                            <input name="fromDate" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose" data-date-format="yyyy-mm-dd" type="text" placeholder="From Date" autocomplete="off"  style="font-size: 10px !important;"/>
+                            <!--</div> input-group -->
+                        </div>
+                        <div class="form-group col-md-3">
+                            <!--<label>To Date</label>-->
+                            <div class="input-group">
+                                <input name="toDate" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose2" data-date-format="yyyy-mm-dd" type="text" placeholder="To Date" autocomplete="off"  style="font-size: 10px !important;"/>
+                            </div><!-- input-group -->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-3">
+                            <!--<label>From Date</label>-->
+                            <!--<div class="input-group">-->
+                            <input name="amount" class="form-control form-control-inline"  id="amount" type="text" placeholder="Amount [optional]" autocomplete="off"  style="font-size: 10px !important;"/>
+                            <!--</div> input-group -->
+                        </div>
+                        <div class="form-group col-md-3">
+                            <!--<label>From Date</label>-->
+                            <!--<div class="input-group">-->
+                            <input name="senderReference" class="form-control form-control-inline"  id="senderReference" type="text" placeholder="Sender Reference [optional]" autocomplete="off"  style="font-size: 10px !important;"/>
+                            <!--</div> input-group -->
+                        </div>
+                        <div class="form-group col-md-3">
+                            <!--<label>From Date</label>-->
+                            <!--<div class="input-group">-->
+                            <input name="currency" class="form-control form-control-inline"  id="currency" type="text" placeholder="currency [optional]" autocomplete="off"  style="font-size: 10px !important;"/>
+                            <!--</div> input-group -->
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <div class="form-group col-md-3 text-right m-b-0">
+                                <button  type="button" class="btn btn-info btn-submit-inwardEft-Summary" onclick="refreshTransferAdviceTable()">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="successFlag">
+            </div>
+            <div  id="loading" hidden=""> </div>
+
+            <div class="row">
+                <table id="transferAdvices" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important;">
+                    <thead>
+                        <tr>
+                            <th>S/N</th>
+                            <th>Message Type</th>
+                            <th>Sender Bank</th>
+                            <th>Receiver Bank</th>
+                            <th>Direction</th>
+                            <th>Channel</th>
+                            <th>sender Reference</th>
+                            <th>Related Reference</th>
+                            <th>Value Date</th>
+                            <th>Currency</th>        
+                            <th>Amount</th>   
+                            <th>FIN</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!--</form>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/teller.js}"></script>
+
+    <script>
+        $(document).ready(function () {
+            jQuery('#datepicker-autoclose').datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            jQuery('#datepicker-autoclose2').datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+            $("#loading").hide();
+            $(".select2").select2();
+            $('.authorize-payments').attr('disabled', 'disabled');
+            $("#messageType").on('change', function () {
+                $('#transferAdvices').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $('#transferAdvices').DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "asc"],
+                ajax: {
+                    'url': '/getTransferAdvicesAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    },
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "direction": $("select[name='direction']").val(),
+                            "fromDate": $("input[name='fromDate']").val(),
+                            "toDate": $("input[name='toDate']").val(),
+                            "amount": $("input[name='amount']").val(),
+                            "currency": $("input[name='currency']").val(),
+                            "senderReference": $("input[name='senderReference']").val()
+                        });
+                    }
+                },
+                "columns": [
+                    {"data": "id", "width": "5%", },
+                    {"data": "messageType", "width": "5%", },
+                    {"data": "senderBank", "width": "5%", },
+                    {"data": "receiverBank", "width": "5%", },
+                    {"data": "direction", "width": "5%", },
+                    {"data": "channel", "width": "5%", },
+                    {"data": 'id',
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "25%",
+                        "render": function (data, type, row, meta) {
+                            return '<a href="/downloadTransferAdvice?senderBank=' + row.senderBank + '&senderReference=' + row.senderReference + '&receiverBank=' + row.receiverBank + '">' + row.senderReference + '</a>';
+                        }},
+                    {"data": "relatedReference", "width": "5%", },
+                    {
+                        "data": "txndate", "width": "5%",
+                        "render": function (data, type,row, meta){
+                            if (!data) return "";
+                            return formatDateTime(data);
+                        }
+                    },
+                    {"data": "currency", "width": "5%", },
+                    {"data": "amount", "width": "5%", },
+                    {"data": "serviceCode", "width": "5%", },
+                    {"data": 'status', "width": "5%", },
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+//                fixedColumns: true,
+                buttons: [{
+                        extend: "copy",
+                        title: 'Transfer Payment Advices',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'Transfer Payment Advices',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'Transfer Payment Advices',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'Transfer Payment Advices',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'Transfer Payment Advices',
+                        className: "btn-sm"
+                    }],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='messageType']").val() == '') {
+                        return false;
+                    }
+                }
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        });
+        function reloadDatatable() {
+            $('#transferAdvices').DataTable().ajax.reload();
+        }
+        function refreshTransferAdviceTable() {
+            $('#transferAdvices').DataTable().ajax.reload();
+        }
+        function getAdvicesReportsPerClickedMessageType(messageType) {
+            $('button').removeClass('selected');
+            $(this).addClass('selected');
+            console.log('MESSAGE TYPE CLICKED:' + messageType);
+            $("#searchFieldsOnSwiftAdvice").show();
+
+        }
+        function formatDateTime(dateString) {
+            if (!dateString) return ''; // Handle null or empty values
+            var date = new Date(dateString);
+            var year = date.getFullYear();
+            var month = ('0' + (date.getMonth() + 1)).slice(-2);
+            var day = ('0' + date.getDate()).slice(-2);
+            var hours = ('0' + date.getHours()).slice(-2);
+            var minutes = ('0' + date.getMinutes()).slice(-2);
+            var seconds = ('0' + date.getSeconds()).slice(-2);
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+    </script>
+</div>

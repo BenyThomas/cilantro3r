@@ -1,0 +1,238 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/select.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill"><div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <div id="successFlag">
+            </div>
+            <div class="row" id="content"></div>
+            <div class="row">
+                <div class="form-group col-md-12">
+<!--                    <button th:if="${(#strings.equals(level, 'A') or #strings.equals(level, 'P')) and isProcessActionAllowed}" th:onclick="processPensionTransactionsConfirmation([[${batchReference}]], [[${level}]])" class="btn btn-primary pull-right col-md-3" style="background-color: #989a25 !important;border: 1px solid #989a25 !important;border-radius: 41px !important;">Process Transactions</button>-->
+                    <button th:if="${isReturnActionAllowed}" th:onclick="showDialog()" class="btn btn-primary pull-right col-md-2" style="background-color: #0a5b94 !important;border: 1px solid #ffffff !important;border-radius: 41px !important;">Return Transactions</button>
+<!--                    <button th:if="${#strings.equals(level, 'V')}" th:onclick="complyTransactionWithReason([[${batchReference}]], [[${status}]])" class="btn btn-primary pull-right col-md-2" style="border-radius: 41px !important;">Comply</button>-->
+                </div>
+            </div>
+            <div id="loading" hidden=""></div>
+            <input hidden="" name="batchReference" th:value="${batchReference}">
+            <input hidden="" name="status" th:value="${status}">
+            <div id="dialog"></div>
+            <div class="row">
+                <table id="pensionBatchTransactions" class="display nowrap table table-striped table-bordered" style="width: 80%; font-size: 7.5px !important;">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>S/N</th>
+                            <th>Txn Reference</th>
+                            <th>Pensioner Name</th>
+                            <th>Cbs Name</th>
+                            <th>Percentage Match</th>
+                            <th>Account</th>
+                            <th>Amount</th>
+                            <th>Currency</th>
+                            <th>Pensioner ID</th>
+                            <th>Batch Reference</th>
+                            <th>Description</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.select.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/teller.js}"></script>
+    <script th:src="@{/assets/scripts/pension.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+        var all = false;
+        $(document).ready(function () {
+            $("#loading").hide();
+            $("#select2").select2();
+            $('.authorize-payments').attr('disabled', 'disabled');
+            $("#mno").on('change', function () {
+                $('#pensionBatchTransactions').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $('#pensionBatchTransactions').DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                select: true,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "desc"],
+                ajax: {
+                    'url': '/getPensionPayrollDetailsAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    },
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "batchReference": $("input[name='batchReference']").val(),
+                            "status": $("input[name='status']").val()
+                        });
+                    }
+                },
+                "columns": [
+                    {
+                        "data": null,
+                        "orderable": false,
+                        "className": 'select-checkbox',
+                        "render": function (data, type, row, meta) {
+                            return '';
+                        }
+                    },
+                    {"data": "id"},
+                    {"data": "bankReference"},
+                    {"data": "name"},
+                    {"data": "cbs_name"},
+                    {"data": "percentage_match"},
+                    {"data": "account"},
+                    {
+                        "data": "amount",
+                        "render": function (data) {
+                            var amount = addCommas(data);
+                            return amount;
+                        }
+                    },
+                    {"data": "currency"},
+                    {"data": "pensioner_id"},
+                    {"data": "batchReference"},
+                    {"data": "description"},
+                    {"data": "message"},
+                    {
+                        "data": "status",
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            var a = '';
+                            if (row.status === "R") {
+                                a = "Transaction received but not validated"
+                            }
+                            if (row.status === "V") {
+                                a = "Transaction validated"
+                            }
+                            if (row.status === "P") {
+                                a = "Transaction posted"
+                            }
+                            if (row.status === "C") {
+                                a = "Transaction processed completely"
+                            }
+                            if (row.status === "F") {
+                                a = "Transaction failed"
+                            }
+                            return a;
+                        }
+                    }
+                ],
+                select: {
+                    style: 'multi',
+                    selector: 'td:first-child'
+                },
+                buttons: [
+                    'selectAll',
+                    'selectNone',
+                    {
+                        extend: "copy",
+                        title: 'Authorize RTGS Remittance Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'Authorize RTGS Remittance  Transactions',
+                        className: "btn-sm"
+                    }
+                ]
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(1, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        });
+
+        function showDialog() {
+            swal({
+                title: "Are you sure?",
+                text: "This is irreversible, click submit button if you are sure.",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                confirmButtonColor: "#3ba03e"
+            })
+            .then((result) => {
+                if (result) {
+                    returnTransactionWithReason(/*[[${batchReference}]]*/);
+                }
+            });
+        }
+    </script>
+</div>

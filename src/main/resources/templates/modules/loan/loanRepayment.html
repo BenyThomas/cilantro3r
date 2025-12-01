@@ -1,0 +1,311 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/plugins/select2/css/select2.min.css}" type="text/css"/>
+    <!--    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div id="reconData" layout:fragment="contents">
+            <div class="panel panel-default panel-fill">
+                <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+                <div class="panel-body">
+                    <div class="row" id="preloader2">
+                        <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+                    </div>
+
+                    <!--- success start--->
+                    <div class="col-md-12" id="successFlag"></div>
+                    <!------ End ------->
+                    <!--- FORM START ----->
+<!--                    Should not be changed, Please !-->
+                    <div class="row" id="another-element">
+                        <form id="form2" role="form"  enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label style="margin-left:1px;">LOAN TYPE</label>
+                                        <select class="form-control select2" id="loanType" name="loanType"
+                                                selected="selected"
+                                                style="width: 550px">
+                                            <!--                                            <option disabled selected value="">CHOOSE...</option>-->
+                                            <option th:each="loanType:${loanTypes}" th:text="${loanType.name}"
+                                                    th:value="${loanType.code}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6 text-right m-b-0" style="margin-top: 27px; ">
+                                        <label style="margin-left:1px;"><a id="downloadSamplePerLoanT" href="#" target="_blank" >SALARYA CSV BATCH</a></label>
+                                        <input type="file" name="batchFile" id="batchFile" class="form-control"/>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-row align-items-end">
+                                    <div class="form-group col-md-4">
+                                        <label for="repaymentType">REPAYMENT TYPE <i>for nisogeze</i></label>
+                                        <select class="form-control select2" id="repaymentType" name="repaymentType" style="width: 100%;">
+                                            <option value="ASSISTED">ASSISTED REPAYEMENT</option>
+                                            <option value="WRITTEN_OFF">WRITTEN OFF</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <label for="repaymentStrategy">STRATEGY <i>for Written Off</i></label>
+                                        <select class="form-control select2" id="repaymentStrategy" name="repaymentStrategy" style="width: 100%;">
+                                            <option value="PRINCIPAL_FIRST">PRINCIPAL FIRST</option>
+                                            <option value="INTEREST_FIRST">INTEREST FIRST</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-md-4 text-right">
+                                        <button type="button" class="btn btn-primary" id="uploadBatchBtn" style="background-color: #063970!important; margin-top: 30px;">
+                                            Upload Batch
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <table id="loansDT" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 7.5px !important;">
+                                    <thead>
+                                    <tr>
+                                        <th>SN</th>
+                                        <th>PRINCIPAL AMT</th>
+                                        <th>PROCESSING FEE</th>
+                                        <th>INTEREST FEE</th>
+                                        <th>LOAN REFERENCE</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <!--- FORM END ---->
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/clockpicker/js/bootstrap-clockpicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/loan.js}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#preloader2").hide();
+
+                jQuery('#fromTime').timepicker({
+                    showMeridian: false
+                });
+                jQuery('#toTime').timepicker({
+                    showMeridian: false
+                });
+                jQuery('#datepicker-autoclose').datepicker({
+                    autoclose: true,
+                    todayHighlight: true
+                });
+                jQuery('#datepicker-autoclose2').datepicker({
+                    autoclose: true,
+                    todayHighlight: true
+                });
+
+                $("#loanType").change(function(e){
+                    e.preventDefault();
+                    var loanType = $(this).val();
+                    var linkName = `${loanType} CSV BATCH`;
+                    $("#downloadSamplePerLoanT").html(linkName); //set jina
+                });
+                $("#downloadSamplePerLoanT").click(function(e){
+                    e.preventDefault();
+                    var loanType = $("#loanType").val();
+                    var url = `/fireDownloadCsvPerLoanType?loanType=${loanType}`;
+                    $(this).attr("href",url);
+                    window.open(url);
+                });
+
+
+                $("#uploadBatchBtn").click(function(e){
+                    var formData = new FormData($('#form2')[0]);
+                    var token = $("meta[name='_csrf']").attr("content");
+                    var header = $("meta[name='_csrf_header']").attr("content");
+                    var count = 0;
+                    $("#preloader2").show();
+                    $("#successFlag").hide();
+                    //ajax start
+                    $.ajax({
+                        processData: false,
+                        contentType: false,
+                        data: formData,
+                        type: "POST",
+                        'url': '/fireUploadBatchForRepayment',
+                        beforeSend: function (request) {
+                            request.setRequestHeader(header, token);
+                            $("#preloader2").show();
+                        },
+                        success: function (response) {
+                            $("#preloader2").hide();
+                            console.log(response);
+                            if(response.code === "200"){
+                                $("#successFlag").after('<div class="alert alert-success" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>' + response.message + ', WAITING APPROVAL </strong></div>');
+                            }else{
+                               $("#successFlag").after('<div class="alert alert-danger" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>' + response.message + '</strong></div>');
+                            }
+                        },
+                        error: function(response){
+                            $("#preloader2").hide();
+                        }
+                    }); //end ajax
+                });
+                //below was the single loan repayment implementations
+             $('#searchBtn').click(function(){
+                var formData = new FormData($('#form2')[0]);
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var count = 0;
+               $("#preloader2").show();
+                var loanType = $('#loanType').val();
+                    //ajax start
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: "POST",
+                    'url': '/fireGetCustomerActiveLoansPerLoanType',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#preloader2").show();
+                    },
+                    success: function (response) {
+                       $("#preloader2").hide();
+                       console.log(response);
+                       if(response.result.length > 0){
+                           if(loanType === 'NISOGEZE'){
+                           $("#nisogezeDependants").show();
+                           $("#hideForNisogeze").hide();
+                           }
+                        $('#initiateRepaymentForm').show();
+                       }
+                       var table = $('#loansDT').DataTable({
+                                dom: 'Blfrtip',
+                                "info": true,
+                                "bDestroy": true,
+                                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                                scrollX: true,
+                                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                "data": response.result,
+                                columns: [
+                                     {"data": "count",
+                                      "render":function(data, type,row,meta){
+                                            return count +=1;
+                                      }
+                                      },
+                                    {"data": "principalAmount",
+                                    "render": function numberWithCommas(principalAmount) {
+                                        return principalAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                     }
+                                     },
+                                    {"data": "processingFee",
+                                    "render": function numberWithCommas(processingFee) {
+                                        return processingFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                     }
+                                     },
+                                    {"data": "reference"}
+
+                                ]
+                                }); //end datatable
+                       }, //end success
+
+                    }); //end ajax
+               }); //end search button
+
+               //start initiate transaction
+               $('#submitBtn').click(function(){
+                            //ajax start
+                $('#submitBtn').prop('disabled',true);
+
+                var formData = new FormData($('#form2')[0]);
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: "POST",
+                    'url': '/fireInitiateLoanRepayments',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#preloader2").show();
+                    },
+                    success: function (response) {
+                       $("#preloader2").hide();
+                       console.log(response);
+                        $("#successFlag").html('<div class="alert alert-success" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>REPAYMENT REQUEST INITIATED SUCCESSFULLY, WAITING APPROVAL</strong></div>');
+                       }, //end success
+                    error: function(response){
+                        console.log(response);
+                    }
+
+                    }); //end ajax
+               });
+               //end initiate transaction
+        }); //END DOCUMENT READY
+
+
+
+
+    </script>
+</div>
+</body>
+</html>
+

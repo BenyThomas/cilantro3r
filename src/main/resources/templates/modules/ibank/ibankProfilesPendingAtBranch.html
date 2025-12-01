@@ -1,0 +1,307 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/plugins/select2/css/select2.min.css}" rel="stylesheet" type="text/css"/>
+</div>
+<div id="loading" hidden=""></div>
+<div class="row" id="separator" hidden="">
+    <hr/>
+</div>
+
+<div class="row">
+    <div class="panel panel-default panel-fill" id="tabContentsss">
+        <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <div id="successFlag">
+            </div>
+            <div class="row">
+                <table id="profilesInitiated" class="display nowrap table table-striped table-bordered"
+                       style="width: 100%; font-size: 7.5px !important;">
+                    <thead>
+                    <tr>
+                        <!--                            <th>S/N</th>-->
+                        <th>Reference</th>
+                        <th>Account</th>
+                        <th>Name</th>
+                        <th>Rim No</th>
+                        <th>Category</th>
+                        <th>Address1</th>
+                        <th>branch</th>
+                        <th>City</th>
+                        <th>Created by</th>
+                        <th>Create Date</th>
+                        <th>Status</th>
+                        <th style="width: 512px !important;">ACTION</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!--</form>-->
+            </div>
+        </div>
+    </div>
+</div>
+<!--<div class="form-group col-md-9">-->
+<div class="row"></div>
+<div class="row">
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+
+    <!--init-->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!--App Js-->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
+    <script th:src="@{/assets/scripts/ibank.js}"></script>
+    <script>
+        $(document).ready(function () {
+            //ADD NEW CLIENT TOGGLE MENU
+            $('#addNewClient').click(function () {
+                $('#newClientForm').toggle('slide');
+                $('#addNewClient').hide();
+                $('#separator').show();
+                $("#loading").hide();
+            });
+            $('.select2').select2();
+            $("#loading").hide();
+//            rtgsTransferForm
+
+//add the number of files to be attached
+            var max_fields = 4;
+            var wrapper = $("#supportingDocument");
+            var add_button = $("#addField");
+
+            var x = 1;
+            $(add_button).click(function (e) {
+                e.preventDefault();
+                if (x < max_fields) {
+                    x++;
+                    $(wrapper).append('<input type="file" name="supportingDoc" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Supporting Document">'); //add input box
+                } else {
+                    alert('You Reached the limits');
+                }
+            });
+
+            $(wrapper).on("click", ".delete", function (e) {
+                e.preventDefault();
+                $(this).parent('div').remove();
+                x--;
+            });
+            //ON SELECTING DESTINATION BANK CHECK IF ITS INTERNATIONAL AND ADD AN INPUT FIELD FOR INTERMEDIARY BANK
+            $('#intermediary').html("");
+            $("#destinationBank").on('change', function () {
+                var benBic = $("select[name='beneficiaryBIC']").val();
+                var identifier = benBic.split('==');
+                if (identifier[1] === 'INTERNATIONAL') {
+                    /*
+                     * ADD AN INPUT FOR INTERMEDIARY SWIFT CODE
+                     */
+                    $('#intermediary').append('<input type="text" id="intermediaryBank" name="intermediaryBank" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Intermediary Bank Swift Code (IF APPLICABLE)">');
+
+                }
+            });
+            $("#mno").on('change', function () {
+                $('#profilesInitiated').DataTable().ajax.reload();
+            });
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+            var table = $('#profilesInitiated').DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "desc"],
+                ajax: {
+                    'url': '/getPendingAtBranchIBProfilesAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    }
+//                    "data": function (d) {
+//                        return $.extend({}, d, {
+//                            "mno": $("select[name='mno']").val()
+//                        });
+//                    }
+                },
+                "columns": [
+                    // {"data": "reference"},
+                    {"data": "reference"},
+                    {"data": "account"},
+                    {"data": "name"},
+                    {"data": "rim_no"},
+                    {"data": "category"},
+                    {"data": "address1"},
+                    {"data": "branch"},
+                    {"data": "city"},
+                    {"data": "created_by"},
+                    {
+                        "data": 'create_dt', "data": 'create_dt', "render": function (data, type, row, meta) {
+                            var today = new Date(row.create_dt);
+                            return today.toLocaleString();
+                        }
+                    },
+                    {
+                        "data": 'status',
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "5%",
+                        "render": function (data, type, row, meta) {
+                            var a = '';
+                            if (row.status === "I") {
+                                a = "INITIATED"
+                            }
+                            if (row.status === "P") {
+                                a = "PENDING"
+                            }
+                            if (row.status === "C") {
+                                a = "COMPLETED"
+                            }
+                            return a;
+                        }
+                    },
+
+                    {
+                        "data": 'reference',
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            var a = '';
+//                     authorizePayment.png      a = '<a type="button" href="/downloadSupportingDoc?reference=' + row.reference + '"><button type="button"><img src="/assets/images/supportingDoc.png" style="width:20px;" title="Download Supporting Document"></button></a>
+                            a += '<button style="background-color: green !important;border-color: green; color: white !important; font-size: 11px !important;"  type="button" onclick="viewPendingIBProfileOnBranchWorkFlow(\'' + row.reference + '\',\'' + row.name + '\',\'' + row.category + '\')"> APPROVE</button>';
+                            return a;
+                        }
+                    }
+                ], aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ], columnDefs: [
+                    {width: 1000, targets: 14}
+                ],
+//                fixedColumns: true,
+                buttons: [{
+                    extend: "copy",
+                    title: 'Authorize RTGS Remittance Transactions',
+                    className: "btn-sm"
+                }, {
+                    extend: "csv",
+                    title: 'Authorize RTGS Remittance  Transactions',
+                    className: "btn-sm"
+                }, {
+                    extend: "excel",
+                    title: 'Authorize RTGS Remittance  Transactions',
+                    className: "btn-sm"
+                }, {
+                    extend: "pdf",
+                    title: 'Authorize RTGS Remittance  Transactions',
+                    className: "btn-sm"
+                }, {
+                    extend: "print",
+                    title: 'Authorize RTGS Remittance  Transactions',
+                    className: "btn-sm"
+                }],
+                "preDrawCallback": function (settings) {
+                    if ($("select[name='mno']").val() == '') {
+                        return false;
+                    }
+                }
+            });
+
+        });
+
+        function getCustomerDetails() {
+            console.log("sender account pressed!!!");
+            $("#loading").show();
+            var accountNo = $("input[name='accountNo']").val();
+            $.ajax({
+                url: "/queryCustomerDetails",
+                type: 'GET',
+                data: {accountNo: accountNo, code: "searchAccount"},
+                dataType: "json",
+                success: function (res) {
+                    $("#loading").hide();
+                    $("#actNM").val(res[0].CUST_NM);
+                    $("#availableBalance").text('Available Blance: ' + addCommas(res[0].CLEARED_BAL));
+                    $("#customerName").val(res[0].CUST_NM);
+                    $("#customerId").val(res[0].CUST_ID);
+                    $("#customerRim").val(res[0].CUST_NO);
+                    $("#custShortName").val(res[0].CUST_SHORT_NM);
+                    $("#custCategory").val(res[0].CUST_CAT);
+                    $("#address1").val(res[0].ADDR_LINE_1);
+                    $("#address2").val(res[0].ADDR_LINE_2);
+                    $("#address3").val(res[0].ADDR_LINE_3);
+                    $("#address4").val(res[0].ADDR_LINE_4);
+                    $("#city").val(res[0].CITY);
+                    $("#email").val("not set");
+                    $("#branchId").val(res[0].MAIN_BRANCH_ID);
+                    $("#branchCode").val(res[0].MAIN_BRANCH_ID);
+                    $("#state").val(res[0].STATE);
+                    console.log(res)
+                },
+                error: function (res) {
+                    $("#loading").hide();
+                    $('#senderAccount').after('<h4 class="error" style="color:red     font-size: 8px !important;"> Error: Please Try Again. Please contact IT Helpdesk / Database Administrator: RUBIKON NOT FOUND</h4>');
+                    console.log(res);
+                }
+            })
+        }
+
+        function addCommas(nStr) {
+            nStr += '';
+            x = nStr.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            }
+            return x1 + x2;
+        }
+    </script>
+</div>

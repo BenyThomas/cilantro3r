@@ -1,0 +1,237 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}">
+</div>
+<div class="panel panel-default panel-fill" id="tabContentsss">
+    <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+    <div class="panel-body">
+        <div class="row">
+            <form id="tips-form" role="form">
+                <div class="row">
+                    <div class="form-group col-md-3">
+                        <label style="margin-left:1px; importrant;">Direction</label>
+                        <select class="form-control select2" id="tipsDirection" name="tipsDirection" selected="selected"
+                                style="width: 550px">
+                            <option disabled selected value="">Select Direction</option>
+                            <option value="TIPS-OUTGOING"> TIPS OUTGOING</option>
+                            <option value="TIPS-INCOMING">TIPS INCOMMING</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label style="margin-left:1px; importrant;">Institution</label>
+                        <select class="form-control select2" id="institution" name="institution" selected="selected" style="width: 550px">
+                            <option selected value="ALL">ALL</option>
+                            <option th:each="fspParticipant: ${fspParticipants}" th:value="${fspParticipant.code}" th:text="${fspParticipant.name}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label style="margin-left:1px; importrant;">From Date</label>
+                        <div class="input-group">
+                            <input autocomplete="off" class="form-control form-control-inline input-txndatemedium default-date-picker" data-date-format="yyyy-mm-dd" id="datepicker-autoclose" name="fromDate" placeholder="From date: yyyy-mm-dd" th:value="${startDate}" type="text"/>
+                            <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                        </div><!-- input-group -->
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label style="margin-left:1px; importrant;">To Date</label>
+                        <div class="input-group">
+                            <input autocomplete="off" class="form-control form-control-inline input-txndatemedium default-date-picker" data-date-format="yyyy-mm-dd" id="datepicker-autoclose2" name="toDate" placeholder="To date: yyyy-mm-dd" th:value="${endDate}" type="text"/>
+                            <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                        </div><!-- input-group -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-3">
+                        <div class="form-group col-md-3 text-right m-b-0" style="margin-bottom:1px;">
+                            <button class="btn btn-info" id="searchTipsTxns" type="button">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="successFlag">
+        </div>
+        <div class="row" id="loading2">
+            <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+        </div>
+        <div class="row">
+            <!--<form>-->
+            <table class="display nowrap table table-striped table-bordered" id="directionBasedTipsTxnReports"
+                   style="width: 100%; font-size: 7.5px !important; display:none;">
+                <thead>
+                <tr>
+                    <th>S/N</th>
+                    <th>Txn Date</th>
+                    <th>Sender Acct</th>
+                    <th>Sender Name</th>
+                    <th>Ben Account</th>
+                    <th>Ben Name</th>
+                    <th>Amount</th>
+                    <th>Currency</th>
+                    <th>Bank Reference</th>
+                    <th>Payee Reference</th>
+                    <th>Institution Name</th>
+                    <th>Status</th>
+                    <th>Cbs Status</th>
+                    <th>Thirdpart Status</th>
+                    <th>Direction</th>
+                    <th scope="col-4">ACTION</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+            <!--</form>-->
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/tips.js}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#loading2").hide();
+                 jQuery('#fromTime').timepicker({
+                    showMeridian: false
+                });
+                jQuery('#toTime').timepicker({
+                    showMeridian: false
+                });
+                jQuery('#datepicker-autoclose').datepicker({
+                    autoclose: true,
+                    todayHighlight: true
+                });
+                jQuery('#datepicker-autoclose2').datepicker({
+                    autoclose: true,
+                    todayHighlight: true
+                });
+
+                 $(".select2").select2({
+                        width:"100%"
+                    });
+
+             $("#searchTipsTxns").click(function (e) {
+                e.preventDefault();
+
+                var direction = $("#tipsDirection").val();
+                if(direction == null){
+                    alert("Transaction direction can not be empty");
+                }else{
+
+                var formData = new FormData($('#tips-form')[0]);
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var count = 0;
+               $("#loading2").show();
+
+               //ajax start
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: "POST",
+                    'url': '/tipsTransactionsReportAjax',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#loading2").show();
+                    },
+
+                    success: function (response) {
+                       $("#loading2").hide();
+<!--                        console.log(response);-->
+                           $("#directionBasedTipsTxnReports").show();
+
+                            var table = $('#directionBasedTipsTxnReports').DataTable({
+                                dom: 'Blfrtip',
+                                "info": true,
+                                "bDestroy": true,
+                                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                                lengthChange: true,
+                                scrollCollapse: true,
+                                scrollY: "700px",
+                                scrollX: true,
+                                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                "data": response,
+                               columns: [
+                                     {"data": "count",
+                                      "render":function(data, type,row,meta){
+                                            return count +=1;
+                                      }
+                                      },
+                                    {"data": "transDate", "width": "5%", },
+                                    {"data": "senderAccount", "width": "5%", },
+                                    {"data": "senderName", "width": "5%", },
+                                    {"data": "benAcct", "width": "5%", },
+                                    {"data": "benName", "width": "5%", },
+                                    {"data": "amount", "width": "5%", },
+                                    {"data": "currency", "width": "5%", },
+                                    {"data": "bankReference", "width": "5%", },
+                                    {"data": "receipt", "width": "5%", },
+                                    {"data": "institutionName", "width": "5%", },
+                                    {"data": "statusDescription", "width": "5%", },
+                                    {"data": "cbsStatus", "width": "5%", },
+                                    {"data": "thirdPartyStatus", "width": "5%", },
+                                    {"data": 'direction', "width": "5%", },
+                                    {"data": 'id',
+                                            "orderable": false,
+                                            "searchable": false,
+                                            "width": "30%",
+                                            "render": function (data, type, row, meta) {
+                                                            a = '<div class="mr-2"><a class="btn btn-xs btn-primary" onclick="confirmBOT(\'' + row.bankReference + '\')"><i class="fa fa-question-circle-o" aria-hidden="true"> Confirm BOT</i></a>';
+                                                            if(row.direction==="TIPS-OUTGOING"){
+                                                            a += '&nbsp <a class="btn btn-xs btn-primary"  onclick="initiateTipsTxnReversal(\'' + row.bankReference + '\')"> <i class="fa fa-recycle " aria-hidden="true"> Reversal</i></a>';
+                                                            }
+                                                            if(row.status=="CC"){
+                                                            a += '&nbsp <a class="btn btn-xs btn-success"  href="/fireDownloadTransferAdvice?bankReference=' + row.bankReference + '" target="_blank"> <i class="fa fa-print " aria-hidden="true"> Print Advice</i></a>';
+                                                            }
+                                                            a +='</div>';
+                                                        return a;
+                                            }}
+                                ]
+                            });
+                            table.buttons().container().appendTo('#directionBasedTipsTxnReports-buttons_wrapper .col-md-6:eq(0)');
+
+                    },
+                    error: function (e) {
+                        $("#preloader2").hide();
+                        console.log(e);
+                    }
+                });
+                //end ajax
+                }
+            });//end change
+
+        });// end document ready
+
+        function reloadDatatable() {
+            $('#directionBasedTipsTxnReports').DataTable().ajax.reload();
+        }
+
+            //view decider end
+    </script>
+</div>

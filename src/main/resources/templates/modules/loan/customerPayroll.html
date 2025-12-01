@@ -1,0 +1,277 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        };
+        #rtgsTxnOnWorkFlow{
+            table-layout: fixed !important;
+            word-wrap:break-word;
+        }
+        .btn{
+            border-radius: 0px !important;
+        }
+        .btn-dark {
+            background-color: #000000!important;
+            border: 1px solid #ffffff!important;
+        }
+        .btn:hover {
+            color: #ffffff !important;
+            text-decoration: none;
+        }
+        .btn-dark.active, .btn-dark.focus, .btn-dark:active, .btn-dark:focus, .btn-dark:hover, .open>.dropdown-toggle.btn-dark {
+            background-color: #3db9dc!important;
+            border: 1px solid #3db9dc!important;
+        }
+        .button.selected{
+            background-color: #3db9dc!important;
+            border: 1px solid #3db9dc!important;
+        }
+        #transactionFile {
+            width: unset;
+            display: inline-block;
+        }
+        .previous {
+            text-decoration: none;
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 10px 0;
+        }
+    </style>
+    <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/datatables/select.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/sweet-alert2/sweetalert2.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+</div>
+<div class="row">
+    <div class="panel panel-default panel-fill">
+        <div class="panel-heading">
+            <h4 class="panel-title" th:text="${pageTitle}"></h4>
+        </div>
+        <div class="panel-body">
+<!--            <div class="row" id="payrollForm">-->
+<!--                <form role="form">-->
+<!--                    <div class="row">-->
+<!--                        <div class="form-group col-md-3">-->
+<!--                            <div class="input-group">-->
+<!--                                <input name="fromDate"-->
+<!--                                       class="form-control form-control-inline input-txndatemedium default-date-picker"-->
+<!--                                       id="datepicker-autoclose" data-date-format="yyyy-mm-dd" type="text"-->
+<!--                                       placeholder="From: yyyy-mm-dd" autocomplete="off"/>-->
+<!--                                <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="form-group col-md-3">-->
+<!--                            <div class="input-group">-->
+<!--                                <input name="toDate"-->
+<!--                                       class="form-control form-control-inline input-txndatemedium default-date-picker"-->
+<!--                                       id="datepicker-autoclose2" data-date-format="yyyy-mm-dd" type="text"-->
+<!--                                       placeholder="To: yyyy-mm-dd" autocomplete="off"/>-->
+<!--                                <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="form-group col-md-1">-->
+<!--                            <div class="form-group col-md-3 text-right m-b-0" style="margin: 2%;">-->
+<!--                                <button type="button" class="btn btn-primary btn-submit-payroll">Search</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+            <div id="successFlag"></div>
+            <div id="loading" hidden=""></div>
+            <div class="row">
+                <table id="payroll" class="display nowrap table table-striped table-bordered"
+                       style="width: 100%; font-size: 9.5px !important;">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>S/N</th>
+                        <th>Txn Reference</th>
+                        <th>Pensioner Name</th>
+                        <th>Cbs Name</th>
+                        <th>Percentage Match</th>
+                        <th>Account</th>
+                        <th>Amount</th>
+                        <th>Currency</th>
+                        <th>Pensioner ID</th>
+                        <th>Batch Reference</th>
+                        <th>Description</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.select.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/plugins/sweet-alert2/sweetalert2.min.js}"></script>
+    <script th:src="@{/assets/scripts/teller.js}"></script>
+    <script th:src="@{/assets/scripts/expenditure.js}"></script>
+    <script th:src="@{/assets/scripts/pension.js}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#loading").hide();
+            $(".select2").select2();
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var b = 1;
+            var i = 0;
+
+            $('.btn-submit-payroll').click(function () {
+                reloadDatatable();
+            });
+            loadPensionPayroll(token, header);
+        });
+
+        function reloadDatatable() {
+            $('#payroll').DataTable().ajax.reload();
+        }
+
+        function loadPensionPayroll(token, header) {
+            var table = $('#payroll').DataTable({
+                dom: 'Blfrtip',
+                lengthChange: true,
+                scrollCollapse: true,
+                scrollY: "700px",
+                scrollX: true,
+                pageLength: 10,
+                select: true,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100, 500, -1],
+                    [5, 10, 25, 50, 100, 500, 'Show all']
+                ],
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                serverMethod: 'post',
+                order: [1, "desc"],
+                ajax: {
+                    'url': '/getPensionersPayrollAjax',
+                    'beforeSend': function (request) {
+                        request.setRequestHeader(header, token);
+                    },
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "fromDate": $("input[name='fromDate']").val(),
+                            "toDate": $("input[name='toDate']").val(),
+                        });
+                    }
+                },
+                "columns": [
+                    {"data": null},
+                    {"data": "id"},
+                    {"data": "bankReference"},
+                    {"data": "name"},
+                    {"data": "cbs_name"},
+                    {"data": "percentage_match"},
+                    {"data": "account"},
+                    {
+                        "data": "amount",
+                        "render": function (data) {
+                            var amount = addCommas(data);
+                            return amount;
+                        }
+                    },
+                    {"data": "currency"},
+                    {"data": "pensioner_id"},
+                    {"data": "batchReference"},
+                    {"data": "description"},
+                    {"data": "message"},
+                    {
+                        "data": "status",
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row, meta) {
+                            var a = '';
+                            if (row.status === "R") {
+                                a = "Transaction received but not validated"
+                            }
+                            if (row.status === "V") {
+                                a = "Transaction validated"
+                            }
+                            if (row.status === "P") {
+                                a = "Transaction posted"
+                            }
+                            if (row.status === "C") {
+                                a = "Transaction processed completely"
+                            }
+                            if (row.status === "F") {
+                                a = "Transaction failed"
+                            }
+                            return a;
+                        }
+                    }
+                ],
+                aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [-1],
+                    }
+                ],
+                buttons: [{
+                        extend: "copy",
+                        title: 'Pension Payroll',
+                        className: "btn-sm"
+                    }, {
+                        extend: "csv",
+                        title: 'Pension Payroll',
+                        className: "btn-sm"
+                    }, {
+                        extend: "excel",
+                        title: 'Pension Payroll',
+                        className: "btn-sm"
+                    }, {
+                        extend: "pdf",
+                        title: 'Pension Payroll',
+                        className: "btn-sm"
+                    }, {
+                        extend: "print",
+                        title: 'Pension Payroll',
+                        className: "btn-sm"
+                    }]
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        }
+    </script>
+</div>

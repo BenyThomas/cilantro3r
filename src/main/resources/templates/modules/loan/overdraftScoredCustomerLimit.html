@@ -1,0 +1,377 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+
+
+        table.dataTable td.dt-control:before {
+            height: 1em;
+            width: 1em;
+            margin-top: -9px;
+            display: inline-block;
+            color: white;
+            border: 0.15em solid white;
+            border-radius: 1em;
+            box-shadow: 0 0 0.2em #444;
+            box-sizing: content-box;
+            text-align: center;
+            text-indent: 0 !important;
+            font-family: "Courier New",Courier,monospace;
+            line-height: 1em;
+            content: "+";
+            background-color: #31b131;
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/plugins/select2/css/select2.min.css}" type="text/css"/>
+<!--    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div id="reconData" layout:fragment="contents">
+            <div class="panel panel-default panel-fill">
+                <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+                <div class="panel-body">
+                    <div class="row" id="preloader2">
+                        <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+                    </div>
+                    <!--- success start--->
+                    <div class="col-md-12" id="successFlag"></div>
+                    <!------ End ------->
+                    <br>
+                    <!--- FORM START ----->
+                    <div class="row" id="another-element">
+                        <form id="form2" role="form">
+                            <div class="row">
+                                <div class="form-row" >
+                                    <div class="form-group col-md-4">
+                                        <label style="margin-left:1px; importrant;">LOAN TYPE</label>
+                                        <select class="form-control select2" id="loanType" name="loanType" selected="selected"
+                                                style="width: 550px">
+<!--                                            <option disabled selected value="">CHOOSE...</option>-->
+                                            <option th:each="loanType:${loanTypes}" th:text="${loanType.name}" th:value="${loanType.code}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label style="margin-left: 1% ! important;">From Date <i class="text-danger">*</i></label>
+                                        <div class="input-group">
+                                            <input autocomplete="off"
+                                                   class="form-control form-control-inline input-txndatemedium default-date-picker"
+                                                   data-date-format="yyyy-mm-dd"
+                                                   id="datepicker-autoclose" name="fromDate"
+                                                   placeholder="From date: yyyy-mm-dd"
+                                                   th:value="${fromDate}" type="text"/>
+                                            <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                                        </div><!-- input-group -->
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label style="margin-left: 1% ! important;">To Date<i class="text-danger">*</i></label>
+                                        <div class="input-group">
+                                            <input autocomplete="off"
+                                                   class="form-control form-control-inline input-txndatemedium default-date-picker"
+                                                   data-date-format="yyyy-mm-dd"
+                                                   id="datepicker-autoclose2" name="toDate"
+                                                   placeholder="To date: yyyy-mm-dd"
+                                                   th:value="${toDate}" type="text"/>
+                                            <span class="input-group-addon"><i class="mdi mdi-timer"></i></span>
+                                        </div><!-- input-group -->
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <div class="form-group col-md-3 text-right m-b-0" style="margin-top: 25px; ">
+                                            <button type="button" class="btn btn-primary" id="searchBtn" style="background-color: #769b77!important">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+                        </form>
+                    </div>
+                    <!--- FORM END ---->
+                    <div class="row">
+                        <table id="dataTebo" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important;">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>CUSTOMER ID</th>
+                                <th>PAYROLL</th>
+                                <th>RIM NO</th>
+                                <th>CUSTOMER NAME</th>
+<!--                                <th>BIRTH DATE</th>-->
+<!--                                <th>SEX</th>-->
+                                <th>ACCOUNT</th>
+                                <th>OD LIMIT</th>
+                                <th>OD LOAN AMOUNT</th>
+                                <th>BRANCH</th>
+                                <th>PAYROLL NET PAY</th>
+                                <th>SCORED BY</th>
+                                <th>ACTION</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/clockpicker/js/bootstrap-clockpicker.min.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-daterangepicker/daterangepicker.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script>
+        $(document).ready(function () {
+        $("html").on("click", "[id*=container2]", function(){
+                        <!--------------- FIRST ONE START------------------>
+                        var customerName = $(this).attr('data-custName');
+                        var HTML_Width = $(".canvas_div_pdf").width();
+                        var HTML_Height = $(".canvas_div_pdf").height();
+                        var top_left_margin = 50;
+                          var margin = 60;
+                        var PDF_Width = HTML_Width+(top_left_margin*2);
+<!--                        var PDF_Height = (PDF_Width*1.5)+(top_left_margin*2);-->
+                        var PDF_Height = (PDF_Width*1.2);
+                        var canvas_image_width = HTML_Width;
+                        var canvas_image_height = HTML_Height;
+
+                        var totalPDFPages = Math.ceil(HTML_Height/PDF_Height)-1;
+
+
+                        html2canvas($(".canvas_div_pdf")[0],{allowTaint:true}).then(function(canvas) {
+                            canvas.getContext('2d');
+
+                            console.log(canvas.height+"  "+canvas.width);
+                            var imgData = canvas.toDataURL("images/tcb", 1.0);
+                            var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
+                            pdf.addImage(imgData, 'PNG', margin, top_left_margin,canvas_image_width,canvas_image_height);
+
+
+                            for (var i = 1; i <= totalPDFPages; i++) {
+                                pdf.addPage(PDF_Width, PDF_Height);
+                                pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
+                            }
+
+                            pdf.save(customerName+".pdf");
+                        });
+                <!--------------- FIRST ONE END------------------>
+           }); //end of click function
+
+           <!-------------- END CLICK DOWNLOAD ----------------->
+            $("#preloader2").hide();
+               jQuery('#fromTime').timepicker({
+                    showMeridian: false
+                });
+                jQuery('#toTime').timepicker({
+                    showMeridian: false
+                });
+                jQuery('#datepicker-autoclose').datepicker({
+                    autoclose: true,
+                    todayHighlight: true
+                });
+                jQuery('#datepicker-autoclose2').datepicker({
+                    autoclose: true,
+                    todayHighlight: true
+                });
+
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            $('#searchBtn').click(function(){
+                var formData = new FormData($('#form2')[0]);
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var count = 0;
+               $("#preloader2").show();
+
+               //ajax start
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: "POST",
+                    'url': '/overdraftScoredCustomerLimitAjax',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#preloader2").show();
+                    },
+
+                    success: function (response) {
+                       $("#preloader2").hide();
+                            var table = $('#dataTebo').DataTable({
+                                dom: 'Blfrtip',
+                                "info": true,
+                                "bDestroy": true,
+                                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000],
+                                scrollX: true,
+                                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                "data": response,
+                                columns: [
+                                     {"data": "count",
+                                      "render":function(data, type,row,meta){
+                                            return count +=1;
+                                      }
+                                      },
+                                    {"data": "custId"},
+                                    {"data": null,
+                                    "orderable": false,
+                                    "className": 'dt-control',
+                                    "defaultContent": ''
+                                    },
+                                    {"data": "rimNo"},
+                                    {"data": "customerName"},
+<!--                                    {"data": "dateOfBirth"},-->
+<!--                                    {"data": "gender"},-->
+                                    {"data": "savingAcct"},
+                                    {"data": "odAmountLimit",
+                                    "render": function numberWithCommas(odAmountLimit) {
+                                        return odAmountLimit.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                     }
+                                     },
+                                    {"data": "odLoanAmount",
+                                    "render": function numberWithCommas(odLoanAmount) {
+                                        return odLoanAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                     }
+                                     },
+                                    {"data": "branchName"},
+                                     {"data": "payrollNetPay",
+                                    "render": function numberWithCommas(payrollNetPay) {
+                                        return payrollNetPay.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                     }
+                                     },
+                                    {"data": "odScoredBy"},
+                                    {data: "id",
+                                    "render": function (data, type, row) {
+                                    return '';
+
+                                    }
+                                    }
+                                ]
+                            });
+            // Add event listener for opening and closing details
+            $('#dataTebo tbody').on('click', 'td.dt-control', function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // Open this row
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+
+            /* Formatting function for row details - modify as you need */
+            function format(d) {
+               console.log(d);
+            var payrolls = JSON.parse(d.odLastPayrolls);
+            var loans = JSON.parse(d.odLoans);
+            var eligibility = JSON.parse(d.odEligibilityCriteria);
+                // `d` is the original data object for the row
+            <!----------------- OLD USER DATA START------------------------->
+<!--               let userDeta = '<div class="container-fluid canvas_div_pdf" style="margin: 20px 10px 20px 10;"><table class="table table-bordered" style="font-size: 12px !important; table-layout: fixed;width: 100%;"><tr style="background-color:#44a9a3;"><th>FIRST NAME</th><th>MIDDLE NAME</th><th>LAST NAME</th><th>SAVING ACCOUNT</th><th>PAYROL LAST DATE</th></tr>';-->
+<!--                      userDeta+='<tr><td>'+d.firstName+'</td><td>'+d.middleName+'</td><td>'+d.lastName+'</td><td>'+d.savingAcct+'</td><td>'+d.payrollLastDate+'</td></tr></table><br>';-->
+            <!----------------- OLD USER DATA END------------------------->
+
+            <!----------------- NEW USER DATA START ------------------------->
+             let userDeta = '<div class="container-fluid canvas_div_pdf" style="margin: 20px 10px 20px 10;"><table class="table table-bordered" style="font-size: 12px !important; table-layout: fixed;width: 100%; border-collapse: collapse;">';
+                 userDeta +='<tr><th>FIRST NAME</th><td>'+d.firstName+'</td></tr><tr><th>MIDDLE NAME</th><td>'+d.middleName+'</td></tr><tr><th>LAST NAME</th><td>'+d.lastName+'</td></tr><tr><th>SAVING ACCOUNT</th><td>'+d.savingAcct+'</td></tr><tr><th>PAYROL LAST DATE</th><td>'+d.payrollLastDate+'</td></tr>';
+                 userDeta += '<div class="container-fluid" style="background-color:#44a9a3;"><h4 style="font-size:12px;">PERSONAL DETAILS</h4></div>'+'</table><br>';
+            <!----------------- NEW USER DATA END------------------------->
+
+               let a = '<table class="table table-bordered" style="font-size: 12px !important; table-layout: fixed;"><tr style="background-color:#44a9a3;"><th>BATCH REFERENCE</th><th>PAYROLL DATE</th><th>AMOUNT</th><th>CURRENCY</th></tr>';
+                if(payrolls !=null){
+                    for(i=0; i<payrolls.length; i++){
+                        a+='<tr><td>'+payrolls[i].batchReference+'</td><td>'+payrolls[i].payrollDate+'</td><td>'+payrolls[i].amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+'</td><td>'+payrolls[i].currency+'</td></tr>';
+                    }
+                 }
+                a+='</table>';
+
+               a = '<h4 style="font-size:12px;">LAST PAYROLLS USED</h4>'+a;
+
+                <!------ second table ------>
+                  let b = '<table class="table table-bordered" style="font-size: 12px !important; table-layout: fixed; width: 100%;"><tr style="background-color:#44a9a3;"><th>NAME</th><th>WEIGHT</th><th>DESCRIPTIONS</th><th>LOAN CODE NAME</th></tr>';
+                    if(eligibility !=null){
+                       for(i=0; i<eligibility.length; i++){
+                           b+='<tr><td>'+eligibility[i].name+'</td><td>'+eligibility[i].weight+'</td><td>'+eligibility[i].description+'</td><td>'+eligibility[i].loanCode.name+'</td></tr>';
+                       }
+                    }
+                b+='</table>';
+
+                b = '<h4 style="font-size:12px;">ELIGIBILITY CRITERIA</h4>'+b;
+
+                 <!------ third table ------>
+                  let c = '<table class="table table-bordered" style=" font-size: 12px !important; table-layout: auto; width: 100%;"><tr style="background-color:#44a9a3;"><th>LOAN ID:</th><th>LOAN DATE:</th><th>FEE</th><th>INDEMNITY</th><th>AMOUNT</th><th>COMMENTS</th></tr>';
+                 if(loans != null){
+                   for(i=0; i<loans.length; i++){
+                    c+='<tr><td>'+loans[i].loanId+'</td><td>'+loans[i].createdDate+'</td><td>'+loans[i].processingFee+'</td><td>'+loans[i].indemnity+'</td><td>'+loans[i].principalAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+'<td>'+loans[i].comments+'</td></tr>';
+                    }
+                 }
+                c+='</table>';
+
+                c = '<h4 style="font-size:12px;">LOANS</h4>'+ c + '</div><br>';
+
+                return '<button type="button" class="btn btn-success downloadBTNNN" id="container2" data-custName="'+d.customerName+'"><i class="fa fa-download"></i> Download</button><br>' + '<br>' + userDeta + '<br>' + a + '<br>' + b + '<br>' + c ;
+            }
+                 table.buttons().container().appendTo('#dataTebo-buttons_wrapper .col-md-6:eq(0)');
+                    },
+                    error: function (e) {
+                        $("#preloader2").hide();
+                        console.log(e);
+                    }
+                }); //end ajax
+
+            }); //end click function
+
+        }); //END DOCUMENT READY
+
+        function text(){
+            alert("ck");
+        }
+    </script>
+</div>
+</body>
+</html>
+

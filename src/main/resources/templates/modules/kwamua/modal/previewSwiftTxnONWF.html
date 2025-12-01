@@ -1,0 +1,39 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+</div>
+<div class="panel panel-default panel-fill">
+    <div class="panel-heading" style="background-color: #04ab18 ! important; "> <h3 class="panel-title" style="color: #ffffff !important;" th:text="${pageTitle}"></h3>
+    </div>
+    <div class="panel-body">
+        <div class="row" id="content"></div>
+        <div class="row">
+            <div id="successFlag"></div>
+        </div>
+        <div class="row" id="preloader2" hidden="">
+            <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+        </div>
+        <div class="row" id="messageData">
+            <div class="col-md-4" style="white-space:pre-wrap; font-size:14px;" th:text="${swift_message}" readonly="" rows="23" cols="50"></div>
+        </div>
+        <div class="modal-footer">
+            <button id="fireAuthorizeSwiftTxn" th:onclick='fireAuthorizeSwiftTxnToKprinter([[${reference}]],[[${swift_message}]])' class="btn btn-primary pull-right col-md-3">Approve Payment</button>
+            <button type="button" class="btn btn-default" id="closeModal" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/scripts/transactions.js}"></script>
+</div>
+<div class="row" id="preloader333" hidden="">
+    <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+</div>

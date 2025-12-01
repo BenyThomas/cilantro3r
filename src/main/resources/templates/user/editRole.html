@@ -1,0 +1,159 @@
+
+<div id="editRole">
+    <form role="form" name="getReconDashboard">
+        <div class="row" th:each="role:${roles}">
+            <div class="form-group col-md-6" >
+                <label for="Name" style="margin-left: 1% ! important;">Role Name *</label>
+                <input  class="hidden" name="roleId" th:value="${role.id}"/>
+                <input name="roleName" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose" data-date-format="yyyy-mm-dd" type="text" th:value="${role.name}" autocomplete="off"/>
+            </div>
+            <div class="form-group col-md-6" >
+                <label for="Name" style="margin-left: 1% ! important;">Role Description *</label>
+                <input name="description" class="form-control form-control-inline input-txndatemedium default-date-picker"  id="datepicker-autoclose" data-date-format="yyyy-mm-dd" type="text" th:value="${role.description}" autocomplete="off"/>
+            </div>
+        </div>
+        <div class="form-group col-md-12" >
+            <label for="Name" style="margin-left: 40% ! important;">MODULES PERMISSIONS</label>
+        </div>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Module Name</th>
+                    <th>Permissions</th>
+                </tr>
+            </thead>
+            <tbody th:utext="${roleTags}">
+
+            </tbody>
+        </table>
+
+        <label for="Name" style="margin-left: 40% ! important;">RECONCILIATION TYPES</label>
+
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Reconciliation Type</th>
+                    <th>Permission</th>
+                </tr>
+            </thead>
+            <tbody th:utext="${reconTypesTag}">
+                </tr>
+            </tbody>
+        </table>
+        <label for="Name" style="margin-left: 40% ! important;">BOOKS RECON TYPES</label>
+
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Reconciliation Type</th>
+                <th>Permission</th>
+            </tr>
+            </thead>
+            <tbody th:utext="${generalReconTypesTag}">
+                </tr>
+            </tbody>
+        </table>
+        <label for="Name" style="margin-left: 40% ! important;">TRANSFER TYPES</label>
+
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Transfer Type</th>
+                    <th>Permission</th>
+                </tr>
+            </thead>
+            <tbody th:utext="${transferTypeTag}">
+
+                </tr>
+            </tbody>
+        </table>
+        <label for="Name" style="margin-left: 40% ! important;">POSTING/PAYMENTS MODULES</label>
+
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Module name</th>
+                    <th>Permission</th>
+                </tr>
+            </thead>
+            <tbody th:utext="${paymentsModulesTag}">
+
+                </tr>
+            </tbody>
+        </table>
+        <label for="Name" style="margin-left: 40% ! important;">KYC MODULES</label>
+
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Module Name</th>
+                    <th>Permission</th>
+                </tr>
+            </thead>
+            <tbody th:utext="${kycModulesTag}">
+
+                </tr>
+            </tbody>
+        </table>
+        <label for="Name" style="margin-left: 40% ! important;">SYSTEM OPERATION ROLES</label>
+
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr><th>Operations Roles</th>
+                    <th>Permission</th>
+                </tr>
+            </thead>
+            <tbody th:utext="${operationsTag}">
+
+                </tr>
+            </tbody>
+        </table>
+        <div class="form-group col-md-12" >
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //submit the roles
+            $('button[type=submit]').click(function (e) {
+                console.log('here we are');
+                e.preventDefault();
+                var permissionID = $('.permissions:checked').serialize();
+                var reconTypeID = $('.reconType:checked').serialize();
+                var generalReconTypeID = $('.generalReconType:checked').serialize();
+                var operationID = $('.operation:checked').serialize();
+                var transferTypeID = $('.transferType:checked').serialize();
+                var roleName = $('input[name="roleName"]').val();
+                var description = $('input[name="description"]').val();
+                var role_id = $('input[name="roleId"]').val();
+                var moduleId = $('.module:hidden').serialize();
+                var Paymentpermission = $('.ppermissions:checked').serialize();
+                var kycID = $('.kyc:checked').serialize();
+                console.log('Role Name:' + roleName + ' description: ' + description);
+                $.ajax({
+                    url: "/saveRole",
+                    type: 'GET',
+                    data: {moduleId: moduleId, permissionID: permissionID, reconTypeID: reconTypeID, generalReconTypeID: generalReconTypeID, operationID: operationID, roleName: roleName, role_id: role_id, description: description, transferTypeID: transferTypeID,Paymentpermission:Paymentpermission, kycID: kycID},
+                    dataType: "json",
+                    success: function (res) {
+                        $('.error').html('');
+                        if (res.validated) {
+                            $('#preloader2').hide();
+                            $('#successFlag').show();
+                            $('#successFlag').html('<div class="alert alert-success" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>Role Edited SuccessFully Refresh the Page to see the effect</strong></div>');
+                            $('#editRole').hide();
+                            //location.reload();
+                        } else {
+                            $('#preloader2').hide();
+                            $.each(res.errorMessages, function (key, value) {
+                                $('Select[name=' + key + ']').after('<span class="error" style="color:red">' + value + '</span>');
+                                $('input[name=' + key + ']').after('<span class="error" style="color:red">' + value + '</span>');
+                            });
+                        }
+                    }
+                });
+            });
+        });
+
+    </script>
+</div>

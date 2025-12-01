@@ -1,0 +1,189 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+  <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+
+    </style>
+</div>
+<div class="panel panel-default panel-fill">
+  <div class="panel-heading" style="background-color: #04ab18 ! important; "><h3 class="panel-title" style="color: #ffffff !important;"
+th:text="${pageTitle}"></h3>
+  </div>
+  <div class="panel-body">
+    <div class="row" id="content"></div>
+    <div class="row">
+      <div id="successFlag"></div>
+    </div>
+    <div class="row" hidden="" id="preloader2">
+      <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+    </div>
+    <div class="row">
+      <label> CLEARENCE DOCUMENTS</label><br>
+      <iframe class="col-md-12"  th:src="@{'/firePrevLoanReqSupportingDocument?reference='+${loanDetails.reference}}" width="700" height="200" frameborder="1" scrolling="yes"/>
+    </div><br>
+
+    <div class="row">
+      <label> CHANGE ACCOUNT DOCUMENTS</label><br>
+      <iframe class="col-md-12"  th:src="@{'/firePrevChangeAccSupportingDocument?reference='+${loanDetails.reference}}" width="700" height="200" frameborder="1" scrolling="yes"/>
+    </div>
+    <div class="row" id="messageData">
+      <form id="amendLoan" role="form" enctype="multipart/form-data">
+        <div class="row">
+          <div class="form-group col-md-6">
+            <label for="rubikonActNM"  style="margin-left: 1% ! important;">Pensioner Rubikon Name</label>
+            <input type="text" id="rubikonActNM" name="rubikonActNM" class="form-control"  th:value="${loanDetails.pensionerRubikonName}" placeholder="Pensioner Rubikon  Name" readonly>
+          </div>
+          <div class="col-md-6">
+            <label for="pensionerName"  style="margin-left: 1% ! important;">Pensionser Name</label>
+            <input type="text" id="pensionerName" name="pensionerName" class="form-control" placeholder="Pensioner  Name" th:value="${loanDetails.pensionerName}" readonly>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <label for="accNumber"  style="margin-left: 1% ! important;">Account Number</label>
+            <input type="text" id="accNumber" name="accNumber" class="form-control" placeholder="Account Number" th:value="${loanDetails.accNumber}">
+          </div>
+          <div class="col-md-6">
+            <div class="form-group col-md-3 text-right m-b-0" style="margin-top: 25px;">
+              <button class="btn btn-primary btn-xs" style="font-size: 9px !important;"  onclick="getAccountDetails()" type="button">Query Account Details
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <label for="narration"  style="margin-left: 1% ! important;">Narrations</label><br>
+            <textarea id="narration" name="narration"  rows="2" cols="93" th:text="${loanDetails.narration}"></textarea>
+          </div>
+          <div class="col-md-6">
+            <label for="pensionerID"  style="margin-left: 1% ! important;">Pensioner ID</label><br>
+            <input type="text" id="pensionerID" name="pensionerID" class="form-control" th:value="${loanDetails.pensionerId}" readonly>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <label for="loanAmount"  style="margin-left: 1% ! important;">Loan Amount</label>
+            <input type="text" id="loanAmount" name="loanAmount" class="form-control comma-number" placeholder="Loan Amount"  th:value="${#numbers.formatDecimal(loanDetails.loanAmount,0, 'COMMA', 2, 'POINT')}">
+          </div>
+          <div class="col-md-4">
+            <label for="monthlyInst"  style="margin-left: 1% ! important;">Monthly Installment</label>
+            <input type="text" id="monthlyInst" name="monthlyInst" class="form-control" th:value="${loanDetails.monthlyInst}">
+          </div>
+          <div class="col-md-4">
+            <label for="period"  style="margin-left: 1% ! important;">Period</label>
+            <input type="number" id="period" name="period" class="form-control" min="1" th:value="${loanDetails.period}" >
+          </div>
+        </div>
+        <div class="row"><br>
+          <div class="col-md-4">
+            <label for="bankType"  style="margin-left: 1% ! important;">Bank Type</label>
+            <select class="form-control form-select" id="bankType" name="bankType">
+              <!--                            <option value="" selected disabled>CHOOSE BANK</option>-->
+              <option value="TAPBTZTZ" selected>TANZANIA COMMERCIAL BANK</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label for="clearanceDoc"  style="margin-left: 1% ! important;">Clearance Doc </label>
+            <input type="file" id="clearanceDoc" name="clearanceDoc" class="form-control" >
+          </div>
+          <div class="col-md-4">
+            <label for="changeBankAccDoc"  style="margin-left: 1% ! important;">Change Bank Account Document </label>
+            <input type="file" id="changeBankAccDoc" name="changeBankAccDoc" class="form-control" >
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <label for="reference"  style="margin-left: 1% ! important;">Request Reference</label>
+            <input type="text" id="reference" name="reference" class="form-control"  th:value="${loanDetails.reference}" readonly>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="branchCode"  style="margin-left: 1% ! important;">Branch</label>
+            <select class="form-control form-select select2" id="branchCode" name="branchCode">
+              <option th:each="branch:${branches}"  th:text="${branch.name}" th:selected="${branch.code == loanDetails.branchCode}" th:value="${branch.code}"></option>
+            </select>
+          </div>
+        </div>
+      </form>
+
+      <!--      <div id="txnDetails">-->
+<!--        <table class=" table table-bordered table-striped">-->
+<!--          <tbody>-->
+<!--          <tr>-->
+<!--            <td>REFERENCE:</td>-->
+<!--            <td th:text="${loanDetails.reference}"></td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>INITIATED FROM BRANCH:</td>-->
+<!--            <td th:text="${loanDetails.branchCode}"></td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>LOAM AMOUNT:</td>-->
+<!--            <td th:text="${#numbers.formatDecimal(loanDetails.loanAmount, 0, 'COMMA', 2, 'POINT')}"></td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>PENSIONER ID:</td>-->
+<!--            <td th:text="${loanDetails.pensionerId}"></td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>PENSIONER NAME:</td>-->
+<!--            <td th:text="${loanDetails.pensionerName}"></td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>MONTHLY INSTALLMENTS:</td>-->
+<!--            <td th:text="${loanDetails.monthlyInst}"></td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>PERIOD:</td>-->
+<!--            <td th:text="${loanDetails.period}"></td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>NARRATIONS:</td>-->
+<!--            <td th:text="${loanDetails.narration}"></td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>BANK TYPE:</td>-->
+<!--            <td th:text="${loanDetails.bankType}"></td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>INITIATED BY:</td>-->
+<!--            <td th:text="${loanDetails.initiatedBy}"></td>-->
+<!--          </tr>-->
+
+<!--          <tr>-->
+<!--            <td>APPROVED BY:</td>-->
+<!--            <td th:text="${loanDetails.submittedBy}"></td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>ACCOUNT NUMBER:</td>-->
+<!--            <td th:text="${loanDetails.accNumber}"></td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td>CREATED DATE:</td>-->
+<!--            <td th:text="${loanDetails.create_dt}"></td>-->
+<!--          </tr>-->
+<!--          </tbody>-->
+<!--        </table>-->
+<!--      </div>-->
+    </div>
+    <div class="modal-footer">
+
+      <button class="btn btn-primary pull-right col-md-3" id="resubmitLoanBtn"
+              th:onclick='fireReSubmitLoanReq()'>Submit
+      </button>
+      <button class="btn btn-default" data-dismiss="modal" id="closeModal" type="button">Close</button>
+    </div>
+  </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+  <script th:src="@{/assets/scripts/loanCredit.js}"></script>
+</div>
+<div class="row" hidden="" id="preloader333">
+  <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+</div>

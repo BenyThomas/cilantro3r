@@ -1,0 +1,91 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+
+    </style>
+</div>
+<div class="panel panel-default panel-fill">
+    <div class="panel-heading" style="background-color: #04ab18 ! important; "><h3 class="panel-title" style="color: #ffffff !important;" th:text="${pageTitle}"></h3>
+    </div>
+    <div class="panel-body">
+        <div class="row" id="content"></div>
+        <div class="row">
+            <div id="successFlag"></div>
+        </div>
+        <div class="row" hidden="" id="preloader2">
+            <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+        </div>
+        <div class="row">
+            <iframe class="col-md-12" th:each="doc:${supportingDocs}" th:src="@{'/firePreviewCMSupportingDocument?reference='+${doc.txnReference}+'&id='+${doc.id}}" width="700" height="200" frameborder="1" scrolling="yes"/>
+        </div>
+        <div class="row" id="messageData">
+            <div id="txnDetails">
+                    <table class=" table table-bordered table-striped">
+                        <tbody>
+                        <tr>
+                            <td>RECEIPT:</td>
+                            <td th:text="${transactionDetails.reference}"></td>
+                        </tr>
+                        <tr>
+                            <td>MOVEMENT CODE:</td>
+                            <td th:text="${transactionDetails.code}"></td>
+                        </tr>
+                        <tr>
+                            <td>MOVEMENT TYPE:</td>
+                            <td th:text="${transactionDetails.messageType}"></td>
+                        </tr>
+                        <tr>
+                            <td>DEBIT ACCOUNT:</td>
+                            <td th:text="${transactionDetails.sourceAcc +' ('+transactionDetails.sourceAccName+')'}"></td>
+                        </tr>
+                        <tr>
+                            <td>CREDIT ACCOUNT:</td>
+                            <td th:text="${transactionDetails.destinationAcc +' ('+transactionDetails.destinationAccName+')'}"></td>
+                        </tr>
+                        <tr>
+                            <td>AMOUNT:</td>
+                            <td th:text="${#numbers.formatDecimal(transactionDetails.amount, 0, 'COMMA', 2, 'POINT')}"></td>
+                        </tr>
+                        <tr>
+                            <td>INITIATED BY:</td>
+                            <td th:text="${transactionDetails.iniatedBy}"></td>
+                        </tr>
+                        <tr>
+                            <td>INITIATED DATE:</td>
+                            <td th:text="${transactionDetails.iniatedDate}"></td>
+                        </tr>
+
+                        <tr>
+                            <td>APPROVED BY:</td>
+                            <td th:text="${transactionDetails.approvedBy}"></td>
+                        </tr>
+                        <tr>
+                            <td>APPROVED DATE:</td>
+                            <td th:text="${transactionDetails.approvedDate}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary pull-right col-md-3" id="fireAuthMobileMovemntPVWFToGLBtn"
+                    th:onclick='fireAuthMobileMovemntPVWFToGL([[${reference}]])'>Approve Payment
+            </button>
+            <button class="btn btn-default" data-dismiss="modal" id="closeModal" type="button">Close</button>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/scripts/transactions.js}"></script>
+</div>
+<div class="row" hidden="" id="preloader333">
+    <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+</div>

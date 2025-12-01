@@ -1,0 +1,303 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+  <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}">
+  <link rel="stylesheet" th:href="@{/assets/plugins/select2/css/select2.min.css}" type="text/css"/>
+</div>
+
+<div class="row">
+  <div class="panel panel-default panel-fill" id="tabContentsss">
+    <div class="panel-heading">
+      <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+    <div class="panel-body">
+      <div class="col-md-12" id="successFlag"></div>
+      <div class="row" id="form">
+        <form id="financeMultipleGLPosting">
+          <div class="col-md-12 alert alert-info" id="totalAmountDisplayer" style="font-size:14px;  font-weight: bold; display:none;">
+            <input type="hidden" name="amountSetter" id="amountSetter" >
+          </div>
+          <div class="row" id="senderAccountError" style="display:none; margin-top:10% | important;">
+            <div class="form-group col-md-12">
+              <h5 class="alert alert-danger" style="font-size: 10px !important;"> Error: Please Try Again. Please contact IT Helpdesk / Database Administrator: RUBIKON NOT FOUND</h5>
+            </div>
+          </div>
+                    <div id="newRow"></div>
+          <div class="row parentRowDiv" id="parentLedgerDiv">
+              <div class="form-group col-md-3" >
+                <label for="senderAccount1"  style="margin-left: 1% ! important;">Debiting Ledger<i class="text-danger">*</i></label>
+                <input autocomplete="off" class="form-control form-control-sm"  name="senderAccount1" id="senderAccount1" placeholder="Ledger" type="text">
+                <button type="button" class="btn btn-primary btn-submit validateLedger" style="font-size: 9px !important;" id="validateLedger1" data-curlId="1">validate Ledger</button></td>
+              </div>
+              <div class="form-group col-md-3">
+                <label for="amount1" style="margin-left: 1% ! important;">Amount (With/Without VAT)<i class="text-danger">*</i></label>
+                <input autocomplete="off" class="form-control form-control-sm" name="amount1" id="amount1" placeholder="Debiting Amount" type="text">
+              </div>
+              <div class="form-group col-md-1" id="vatDiv1">
+                <label  style="margin-left: 1% ! important;">With VAT<i class="text-danger">*</i></label>
+                <input type="checkbox" name="vat1" id="vat1" style="margin: 32px 0 0;">
+              </div>
+              <div id="addDiv">
+                <button class="btn btn-success add_new_row" id="rowAdder" style="margin-top: 24px !important;">Add New Ledger </button>
+              </div>
+              <div class="form-group col-md-4" style="display:none;">
+                <label for="ledger1Name" style="margin-left: 1% ! important;">Ledger Name<i class="text-danger">*</i></label>
+                <input type="hidden" name="lastItemIndex" id="theLastItemIndex" value="1"/>
+                <input autocomplete="off" class="form-control form-control-sm" id="ledger1Name" name="ledger1Name" readonly type="text">
+              </div>
+          </div>
+<!--          <div id="newRow"></div>-->
+
+          <table  class="table table-striped table-bordered"  style="width: 100%; font-size: 8.5px !important;">
+            <tbody>
+            <tr>
+              <td>Sender Name</td>
+              <td>
+                <input type="text" name="senderName" id="actNM" value="TANZANIA COMMERCIAL BANK PLC" autocomplete="off"  class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Sender Name">
+                <input type="hidden" name="senderBic" id="senderBic" value="TAPBTZTZ" autocomplete="off"  class="form-control form-control-sm">
+              </td>
+              <td>Sending Currency</td>
+              <td>
+                <select class="form-control col-sm-12 select2" id="currency" name="currency"  style="font-size: 10px !important;">
+                  <option value="">Select Currency</option>
+                  <option value="TZS">TZS</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="ZAR">ZAR</option>
+                  <option value="GBP">GBP</option>
+                </select>
+              </td>
+            <tr>
+              <td>Taxable Amount</td>
+              <td><input type="text" name="taxableAmount" autocomplete="off" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Amount that Is applicable with With-holding Tax"></td>
+              <td>Tax Category</td>
+              <td>
+                <select class="form-control col-sm-12 select2" id="taxRate" name="taxRate"  style="font-size: 10px !important;">
+                  <option value="">Select Tax Category</option>
+                  <option th:each="tax: ${taxCategories}" th:value="${tax.rate+'=='+tax.gl_account}" th:text="${tax.name}"> rate  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Beneficiary Account</td>
+              <td>
+                <select class="form-control col-sm-12 select2" id="beneficiaryAccount" name="beneficiaryAccount"  style="font-size: 10px !important;">
+                  <option value="">Select Service Provider</option>
+                  <option th:each="sp: ${serviceProviders}" th:value="${sp.id+'=='+sp.bank_account}" th:text="${sp.name+'  [ '+sp.bank_account+' ]'}"> Service Provider  </option>
+                </select>
+              </td>
+              <td>Beneficiary Name</td>
+              <td><input type="text" readonly="" id="beneficiaryName" name="beneficiaryName" class="form-control form-control-sm" autocomplete="off" style="font-size: 10px !important;" placeholder="Beneficiary Name"></td>
+            </tr>
+            <tr>
+              <td>Beneficiary Bank</td>
+              <td><input type="text" readonly="" id="beneficiaryBIC" name="beneficiaryBIC" class="form-control form-control-sm" autocomplete="off" style="font-size: 10px !important;" placeholder="Beneficiary Bank Code"></td>
+              <td>Sender Address</td>
+              <td><input type="text" readonly="" id="customerAddress"  name="senderAddress" autocomplete="off"  value="P.O.Box 9300 Dar Es Salaam" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Sender Address"></td>
+            </tr>
+            <tr>
+              <td>Beneficiary Contact</td>
+              <td><input type="text" readonly="" id="beneficiaryContact" name="beneficiaryContact" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Beneficiary Contact"></td>
+              <td>Sender Phone</td>
+              <td><input type="text" value=" +255 22 2162940" readonly="" name="senderPhone" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Sender Phone"></td>
+            </tr>
+            <tr>
+              <td>Payment Purpose</td>
+              <td><textarea name="description" id="purposeDescription" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Purpose of Payment"></textarea></td>
+              <td>Supporting Document</td>
+              <td><div id="supportingDocument"><input type="file" name="supportingDoc" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Supporting Document"> <button class="btn btn-primary" id="addField"><span style="font-size:16px; font-weight:bold;">+ </span></button></div></td>
+            </tr>
+            </tbody>
+          </table>
+          <button type="button" class="btn btn-primary" id="initiate_multiple_gl_transaction_finance">Post Payments</button>
+        </form>
+
+      </div>
+      <!--form ends-->
+    </div>
+  </div>
+</div>
+<!--<div class="form-group col-md-9">-->
+
+<div class="row">
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+  <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+  <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+
+  <!--init-->
+  <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+  <!--App Js-->
+  <script th:src="@{/assets/js/jquery.app.js}"></script>
+  <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+  <script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
+  <script th:src="@{/assets/scripts/teller.js}"></script>
+  <script type="text/javascript" th:inline="javascript">
+        $(document).ready(function () {
+            $('.select2').select2({
+            theme:'classic',
+            height:'80%',
+            width:'100%'
+            });
+            $("#loading").hide();
+
+    //add the number of files to be attached
+            var max_fields = 4;
+            var wrapper = $("#supportingDocument");
+            var add_button = $("#addField");
+
+            var x = 1;
+            $(add_button).click(function (e) {
+                e.preventDefault();
+                if (x < max_fields) {
+                    x++;
+                    $(wrapper).append('<input type="file" name="supportingDoc" class="form-control form-control-sm" style="font-size: 10px !important;" placeholder="Supporting Document">'); //add input box
+                } else {
+                    alert('You Reached the limits');
+                }
+            });
+
+            $(wrapper).on("click", ".delete", function (e) {
+                e.preventDefault();
+                $(this).parent('div').remove();
+                x--;
+            });
+
+          var itemCount = 2;
+            $('#rowAdder').click(function (e) {
+                e.preventDefault();
+                        var htmlRow = '<div class="row"  class="parentRowDiv"><div class="form-group col-md-3">'+
+                                       '<label style="margin-left: 1% ! important;">Debiting Ledger<i class="text-danger">*</i></label>'+
+                                        '<input autocomplete="off" class="form-control form-control-sm"  name="senderAccount'+itemCount+'" id="senderAccount'+itemCount+'" placeholder="Ledger" type="text">'+
+                                        '<button type="button" class="btn btn-primary btn-submit validateLedger" style="font-size: 9px !important;" data-curlId="'+itemCount+'" >validate Ledger</button></td>'+
+                                      '</div>'+
+                                   '<div class="form-group col-md-3">'+
+                                     '<label style="margin-left: 1% ! important;">Amount (With/Without VAT)<i class="text-danger">*</i></label>'+
+                                     '<input autocomplete="off" class="form-control form-control-sm" name="amount'+itemCount+'" id="amount'+itemCount+'" placeholder="Debiting Amount" type="text">'+
+                                   '</div>'+
+                                   '<div class="form-group col-md-1">'+
+                                      '<label  style="margin-left: 1% ! important;">With VAT<i class="text-danger">*</i></label>'+
+                                      '<input type="checkbox" name="vat'+itemCount+'"  id="vat'+itemCount+'" style="margin: 32px 0 0;">'+
+                                    '</div>'+
+<!--                                    '<div id="addDiv">'+-->
+<!--                                        '<button class="btn btn-danger remove_row" id="remove_row" style="margin-top: 24px !important;">Remove</button>'+-->
+<!--                                    '</div>'+-->
+                                   '<div class="form-group col-md-3" style="display:none;">'+
+                                     '<label style="margin-left: 1% ! important;">Ledger Name<i class="text-danger">*</i></label>'+
+                                     '<input autocomplete="off" class="form-control form-control-sm" name="ledger'+itemCount+'Name" id="ledger'+itemCount+'Name" readonly type="text">'+
+                                   '</div>'+
+                                 '</div>';
+                            $('#newRow').prepend(htmlRow);
+                            $('#theLastItemIndex').val(itemCount);
+                            itemCount++;
+
+            }); //end rowAdder
+
+        <!--- REMOVE DIV BEGINS HERE --->
+        $(document).on('click', '.remove_row', function(e){
+          e.preventDefault();
+          let this_row = $(this).parent().parent();
+            $(this_row).remove();
+        });
+        <!--- REMOVE DIV ENDS HERE --->
+            $('#intermediary').html("");
+            $("#beneficiaryAccount").on('change', function () {
+                $("#loading").show();
+                var benBic = $("select[name='beneficiaryAccount']").val();
+                var serviceProdiver = benBic.split('==');
+                $.ajax({
+                    url: "/queryServiceProviderDetails",
+                    type: 'GET',
+                    data: {serviceProviderId: serviceProdiver[0], account: serviceProdiver[1]},
+                    dataType: "json",
+                    success: function (res) {
+                        $("#loading").hide();
+                        $("#beneficiaryContact").val(res[0].phone);
+                        $("#beneficiaryName").val(res[0].name);
+                        $("#beneficiaryBIC").val(res[0].bank_swiftcode);
+                        $("#purposeDescription").val(res[0].facility_description);
+                    },
+                    error: function (res) {
+                        $("#loading").hide();
+                        $('#beneficiaryAccount').after('<h4 class="error" style="color:red font-size: 8px !important;"> Error: Please Try Again. Please contact IT Helpdesk for support :404</h4>');
+                        console.log(res);
+                    }
+                });
+            });
+
+         });//end document ready
+
+
+
+        $('body').on('click','.validateLedger',function(e){
+            e.preventDefault();
+            $("#loading").show();
+            var itemId = $(this).attr("data-curlId");
+            var accountNo = $('#senderAccount'+itemId).val();
+<!--            console.log(itemId);-->
+<!--            console.log(accountNo);-->
+             $.ajax({
+                url: "/queryLedgerDetails",
+                type: 'GET',
+                data: {accountNo: accountNo, code: "searchAccount"},
+                dataType: "json",
+                success: function (res) {
+                console.log(res);
+                    $("#loading").hide();
+                    //$("#branchName").text('BRANCH NAME: ' + res[0].BRANCHNAME);
+                    $("#ledger'+itemId+'Name").text('LEDGER NAME: ' + res[0].ACCT_DESC);
+                    $("#ledger'+itemId+'Name").show();
+//                    $("#availableBalance").text('Available Blance: ' + addCommas(res[0].CLEARED_BAL));
+//                    $("#customerAddress").val(res[0].ADDR_LINE_1 + ',' + res[0].ADDR_LINE_2 + ' , ' + res[0].ADDR_LINE_3 + ' , ' + res[0].ADDR_LINE_4);
+                    console.log(res)
+                },
+                error: function (res) {
+                    $("#loading").hide();
+                    $('#senderAccountError').show();
+                    console.log(res);
+                }
+            })
+        });
+
+
+        function addCommas(nStr) {
+            nStr += '';
+            x = nStr.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            }
+            return x1 + x2;
+        }
+    </script>
+</div>

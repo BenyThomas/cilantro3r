@@ -1,0 +1,80 @@
+<div class="panel panel-default panel-fill" >
+    <!--<div id="retryTransactions">-->
+    <div class="panel-heading" style="background-color: #860903 ! important; "> <h3 class="panel-title" style="color: #ffffff !important;">ARE YOU SURE YOU WANT TO  APPROVE REFUND/RETRY OF THE BELOW TXNS ? </h3>
+    </div>
+    <div class="panel-body" >
+        <form role="form" name="submitRefundRetry" id="submitRefundRetry" enctype="multipart/form-data">
+            <table  class="table table-striped table-bordered">
+                <tr>
+                    <td>Reason:  <b th:text="${reason}"></b></td>
+                </tr>
+                <tr></tr>
+                <tr>
+                    <td>
+                        <iframe th:src="@{${supportingDoc}}" width="610" height="200" frameborder="0" scrolling="yes"></iframe>
+                        <a th:href="@{${supportingDoc}}">Download Supporting Document</a>
+                        <input hidden="" name="txn_type" th:value="${txn_type}">
+                    </td>
+                </tr>
+            </table>
+            <table id="cbsTxnsRetryRefund" class="table table-striped table-bordered"  style="width: 100%; font-size: 11px !important;">
+                <thead>
+                    <tr>
+                        <th>reference</th>
+                        <th>msisdn</th>
+                        <th>Docode</th>
+                        <th>source Acct</th>
+                        <th>Destination Acct</th>
+                        <th>Amount</th>
+                        <th>Txn Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+            </table>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default " data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary btn-teal"><b>Submit</b></button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row" id="preloader333" hidden=""> 
+    <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+</div>
+<!--</div>-->
+
+<script>
+    $(document).ready(function () {
+        $("#successFlag").hide();
+        $('#myModal').data('modal', null);
+        $(".btn-teal").click(function (e) {
+            e.preventDefault();
+            $('#preloader333').show();
+            var formdata = new FormData($("#submitRefundRetry")[0]);
+            console.log(formdata);
+            $.ajax({
+                url: '/submitApprovalForRefundRetry',
+                data: formdata,
+                type: 'POST',
+                enctype: 'multipart/form-data',
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    $('#myModal').modal('hide');
+                    $("#myModal").on('hidden.bs.modal', function () {
+                        $(this).data('bs.modal', null);
+                    });
+                    $("#successFlag").show();
+                    $("#successFlag").html('<div class="alert alert-success" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>' + res.message + '</strong></div>');
+                },
+                error: function (res) {
+                    console.log(res);
+                    $('#myModal').modal('hide');
+                    $("#successFlag").show();
+                    $("#successFlag").html('<div class="alert alert-danger" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>Error!</strong></div>');
+
+                }
+            });
+        });
+    });
+</script>

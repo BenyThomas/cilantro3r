@@ -1,0 +1,46 @@
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+</div>
+<div class="panel panel-default panel-fill">
+    <div class="panel-heading" style="background-color: #04ab18 ! important; "> <h3 class="panel-title" style="color: #ffffff !important;" th:text="${pageTitle}"></h3>
+    </div>
+    <div class="panel-body">
+
+        <div  id="loading"> </div>
+        <div class="row" id="rtgsPayments">
+            <div class="col-md-12" id="successFlag"></div>
+            <div class="col-md-12" id="rtgsTransferFormDiv">
+                <div id="errorMessage"></div>
+
+            </div>
+        </div>
+        <!--<div class="form-group col-md-9">-->
+        <div class="row"></div>
+        <div class="row">
+        </div>
+    </div>
+</div>
+<div class="row" id="preloader333" hidden="">
+    <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/scripts/teller.js}"></script>
+</div>
+<script>
+
+</script>
+
+
+
+
+

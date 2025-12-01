@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/main_layout}">
+    <head>
+        <title layout:title-pattern="Cilantro ~ Dashboard">Cilantro ~ Dashboard</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    </head>
+    <body>
+        <div class="container" layout:fragment="contents">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div style="" class="text-center">
+                        <h3>Hi, <strong th:text="${session.username}"></strong></h3>
+                        <div th:if="${session.error}" class="alert alert-danger">    
+                            <span th:text="${session.error}"></span>
+                        </div>
+                        <a class="btn btn-primary" href="/dashboard"> Dashboard <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

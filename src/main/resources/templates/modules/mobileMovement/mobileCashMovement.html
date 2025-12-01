@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html layout:decorate="~{fragments/main_layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>Mobile Cash Movement</title>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+</head>
+<body>
+<div layout:fragment="pageStyle" th:remove="tag">
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" type="text/css"/>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div id="reconData" layout:fragment="contents">
+            <div class="panel panel-default panel-fill">
+                <div class="panel-heading"><h4 class="panel-title">POPOTE/MKOBA/SONGESHA CASH MOVEMENT BETWEEN
+                    BOT&DISBURSEMENT/ DISBURSEMENT & COLLECTION</h4></div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card-box">
+                                <ul class="nav nav-tabs">
+
+                                    <li class="nav-item active" th:if="${roleId =='21' or roleId =='41'or roleId =='46'}">
+                                        <a aria-expanded="true" class="nav-link"
+                                           data-target="#tabContent" data-toggle="tab"
+                                           data-url="/initiateMobileCashMovement" href="#/initiateMobileCashMovement" id="tabContent1"
+                                           style="font-size: 10px !important;">
+                                            INITIATE MOVEMENT
+                                        </a>
+                                    </li>
+                                    <li class="nav-item" th:if="${roleId =='21' or roleId =='41'or roleId =='46'}">
+                                        <a aria-expanded="true" class="nav-link"
+                                           data-target="#tabContent" data-toggle="tab" data-url="/fireMobileMovementWF"
+                                           href="#/fireMobileMovementWF" id="tabContent32" style="font-size: 10px !important;">
+                                            WORK FLOW
+                                        </a>
+                                    </li>
+                                    <li class="nav-item" th:if="${roleId =='25' or roleId =='28'}">
+                                        <a aria-expanded="true" class="nav-link"
+                                           data-target="#tabContent" data-toggle="tab" data-url="/fireGetCMTxnsForPVWF"
+                                           href="#/fireGetCMTxnsForPVWF" id="tabContent2" style="font-size: 10px !important;">
+                                            PENDING AT POSTING & VALIDATION
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a aria-expanded="true" class="nav-link"
+                                           data-target="#tabContent" data-toggle="tab"
+                                           data-url="/fireMobileMovementReport" href="#/fireMobileMovementReport" id="tabContent3"
+                                           style="font-size: 10px !important;">
+                                            REPORTS
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div class="row" id="preloader">
+                                    <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+                                </div>
+                                <div class="row">
+                                    <div id="tabContent">
+                                    </div>
+                                </div>
+                                <div aria-hidden="true" aria-labelledby="myModalLabel" class="modal fade" id="myModal"
+                                     role="dialog" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div id="areaValue">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- end col -->
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/reconDashboard.js}"></script>
+    <script th:src="@{/assets/scripts/transactions.js}"></script>
+    <script>
+                $(document).ready(function () {
+                    $("#preloader2").hide();
+                    $("#preloader").hide();
+                    $(".btn-submit-initiate-cashMovementpayments").click(function (e) {
+                        $("#preloader2").show();
+                        e.preventDefault();
+                        $('#preloader333').show();
+                        var formdata = new FormData($("#initiateCashMovement")[0]);
+                        console.log(formdata);
+                        $.ajax({
+                            url: '/initiateCashMovement',
+                            data: formdata,
+                            type: 'POST',
+                            enctype: 'multipart/form-data',
+                            processData: false,
+                            contentType: false,
+                            success: function (res) {
+                                $("#cashMovementForm").hide();
+                                $("#preloader2").hide();
+                                console.log(res);
+                                $('#myModal').modal('hide');
+                                $("#myModal").on('hidden.bs.modal', function () {
+                                    $(this).data('bs.modal', null);
+                                });
+                                $("#successFlag").show();
+                                $("#successFlag").html('<div class="alert alert-success" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>Transaction successfully initiated please check on INITIATED TRANSACTIONS</strong></div>');
+                            },
+                            error: function (res) {
+                                console.log(res);
+                                $('#myModal').modal('hide');
+                                $("#successFlag").show();
+                                $("#successFlag").html('<div class="alert alert-danger" role="alert" id="successFlag"><button type="button" class="close" data-dismiss="alert"asuccessFlagria-label="Close"> </button><strong>Error!</strong></div>');
+                            }
+                        });
+                    });
+                    //load tab content 
+                    $('[data-toggle="tab"]').click(function (e) {
+                        $("#preloader").show();
+                        var $this = $(this),
+                                loadurl = $this.attr('data-url');
+                        $.ajax({
+                            url: loadurl,
+                            type: 'GET',
+                            success: function (res) {
+                                $("#tabContent").html(res).return;
+                                //$("#tabContent").show();
+                                $("#preloader").hide();
+                            }
+                        });
+                        //$this.tab('show');
+
+                        return true;
+                    });
+                });
+
+    </script>
+</div>
+</body>
+</html>
+

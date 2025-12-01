@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/main_layout}">
+    <head>
+        <title>Income Transactions report</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div layout:fragment="pageStyle" th:remove="tag">
+            <style>
+                .canvasjs-chart-credit{ display: none ! important;}
+            </style>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div layout:fragment="contents" class="container" id="reconData">
+                    <div class="panel panel-default panel-fill"  >
+                        <div class="panel-heading"> <h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+                        <div class="panel-body">
+                            <form role="form" name="getIncomeTransactionReport">
+                                <div class="row">
+                                    <div class="form-group col-md-2">
+                                        <label for="txnType">Transaction </label>
+                                        <select class="form-control" id="txnType" name="txnType" style="width: 250px" >
+                                            <option value="">Please select Txn Type ....</option>
+                                            <option th:each="txn_type: ${txn_types}" th:value="${txn_type.code}" th:text="${txn_type.name}"> ATM  </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label for="incomePeriod">Period </label>
+                                        <select class="form-control" id="period" name="period" style="width: 250px" >
+                                            <option value="">Please Period Type ....</option>
+                                            <option value="daily">Daily</option>
+                                            <option value="monthly">Monthly</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-2" id="monthYear" hidden="">
+                                        <label for="incomePeriod2">Month/Year </label>
+                                        <select class="form-control" id="incomePeriod2" name="month" style="width: 250px" >
+                                            <option value="">Please Month/Year ....</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-2" id="year" hidden="">
+                                        <label for="incomePeriod2">Year </label>
+                                        <select class="form-control" id="yearD" name="year" style="width: 250px" >
+                                            <option value="">Please Year ....</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-2 text-right m-b-0" style="margin-top: 2%;" >
+                                        <button  type="submit" class="btn btn-info btn-submit">Search</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="row" id="preloader2"> 
+                                <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+                            </div>
+                            <div class="col-sm-12">
+                                <div id="posIncome" style="height: 300px; width: 100%;"></div>
+                                <div id="atmIncome" style="height: 300px; width: 100%;"></div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div layout:fragment="pageScript" th:remove="tag">
+            <!-- App Js -->
+            <script th:src="@{/assets/js/jquery.canvasjs.min.js}"></script>
+            <script th:src="@{/assets/js/canvasjs.min.js}"></script>
+            <script>
+                function addCommas(nStr)
+                {
+                    nStr += '';
+                    x = nStr.split('.');
+                    x1 = x[0];
+                    x2 = x.length > 1 ? '.' + x[1] : '';
+                    var rgx = /(\d+)(\d{3})/;
+                    while (rgx.test(x1)) {
+                        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+                    }
+                    return x1 + x2;
+                }
+                $(document).ready(function () {
+                    $('#period').on('change', function () {
+//                        alert(this.value);
+                        if (this.value === 'daily') {
+                            $('#incomePeriod2').empty();
+                            var months = [
+                                "January",
+                                "February",
+                                "March",
+                                "April",
+                                "May",
+                                "June",
+                                "July",
+                                "August",
+                                "September",
+                                "October",
+                                "November",
+                                "December"
+                            ];
+
+                            var options_str = "";
+                            $('#incomePeriod2').val(null).trigger('change');
+                            var select = document.getElementById('incomePeriod2');
+                            months.forEach(function (month) {
+                                var value1 = +months.indexOf(month) + +1;
+                                var opt = document.createElement('option');
+                                opt.value = value1;
+                                opt.innerHTML = month;
+                                select.appendChild(opt);
+                            });
+                            $("#monthYear").show();
+                            $('#yearD').empty();
+                            var max = new Date().getFullYear();
+                            var min = 2017;
+                            var select2 = document.getElementById('yearD');
+                            for (var i = min; i <= max; i++) {
+                                var opt = document.createElement('option');
+                                opt.value = i;
+                                opt.innerHTML = i;
+                                select2.appendChild(opt);
+                            }
+                            $("#year").show();
+
+                        } else if (this.value === 'monthly') {
+                            $('#year').hide();
+                            $('#incomePeriod2').empty();
+                            var max = new Date().getFullYear();
+                            var min = 2017;
+                            var select2 = document.getElementById('incomePeriod2');
+                            for (var i = min; i <= max; i++) {
+                                var opt = document.createElement('option');
+                                opt.value = i;
+                                opt.innerHTML = i;
+                                select2.appendChild(opt);
+                            }
+                            $("#monthYear").show();
+                        }
+                    });
+
+                    $('#preloader').hide();
+                    $('#preloader2').hide();
+                    /*  Submit form using Ajax */
+                    $('button[type=submit]').click(function (e) {
+                        $('#preloader2').show();
+                        //Prevent default submission of form
+                        e.preventDefault();
+                        //Remove all errors
+                        $('input').next().remove();
+                        var txnType = $("select[name='txnType']").val();
+                        var period = $("select[name='period']").val();
+                        var month = $("select[name='month']").val();
+                        var year = $("select[name='year']").val();
+                        var title = '---';
+                        var monthYear = '---';
+                        var titleXaxis = '----';
+                        if (period === 'daily') {
+                            var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                            monthYear = months[month - 1];
+                            titleXaxis = 'DAYS';
+                            title = 'UNSUCCESSFULLY VOLUMES DAILY PER MONTH FOR ' + monthYear.toUpperCase() + ' ';
+                        }
+                        if (period === 'monthly') {
+                            year = month;
+                            monthYear = month;
+                            titleXaxis = 'MONTH';
+                            title = 'UNSUCCESSFULLY VOLUMES MONTHLY PER YEAR FOR: ' + month;
+                        }
+                        $.ajax({
+                            url: "/getExceptionTrendsReportAjax",
+                            type: 'GET',
+                            data: {txnType: txnType, period: period, month: month, year: year},
+                            dataType: "json",
+                            success: function (res) {
+                                var i = 0;
+                                $('.error').html('');
+                                if (res.validated) {
+                                    $('#preloader2').hide();
+                                    //POS income graph
+                                    var options = {
+                                        animationEnabled: true,
+                                        exportEnabled: true,
+                                        title: {
+                                            text: 'POS '+title
+                                        },
+                                        axisY: {
+                                            title: "Amount (in Tsh)",
+                                            includeZero: false
+                                        },
+                                        axisX: {
+                                            title: titleXaxis,
+                                            includeZero: false
+                                        },
+                                        data: [{toolTipContent: "<b>{label}</b>: {y}",
+                                                showInLegend: "true",
+                                                legendText: monthYear,
+                                                indexLabelFontSize: 11,
+                                                indexLabel: "{y}",
+                                                indexLabelOrientation: 'vertical',
+                                                type: "column",
+                                                yValueFormatString: "#,###.##",
+                                                dataPoints: res.json
+
+                                            }]
+                                    };
+                                    $("#posIncome").CanvasJSChart(options);
+
+                                    //ATM income graph
+                                    var options2 = {
+                                        
+                                        animationEnabled: true,
+                                        exportEnabled: true,
+                                        title: {
+                                            text: 'ATM  '+title
+                                        },
+                                        axisY: {
+                                            title: "Amount (in Tsh)",
+                                            includeZero: false
+                                        },
+                                        axisX: {
+                                            title: titleXaxis,
+                                            includeZero: false
+                                        },
+                                        data: [{toolTipContent: "<b>{label}</b>: {y}",
+                                                showInLegend: "true",
+                                                legendText: monthYear,
+                                                indexLabelFontSize: 11,
+                                                indexLabel: "{y}",
+                                                indexLabelOrientation: 'vertical',
+                                                type: "column",
+                                                yValueFormatString: "#,##0.00#",
+                                                dataPoints: res.json2
+
+                                            }]
+                                    };
+                                    $("#atmIncome").CanvasJSChart(options2);
+
+                                } else {
+                                    $('#preloader2').hide();
+                                    $.each(res.errorMessages, function (key, value) {
+                                        $('Select[name=' + key + ']').after('<span class="error" style="color:red">' + value + '</span>');
+                                        $('input[name=' + key + ']').after('<span class="error" style="color:red">' + value + '</span>');
+                                    });
+                                }
+                            }
+                        });
+                    });
+                    //load the tab content
+                    $('[data-toggle="tab"]').click(function (e) {
+                        $("#preloader").show();
+                        var $this = $(this),
+                                loadurl = $this.attr('data-url');
+                        $.ajax({
+                            url: loadurl,
+                            type: 'GET',
+                            success: function (res) {
+                                $("#tabContent").html(res);
+                                $("#tabContent").show();
+                                $("#preloader").hide();
+                            }
+                        });
+                        $this.tab('show');
+                        return true;
+                    });
+                }
+                );
+            </script>
+        </div>
+    </body>
+</html>

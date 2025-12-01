@@ -1,0 +1,317 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{fragments/main_layout}">
+<head>
+    <title layout:title-pattern="Cilantro ~ Dashboard">Visa-Card-Report</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div layout:fragment="pageStyle" th:remove="tag">
+        <style>
+            #loading {
+                background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 92%;
+                width: 100%;
+                z-index: 9999999;
+            };
+            #rtgsTxnOnWorkFlow{
+                table-layout: fixed !important;
+                word-wrap:break-word;
+            }
+        </style>
+        <link th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+        <link th:href="@{/assets/plugins/timepicker/bootstrap-timepicker.min.css}" rel="stylesheet">
+        <link th:href="@{/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css}" rel="stylesheet">
+
+
+    </div>
+</head>
+<body>
+<div class="row" layout:fragment="contents">
+    <div class="panel panel-default panel-fill" id="tabContentsss">
+        <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+        <div class="panel-body">
+            <div class="row" id="preloader2" >
+                <img th:src="@{/assets/images/please_wait.gif}" alt="please wait"/>
+            </div>
+            <div class="row">
+                <form role="form" id="form1">
+                    <div class="row">
+                        <div class="form-group col-md-3">
+                                <input type="text"  placeholder="Enter account number" name="acctNo" id="acctNo" class="form-control"/>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <div class="form-group col-md-3 text-right m-b-0" style="margin: 2%;">
+                                <button  type="button" class="btn btn-info btn-submit-inwardEft-Summary" onclick="doAjaxSearching()">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="successFlag">
+            </div>
+            <div  id="loading" hidden=""> </div>
+            <div class="row">
+                <table id="cardDetails" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important;">
+                    <thead>
+                    <tr>
+                        <th>Ref</th>
+                        <th>account no</th>
+                        <th>phone</th>
+                        <th>pan</th>
+                        <th>customer name</th>
+                        <th>email</th>
+                        <th>cust id</th>
+                        <th>customer rim</th>
+                        <th>reference</th>
+                        <th>shortName</th>
+                        <th>customer cat</th>
+                        <th>create date</th>
+                        <th>Branch approved date</th>
+                        <th>HQ approved date</th>
+                        <th>HQ dispatched date</th>
+                        <th>HQ received date</th>
+                        <th>Issue date</th>
+                        <th>status</th>
+                        <th>rejection reason</th>
+                        <th>stage</th>
+                        <th>originating_branch</th>
+                        <th>collecting_branch</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!--</form>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <script th:src="@{/assets/plugins/moment/moment.js}"></script>
+    <script th:src="@{/assets/plugins/timepicker/bootstrap-timepicker.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js}"></script>
+
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+    let userRoleId = /*[[${userRoleId}]]*/;
+     $(document).ready(function () {
+                $('#preloader2').hide();
+            });
+     $("#cardDetails").hide();
+
+      function doAjaxSearching() {
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                var formdata = new FormData($('#form1')[0]);
+                var count = 0;
+               $("#preloader2").show();
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    data: formdata,
+                    type: "POST",
+                    'url': '/fireGetCardDetailsAjax',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(header, token);
+                        $("#preloader2").show();
+                    },
+
+                    success: function (response) {
+                    $("#cardDetails").show();
+                       $("#preloader2").hide();
+                            var table = $('#cardDetails').DataTable({
+                                dom: 'Blfrtip',
+                                "info": true,
+                                "bDestroy": true,
+                                lengthMenu: [10, 25, 50, 100, 200, 300, 500, 1000,10000,25000,50000],
+                                lengthChange: true,
+                                scrollCollapse: true,
+                                scrollY: "700px",
+                                scrollX: true,
+                                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                                "data": response,
+                               columns: [
+                               {data:'ID',
+                                  "render": function(data){
+                                  count +=1;
+                                  return count;
+                                  }
+                                  },
+                                {"data": "account_no"},
+                                {"data": "phone"},
+                                   {"data": "PAN","render": function (data, type, row, meta) {
+                                           var a = row.PAN;
+                                           return maskCard(a);
+                                       }},
+                                {"data": "customer_name"},
+                                {"data":"email", "defaultContent": ""},
+                                {"data": "custid"},
+                                {"data": "customer_rim_no"},
+                                {"data": 'reference'},
+                                {"data": "customer_shortName"},
+                                {"data": 'customer_category'},
+                                {
+                                    "data": 'create_dt',
+                                    "render": function (data, type, row){
+                                        return formatDateTime(data)
+                                    }
+                                },
+                                {
+                                    "data":'approver1_dt',
+                                    "render": function (data, type, row){
+                                        return formatDateTime(data)
+                                    }
+                                },
+                                {
+                                    "data":'approver2_dt',
+                                    "render": function (data, type, row){
+                                        return formatDateTime(data)
+                                    }
+                                },
+                                {
+                                    "data":'dispatched_dt',
+                                    "render": function (data, type, row){
+                                        return formatDateTime(data)
+                                    }
+                                },
+                                {
+                                    "data":'hq_received_dt',
+                                    "render": function (data, type, row){
+                                        return formatDateTime(data)
+                                    }
+                                },
+                                {
+                                    "data":'issued_dt',
+                                    "render": function (data, type, row) {
+                                        return formatDateTime(data)
+                                    }
+                                },
+                                {"data": 'status',
+                                    "render": function (data, type, row, meta) {
+                                        var a = '';
+                                        if (row.status === "I") {
+                                            a = "INITIATED"
+                                        }
+                                        if (row.status === "P") {
+                                            a = "PENDING"
+                                        }
+                                        if (row.status === "C") {
+                                            a = "COMPLETED"
+                                        }
+                                        if (row.status === "AP") {
+                                            a = "AWAITING PRINTING"
+                                        }
+                                        if(row.status === "R"){
+                                        a = "REJECTED"
+                                        }
+                                        if(row.status === "CD"){
+                                        a = "AWAITING DISPATCH"
+                                        }
+                                        if(row.status === "RA"){
+                                        a = "RETURNED FOR AMENDMENT"
+                                        }
+                                        return a;
+                                    }
+                                },
+                                {"data":'reject_reason'},
+                                {"data": 'stage'},
+                                {"data": 'ob_name'},
+                                {"data": 'cb_name'},
+                                {"data": 'id',
+                                "render": function (data, type, row, meta) {
+                                            a = '<div><a class="btn btn-xs btn-primary" onclick="takeActionOnVisaCard(\'' + row.account_no + '\',\'' + row.reference + '\')"><i class="fa fa-check-circle-o" aria-hidden="true">Modifiy Details</i></a></div>';
+                                            return a;
+                                }}
+                                ]
+                            });
+                            $('#visaCardIssueReportSummaryDiv').show();
+
+                            table.buttons().container().appendTo('#cardDetails-buttons_wrapper .col-md-6:eq(0)');
+                    },
+                    error: function (e) {
+                        $("#preloader2").hide();
+                        console.log(e);
+                    }
+                });
+            }
+
+            // show the modal for editing
+                function takeActionOnVisaCard(accountNo,reference){
+                var accountNo = accountNo;
+                var reference = reference;
+                var formData = new FormData();
+                formData.append('accountNo',accountNo);
+                formData.append('reference',reference);
+                        $.ajax({
+                            processData: false,
+                            contentType: false,
+                            data:formData,
+                            type: "POST",
+                            url: "/fireChangeVisaCardDetails",
+                            success: function (response) {
+                                $("#loading").hide();
+                                $("#myModal").modal("show");
+                                $("#areaValue").html(response);
+                            },
+                            error: function (e) {
+                                console.log(e);
+                            }
+                        });
+                    }
+
+    function maskCard(cardNumber) {
+        // Extract and format the parts of the card number
+        const firstSeven = cardNumber.slice(0, 7); // First 7 digits
+        const lastFour = cardNumber.slice(-4);    // Last 4 digits
+        return `${firstSeven} ** **** ${lastFour}`;
+    }
+    function formatDateTime(dateString) {
+        if (!dateString) return ''; // Handle null or empty values
+        var date = new Date(dateString);
+        var year = date.getFullYear();
+        var month = ('0' + (date.getMonth() + 1)).slice(-2);
+        var day = ('0' + date.getDate()).slice(-2);
+        var hours = ('0' + date.getHours()).slice(-2);
+        var minutes = ('0' + date.getMinutes()).slice(-2);
+        var seconds = ('0' + date.getSeconds()).slice(-2);
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+        </script>
+</div>
+
+</body>
+</html>
+
+
+

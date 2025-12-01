@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html layout:decorate="~{fragments/main_layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>Loan/Credit</title>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+</head>
+<body>
+<div layout:fragment="pageStyle" th:remove="tag">
+    <style>
+        #loading {
+            background: url('/assets/images/ajax-loader.gif') no-repeat center center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 92%;
+            width: 100%;
+            z-index: 9999999;
+        }
+    </style>
+</div>
+<div layout:fragment="pageStyle" th:remove="tag">
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/jquery.dataTables.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/buttons.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/responsive.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/scroller.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.colVis.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/dataTables.bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/assets/plugins/datatables/fixedColumns.dataTables.min.css}" type="text/css"/>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div id="reconData" layout:fragment="contents">
+            <div class="panel panel-default panel-fill">
+                <div class="panel-heading"><h4 class="panel-title" th:text="${pageTitle}"></h4></div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card-box">
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item"  th:each="tabs:${salaryProcessingPermissions}">
+                                        <a style="font-size: 10px !important;" th:href="@{'#'+${tabs.url}}" th:text="${tabs.name}"  th:data-url="${tabs.url}" data-toggle="tab" data-target="#tabContent" aria-expanded="true" id="tabContentsss"class="nav-link">
+                                            tab name
+                                        </a>
+                                </ul>
+                                <div class="row" id="preloader">
+                                    <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+                                </div>
+                                <div class="row">
+                                    <div id="tabContent">
+                                    </div>
+                                </div>
+                                <div aria-hidden="true" aria-labelledby="myModalLabel" class="modal fade" id="myModal"
+                                     role="dialog" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div id="areaValue">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- end col -->
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+<div layout:fragment="pageScript" th:remove="tag">
+    <script th:src="@{/assets/plugins/datatables/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/jszip.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/pdfmake.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/vfs_fonts.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.html5.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/buttons.print.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.keyTable.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.scroller.min.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.colVis.js}"></script>
+    <script th:src="@{/assets/plugins/datatables/dataTables.fixedColumns.min.js}"></script>
+    <!-- init -->
+    <script th:src="@{/assets/pages/jquery.datatables.init.js}"></script>
+    <!-- App Js -->
+    <script th:src="@{/assets/js/jquery.app.js}"></script>
+    <script th:src="@{/assets/plugins/select2v4/select2.min.js}"></script>
+    <script th:src="@{/assets/scripts/reconDashboard.js}"></script>
+    <script th:src="@{/assets/scripts/transactions.js}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#preloader2").hide();
+            $("#preloader").hide();
+
+            //load tab content
+            $('[data-toggle="tab"]').click(function (e) {
+                $("#preloader").show();
+                var $this = $(this),
+                        loadurl = $this.attr('data-url');
+                $.ajax({
+                    url: loadurl,
+                    type: 'GET',
+                    success: function (res) {
+                        $("#tabContent").html(res).return;
+                        //$("#tabContent").show();
+                        $("#preloader").hide();
+                    }
+                });
+                //$this.tab('show');
+
+                return true;
+            });
+        });
+
+    </script>
+</div>
+</body>
+</html>
+

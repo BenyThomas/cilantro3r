@@ -1,0 +1,188 @@
+<div class="row" id="preloader2">
+    <img alt="please wait" th:src="@{/assets/images/please_wait.gif}"/>
+</div>
+<table th:fragment="portfolioPositionDT" id="dataTebo" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important; display:none;">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>ACCOUNT NO</th>
+        <th>CUSTOMER NAME</th>
+        <th>BRANCH NAME</th>
+        <th>CURRENT SYSTEM CLASS</th>
+        <th>DAYS IN AREA</th>
+        <th>DISBURSEMENT AMOUNT</th>
+        <th>DISBURSEMENT DATE</th>
+        <th>LOAN REFERENCE</th>
+        <th>MATURITY DATE</th>
+        <th>OUTSTANDING AMOUNT</th>
+        <th>OUTSTANDING FEE</th>
+        <th>PHONE NO</th>
+        <th>INTEREST</th>
+        <th>PROCESSING FEE</th>
+        <th>PROVISION AMOUNT</th>
+        <th>PROVISION RATE</th>
+        <th>TOTAL OUTSTANDING</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<table th:fragment="portfolioPositionDTNISOGEZE" id="NISOGEZE_PORTIFOLIO_POSITION" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important; display:none;">
+    <thead>
+    <tr>
+        <th>SN</th>
+        <th>BRANCH NAME</th>
+        <th>POLICY NUMBER</th>
+        <th>CUSTOMER NAME</th>
+        <th>CONTROL NUMBER</th>
+        <th>LOAN AMOUNT</th>
+        <th>PROCESSING FEE</th>
+        <th>INTEREST RATE</th>
+        <th>LOAN TERM</th>
+        <th>MATURITY DATE</th>
+        <th>DISBURSEMENT DATE</th>
+        <th>DAYS IN ARREARS</th>
+        <th>OUTSTANDING PRINCIPAL</th>
+        <th>PHONE NUMBER</th>
+        <th>OUTSTANDING INTEREST</th>
+        <th>TOTAL OUTSTANDING LOAN</th>
+        <th>CLASSIFICATION STATUS</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<table th:fragment="OUTSTANDING_LOAN" id="OUTSTANDING_LOAN_DT" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important; display:none;">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>ACCOUNT NO</th>
+        <th>CUSTOMER NAME</th>
+        <th>DATE OF BIRTH</th>
+        <th>BRANCH NAME</th>
+        <th>CUSTOMER RIM</th>
+        <th>INTEREST RATE</th>
+        <th>OUTSTANDING FEE</th>
+        <th>OUTSTANDING PRINCIPAL</th>
+        <th>PHONE NUMBER</th>
+        <th>TOTAL OUTSTANDING LOAN</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<table th:fragment="CHARGED_OFF_LOAN" id="CHARGED_OFF_LOAN_DT" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important; display:none;">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>ACCOUNT NUMBER</th>
+        <th>CUSTOMER NAME</th>
+        <th>BRANCH NAME</th>
+        <th>CURRENT SYSTEM CLASS</th>
+        <th>DAYS IN ARREARS</th>
+        <th>PROVISION RATE</th>
+        <th>DISBURSEMENT AMOUNT</th>
+        <th>DISBURSEMENT DATE</th>
+        <th>LOAN REFERENCE</th>
+        <th>MATURITY DATE</th>
+        <th>PHONE NUMBER</th>
+        <th>CHARGED OFF DATE</th>
+        <th> TOTAL CHARGED OFF AMOUNT</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<table th:fragment="REPAYMENT_SUMMARY_PER_ACCOUNT" id="REPAYMENT_SUMMARY_PER_ACCOUNT" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important; display:none;">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>ACCOUNT NO</th>
+        <th>AGE</th>
+        <th>BRANCH NAME</th>
+        <th>CUSTOMER RIM</th>
+        <th>PHONE</th>
+        <th>DAYS IN AREAS</th>
+        <th>DISBURSEMENT DATE</th>
+        <th>CUSTOMER NAME</th>
+        <th>LOAN REFERENCE</th>
+        <th>MATURITY DATE</th>
+        <th>DISBURSED PRINCIPALS</th>
+        <th>OUTSTANDING AMOUNT</th>
+        <th>OUTSTANDING FEE</th>
+        <th>PROCESSING FEE</th>
+        <th>TOTAL OUTSTANDING</th>
+        <th>ACTION</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+
+</table>
+<table th:fragment="REPAYMENT_SUMMARY_PER_LOAN" id="REPAYMENT_SUMMARY_PER_LOAN" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important; display:none;">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>LOAN REFERENCE</th>
+        <th>ACCOUNT NO</th>
+        <th>CUSTOMER RIM</th>
+        <th>CUSTOMER NAME</th>
+        <th>PHONE</th>
+        <th>AGE</th>
+        <th>DISBURSEMENT DATE</th>
+        <th>MATURITY DATE</th>
+        <th>BRANCH NAME</th>
+        <th>LAST REPAYMENT DATE</th>
+        <th>DAYS IN AREAS</th>
+        <th>DATE OF BIRTH</th>
+        <th>DISBURSED PRINCIPAL</th>
+        <th>PROCESSING FEE</th>
+        <th>OUTSTANDING AMOUNT</th>
+        <th>OUTSTANDING FEE</th>
+        <th>TOTAL FEE PAID</th>
+        <th>TOTAL PRINCIPAL PAID</th>
+        <th>TOTAL PAID AMOUNT</th>
+        <th>TOTAL OUTSTANDING LOAN</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+    <!--              <tfoot>-->
+    <!--              <tr>-->
+    <!--                <th colspan="2" style="text-align:right">TOTAL CURRENT PAGE/ ALL PAGES:</th>-->
+    <!--                <th></th>-->
+    <!--              </tr>-->
+    <!--              </tfoot>-->
+</table>
+<table th:fragment="DAILY_LOAN_BALANCE" id="DAILY_LOAN_BALANCE" class="display nowrap table table-striped table-bordered" style="width: 100%; font-size: 9.5px !important; display:none;">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>ACCOUNT</th>
+        <th>CUSTOMER NAME</th>
+        <th>SYSTEM CLASS</th>
+        <th>DAYS IN ARREARS</th>
+        <th>DISBURSED AMOUNT</th>
+        <th>OUTSTANDING AMOUNT</th>
+        <th>DISBURSED DATE</th>
+        <th>MATURITY DATE</th>
+        <th>MSISDN</th>
+        <th>INTEREST</th>
+        <th>INTEREST BALANCE</th>
+        <th>PROCESSING FEE</th>
+        <th>OUTSTANDING FEE</th>
+        <th>PROVISION AMOUNT</th>
+        <th>PROVISION RATE</th>
+        <th>LOAN BALANCE</th>
+        <th>BALANCE DATE</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+    <!--              <tfoot>-->
+    <!--              <tr>-->
+    <!--                <th colspan="2" style="text-align:right">TOTAL CURRENT PAGE/ ALL PAGES:</th>-->
+    <!--                <th></th>-->
+    <!--              </tr>-->
+    <!--              </tfoot>-->
+</table>
