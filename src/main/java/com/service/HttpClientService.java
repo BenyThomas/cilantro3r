@@ -26,8 +26,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 
 import javax.net.ssl.*;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.net.Authenticator;

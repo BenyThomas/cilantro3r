@@ -5,5 +5,5 @@
 // Generated on: 2021.05.11 at 09:32:07 PM EAT 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://api.PHilae/")
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://api.PHilae/")
 package philae.api;

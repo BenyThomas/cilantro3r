@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import philae.api.BnUser;
 import philae.api.UsRole;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.Period;

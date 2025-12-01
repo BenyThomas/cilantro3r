@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

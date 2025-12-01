@@ -59,7 +59,7 @@ import philae.ach.TaResponse;
 import philae.ach.TaTransfer;
 import philae.api.*;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;

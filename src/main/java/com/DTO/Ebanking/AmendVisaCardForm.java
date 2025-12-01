@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.intellij.lang.annotations.RegExp;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @Getter
 @Setter

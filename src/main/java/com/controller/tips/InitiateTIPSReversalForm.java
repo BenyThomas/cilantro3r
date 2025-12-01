@@ -1,6 +1,6 @@
 package com.controller.tips;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 public class InitiateTIPSReversalForm {
     @NotEmpty(message = "Reversal reason is required")

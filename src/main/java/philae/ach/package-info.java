@@ -5,5 +5,5 @@
 // Generated on: 2021.02.08 at 02:41:52 AM EAT 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://ach.PHilae/")
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://ach.PHilae/")
 package philae.ach;

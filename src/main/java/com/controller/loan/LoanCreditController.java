@@ -31,10 +31,10 @@ import org.springframework.web.multipart.MultipartFile;
 import philae.api.BnUser;
 import philae.api.UsRole;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
