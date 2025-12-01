@@ -274,7 +274,7 @@ public class DB extends HikariConfig {
         return new JdbcTemplate(ds2);
     }
     @Bean(name = "gwAirtelVikobaDBConnection")
-    public JdbcTemplate gwAirtelVikobaConnection(@Qualifier("gwAirtelVikobaConnection") HikariDataSource ds2) {
+    public JdbcTemplate gwAirtelVikobaJdbcTemplate(@Qualifier("gwAirtelVikobaConnection") HikariDataSource ds2) {
         return new JdbcTemplate(ds2);
     }
 }
