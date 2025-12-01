@@ -32,8 +32,9 @@ import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.csrf.LazyCsrfTokenRepository;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 /**
@@ -59,10 +60,16 @@ public class SecurityConfig {
                 .addFilterAfter(customAuthFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
-                .csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/api/**")));
+                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/**")));
 
-        http.sessionManagement().sessionFixation().none().sessionAuthenticationErrorUrl("/login?session").invalidSessionUrl("/login?session").maximumSessions(1).expiredUrl("/login?session");
-        http.headers().frameOptions().sameOrigin();
+        http.sessionManagement(session -> session
+                .sessionFixation(sessionFixation -> sessionFixation.none())
+                .sessionAuthenticationErrorUrl("/login?session")
+                .invalidSessionUrl("/login?session")
+                .maximumSessions(1)
+                .expiredUrl("/login?session"));
+
+        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
         return http.build();
 
     }
@@ -70,7 +77,7 @@ public class SecurityConfig {
     @Bean
     public UsernamePasswordAuthenticationFilter customAuthFilter(AuthenticationManager authenticationManager) {
         CustomUsernamePasswordAuthenticationFilter authenticationFilter = new CustomUsernamePasswordAuthenticationFilter();
-        authenticationFilter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/login", "POST"));
+        authenticationFilter.setRequiresAuthenticationRequestMatcher(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/login"));
         authenticationFilter.setUsernameParameter("username");
         authenticationFilter.setPasswordParameter("password");
         authenticationFilter.setAuthenticationManager(authenticationManager);
@@ -116,9 +123,9 @@ public class SecurityConfig {
     public AuthenticationEntryPoint delegatingEntryPoint() {
         final LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> map = new LinkedHashMap();
         //for root return to login
-        map.put(new AntPathRequestMatcher("/"), new LoginUrlAuthenticationEntryPoint("/login?"));
+        map.put(AntPathRequestMatcher.antMatcher("/"), new LoginUrlAuthenticationEntryPoint("/login?"));
         //any other return to 403
-        map.put(new AntPathRequestMatcher("/error"), new Http403ForbiddenEntryPoint());
+        map.put(AntPathRequestMatcher.antMatcher("/error"), new Http403ForbiddenEntryPoint());
         // map.put(new AntPathRequestMatcher("/setup/**"), new Http403ForbiddenEntryPoint());
         final DelegatingAuthenticationEntryPoint entryPoint = new DelegatingAuthenticationEntryPoint(map);
 
