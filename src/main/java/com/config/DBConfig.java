@@ -55,7 +55,7 @@ public class DBConfig {
     }
 
     @Primary
-    @Bean(name = "amgwConnection")
+    @Bean(name = {"amgwConnection", "dataSource"})
     public DataSource userDataSource() {
 
         HikariDataSource dataSource
