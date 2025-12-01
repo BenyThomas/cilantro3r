@@ -35,7 +35,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.math.BigDecimal;

@@ -57,7 +57,7 @@ import philae.api.TxRequest;
 import philae.api.UsRole;
 import philae.api.XaResponse;
 
-import javax.validation.constraints.Null;
+import jakarta.validation.constraints.Null;
 
 /**
  * @author melleji.mollel

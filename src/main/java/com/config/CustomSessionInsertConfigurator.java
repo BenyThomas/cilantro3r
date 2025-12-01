@@ -9,7 +9,7 @@ package com.config;
  *
  * @author samichael, fix duplicate key when user login [spring session]
  */
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;

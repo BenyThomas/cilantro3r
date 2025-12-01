@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 @ToString

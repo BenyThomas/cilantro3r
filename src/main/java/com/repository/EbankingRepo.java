@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * @author melleji.mollel

@@ -1,7 +1,7 @@
 package com.models;
 
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 

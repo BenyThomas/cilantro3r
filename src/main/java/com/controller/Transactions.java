@@ -38,11 +38,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 import com.service.XapiWebService;
 import org.slf4j.LoggerFactory;

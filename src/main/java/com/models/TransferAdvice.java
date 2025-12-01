@@ -1,10 +1,10 @@
 package com.models;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Lob;
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

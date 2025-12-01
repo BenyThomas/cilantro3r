@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 import philae.api.XaResponse;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import javax.xml.stream.XMLStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

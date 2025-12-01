@@ -10,7 +10,7 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import com.config.SYSENV;
 import com.helper.DateUtil;

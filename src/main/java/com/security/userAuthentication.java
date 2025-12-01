@@ -18,7 +18,7 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;

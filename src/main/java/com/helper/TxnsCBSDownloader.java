@@ -33,7 +33,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

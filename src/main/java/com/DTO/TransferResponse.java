@@ -3,7 +3,7 @@ package com.DTO;
 import com.helper.TransferItem;
 import lombok.Data;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @Data

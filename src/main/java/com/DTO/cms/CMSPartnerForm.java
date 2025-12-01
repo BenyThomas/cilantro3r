@@ -1,7 +1,7 @@
 package com.DTO.cms;
 
 import javax.jms.Message;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class CMSPartnerForm {
 

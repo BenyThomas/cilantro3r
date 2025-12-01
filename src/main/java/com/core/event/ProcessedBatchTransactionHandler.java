@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import java.util.Objects;
 
 @Component

@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.xml.stream.XMLStreamReader;
 import java.math.BigDecimal;
 import java.util.List;

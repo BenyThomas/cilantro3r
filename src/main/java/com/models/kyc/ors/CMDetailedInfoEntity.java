@@ -2,7 +2,7 @@ package com.models.kyc.ors;
 
 import com.fasterxml.jackson.annotation.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

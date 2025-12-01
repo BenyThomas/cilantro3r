@@ -55,7 +55,7 @@ import philae.api.TpRequest;
 import philae.api.TxRequest;
 import philae.api.XaResponse;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author melleji.mollel

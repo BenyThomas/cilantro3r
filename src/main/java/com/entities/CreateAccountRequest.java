@@ -8,7 +8,7 @@ package com.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  *

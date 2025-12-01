@@ -7,7 +7,7 @@ package com.entities;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  *

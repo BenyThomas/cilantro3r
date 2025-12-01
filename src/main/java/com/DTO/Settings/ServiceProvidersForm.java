@@ -5,7 +5,7 @@
  */
 package com.DTO.Settings;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  *

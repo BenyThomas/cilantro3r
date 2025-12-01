@@ -9,7 +9,7 @@ import lombok.ToString;
 import org.hibernate.validator.constraints.Email;
 import org.intellij.lang.annotations.RegExp;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  *

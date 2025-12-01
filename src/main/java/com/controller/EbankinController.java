@@ -22,9 +22,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 import com.repository.VisaCardBINConfigurationRepository;
 import com.repository.WebserviceRepo;

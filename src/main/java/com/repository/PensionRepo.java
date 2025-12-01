@@ -39,10 +39,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import philae.api.UsRole;
 
-import javax.annotation.Nonnull;
-import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
+import jakarta.annotation.Nonnull;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 import java.math.BigDecimal;

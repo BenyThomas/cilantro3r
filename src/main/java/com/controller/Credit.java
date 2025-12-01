@@ -34,11 +34,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 import com.repository.reports.ReconReportsRepo;
 import net.sf.jasperreports.engine.JasperPrint;

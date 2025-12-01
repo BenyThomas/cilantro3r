@@ -2,7 +2,7 @@ package com.models.ubx;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

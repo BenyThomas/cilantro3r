@@ -14,10 +14,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint;
@@ -43,54 +42,49 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     @Autowired
     private userAuthentication authProvider;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.antMatcher("/**")
-                .addFilterBefore(customAuthFilter(), UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests()
-                .antMatchers("/login", "/assets/**", "/upload/**", "/", "/api/**",
-                        "/batchProcessingAsyncUrl/**", "/actuator/**", "/error").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .exceptionHandling().authenticationEntryPoint(delegatingEntryPoint())
-                .and()
-                .addFilterAfter(customAuthFilter(), UsernamePasswordAuthenticationFilter.class)
-                .formLogin().disable();
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+        http.securityMatcher("/**")
+                .addFilterBefore(customAuthFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login", "/assets/**", "/upload/**", "/", "/api/**",
+                                "/batchProcessingAsyncUrl/**", "/actuator/**", "/error").permitAll()
+                        .anyRequest().authenticated())
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(delegatingEntryPoint()))
+                .addFilterAfter(customAuthFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/api/**")));
 
         http.sessionManagement().sessionFixation().none().sessionAuthenticationErrorUrl("/login?session").invalidSessionUrl("/login?session").maximumSessions(1).expiredUrl("/login?session");
         http.headers().frameOptions().sameOrigin();
-        http.cors().disable();
-        http.csrf().ignoringAntMatchers("/api/**");
+        return http.build();
 
     }
 
     @Bean
-    public UsernamePasswordAuthenticationFilter customAuthFilter() throws Exception {
+    public UsernamePasswordAuthenticationFilter customAuthFilter(AuthenticationManager authenticationManager) {
         CustomUsernamePasswordAuthenticationFilter authenticationFilter = new CustomUsernamePasswordAuthenticationFilter();
         authenticationFilter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/login", "POST"));
         authenticationFilter.setUsernameParameter("username");
         authenticationFilter.setPasswordParameter("password");
-        authenticationFilter.setAuthenticationManager(authenticationManagerBean());
+        authenticationFilter.setAuthenticationManager(authenticationManager);
         authenticationFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler());
         authenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler());
         authenticationFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy());
         return authenticationFilter;
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(authProvider);
-    }
-
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authBuilder.authenticationProvider(authProvider);
+        return authBuilder.build();
     }
 
     @Bean
@@ -116,7 +110,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         ));
     }
 
-   
+
 
     @Bean
     public AuthenticationEntryPoint delegatingEntryPoint() {
