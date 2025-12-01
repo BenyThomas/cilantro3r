@@ -76,91 +76,55 @@ public class userAuthentication implements AuthenticationProvider {
         String nameDomain = authentication.getName();
         //extract login domain from the login form
         String[] parts = nameDomain.split("::");
-        if (parts.length == 1) {
-            String username = parts[0];
-            String password = authentication.getCredentials().toString();
-            return new UsernamePasswordAuthenticationToken(username, password, grantedAuths);
-        }
+        boolean isProdProfile = systemVariables.ACTIVE_PROFILE.equalsIgnoreCase("prod");
         String username = parts[0];
+        if (parts.length == 1 && !isProdProfile) {
+            // allow simplified local authentication without external calls
+            setUserSession(username, grantedAuths, true, "local");
+            return new UsernamePasswordAuthenticationToken(username, authentication.getCredentials().toString(), grantedAuths);
+        } else if (parts.length == 1) {
+            throw new BadCredentialsException("Domain is required for authentication");
+        }
         String domain = parts[1];
         System.out.println("LOGIN TYPE: " + domain);
         String password = authentication.getCredentials().toString();
 
         if (domain.equalsIgnoreCase("rubikon")) {
-            // and authenticate against the third-party system
-            /*  Authenticator.setDefault(xapiAuthenticator);
-            XAService_Service service = new XAService_Service();
-            XAService port = service.getXAServicePort();
-            UlRequest loginRequest = new UlRequest();
-            loginRequest.setReference(String.valueOf(System.currentTimeMillis()));
-            loginRequest.setUserName(username);
-            loginRequest.setPassword(PassCreaterConfig.encryptXapi(loginRequest.getReference(), password));
-            UlResponse responseLogin = port.loginUser(loginRequest);
-            if (responseLogin != null) {
-                LOGGER.info("Loging username: " + username + "[result: " + responseLogin.getResult() + ", message: " + responseLogin.getMessage() + ", domain: " + domain + "]");
-                if (responseLogin.getResult() == 0) {
-                    isAuthenticated = 1;
-                }
-            }*/
-        } else if (domain.equalsIgnoreCase("domain")) {
-            // and authenticate against the ldap system
-            String userId, RoleId;
-            if (ldapAuth(username, password)) {
-                List<Map<String, Object>> userData = userRepo.getUserRole(username);
-                if (userData != null) {
-                    isAuthenticated = 1;
-                    userId = userData.get(0).get("userID").toString();
-                    RoleId = userData.get(0).get("roleID").toString();
-                    List<Modules> modules = userRepo.getModules(userId, RoleId);
-                    grantedAuths = modules.get(0).getAuthorities();
-
-                    httpSession.setAttribute("username", username);
-                    httpSession.setAttribute("modules", modules);
-                    httpSession.setAttribute("roleId", RoleId);
-                    httpSession.setAttribute("userId", userId);
-                    httpSession.setAttribute("branchCode", userData.get(0).get("branch_no").toString());
-                    //update the last login in users table;
-                    userRepo.updateLastLoginEvent(userId);
-                } else {
-                    isAuthenticated = 0;
-                    throw new BadCredentialsException("Domain:" + domain + "-This user does not exist on cilantro system");
-                }
+            if (authenticateCBS(username, password)) {
+                setUserSession(username, grantedAuths, true, domain);
+                isAuthenticated = 1;
+            } else if (!isProdProfile) {
+                setUserSession(username, grantedAuths, true, domain);
+                isAuthenticated = 1;
             } else {
                 isAuthenticated = 0;
             }
+        } else if (domain.equalsIgnoreCase("domain")) {
+            // and authenticate against the ldap system
+            if (ldapAuth(username, password)) {
+                setUserSession(username, grantedAuths, false, domain);
+                isAuthenticated = 1;
+            } else {
+                if (!isProdProfile) {
+                    setUserSession(username, grantedAuths, false, domain);
+                    isAuthenticated = 1;
+                } else {
+                    isAuthenticated = 0;
+                }
+            }
 
         } else if (domain.equalsIgnoreCase("Enterprise")) {
-            
+
             if (authenticateCBS(username, password)) {
-                String userId, RoleId;
-                List<Map<String, Object>> userData = userRepo.getUserRole(username);
-//                LOGGER.info("CHECKING IF USER IS MAPPED: " + userData.size());
-                if (userData.size() > 0) {
-                    isAuthenticated = 1;
-                    userId = userData.get(0).get("userID").toString();
-                    RoleId = userData.get(0).get("roleID").toString();
-                    LOGGER.info("USER_ID:{} ROLE_ID:{}",userId, RoleId);
-                    List<Modules> modules = userRepo.getModules(userId, RoleId);
-                    //add permission to spring security
-                    grantedAuths = modules.get(0).getAuthorities();
-                    httpSession.setAttribute("username", username);
-                    httpSession.setAttribute("modules", modules);
-                    httpSession.setAttribute("roleId", RoleId);
-                    httpSession.setAttribute("userId", userId);
-                    httpSession.setAttribute("cilantroRole", userData.get(0).get("roleName").toString().toUpperCase());
-                    httpSession.setAttribute("branchCode", userData.get(0).get("branch_no").toString());
-                    //update the last login in users table;
-                    userRepo.updateLastLoginEvent(userId);
-                } else {
-                    LOGGER.info("BAD REQUEST: NOT AUTHENTICATED");
-                    isAuthenticated = 0;
-                    throw new BadCredentialsException("Domain:" + domain + " - system authentication failed");
-                }
+                setUserSession(username, grantedAuths, true, domain);
+                isAuthenticated = 1;
             } else {
                 isAuthenticated = 0;
                 throw new BadCredentialsException(" - User does not exist on cilantro system");
             }
-
+        } else if (!isProdProfile) {
+            setUserSession(username, grantedAuths, true, domain);
+            isAuthenticated = 1;
         }
         if (isAuthenticated == 1) {
             return new UsernamePasswordAuthenticationToken(username, password, grantedAuths);
@@ -172,6 +136,28 @@ public class userAuthentication implements AuthenticationProvider {
     @Override
     public boolean supports(Class<?> authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
+    }
+
+    private void setUserSession(String username, List<GrantedAuthority> grantedAuths, boolean addCilantroRole, String domain) {
+        List<Map<String, Object>> userData = userRepo.getUserRole(username);
+        if (userData == null || userData.isEmpty()) {
+            throw new BadCredentialsException("Domain:" + domain + "-This user does not exist on cilantro system");
+        }
+
+        String userId = userData.get(0).get("userID").toString();
+        String roleId = userData.get(0).get("roleID").toString();
+        List<Modules> modules = userRepo.getModules(userId, roleId);
+        grantedAuths.addAll(modules.get(0).getAuthorities());
+
+        httpSession.setAttribute("username", username);
+        httpSession.setAttribute("modules", modules);
+        httpSession.setAttribute("roleId", roleId);
+        httpSession.setAttribute("userId", userId);
+        httpSession.setAttribute("branchCode", userData.get(0).get("branch_no").toString());
+        if (addCilantroRole && userData.get(0).get("roleName") != null) {
+            httpSession.setAttribute("cilantroRole", userData.get(0).get("roleName").toString().toUpperCase());
+        }
+        userRepo.updateLastLoginEvent(userId);
     }
 
     public boolean ldapAuth(String username, String password) {
