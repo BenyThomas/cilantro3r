@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,7 +21,7 @@ public class KeycloakUserAuthoritiesConverter implements Converter<Jwt, Collecti
     private static final String CLIENT_ID = "cilantro";
 
     @Override
-    public Collection<GrantedAuthority> convert(Jwt jwt) {
+    public Collection<GrantedAuthority> convert(@NotNull Jwt jwt) {
         Set<String> roles = new HashSet<>();
 
         roles.addAll(resolveRealmRoles(jwt));

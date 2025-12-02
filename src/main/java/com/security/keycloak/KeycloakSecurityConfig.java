@@ -31,15 +31,26 @@ public class KeycloakSecurityConfig {
                                 "/actuator/info",
                                 "/actuator/health/**"
                         ).permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().authenticated()
+                )
+                // Browser login via Keycloak
                 .oauth2Login(oauth -> oauth
+                        // if you want a custom login page, you can add:
+                        // .loginPage("/oauth2/authorization/cilantro")
                         .userInfoEndpoint(userInfo -> userInfo
-                                .userAuthoritiesMapper(authorities -> authorities)))
+                                .userAuthoritiesMapper(authorities -> authorities)
+                        )
+                )
+                // JWT for API requests (e.g. if you call Cilantro APIs from other services)
                 .oauth2ResourceServer(resource -> resource
                         .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())))
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                        )
+                )
+                // For browser login, keep sessions enabled
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable);
 
@@ -54,4 +65,3 @@ public class KeycloakSecurityConfig {
     }
 
 }
-
