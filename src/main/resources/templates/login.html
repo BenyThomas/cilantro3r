@@ -2,11 +2,19 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>Cilantro | Login Page</title>    
-        <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
-        <meta  http-equiv="Content-Security-Policy" th:if="${@environment.getProperty('spring.profiles.active').equals('prod')}"  content="" />
-        <meta  http-equiv="Content-Security-Policy" th:unless="${@environment.getProperty('spring.profiles.active').equals('prod')}"  content=" default-src https://cilantro.tcbbank.co.tz:8443 https://cilantrouat.tcbbank.co.tz:8443 http://cilantrouat.tcbbank.co.tz:8443 http://localhost:8080 http://localhost:8082 http://localhost:8030;  child-src 'none'; object-src 'none'" />
-        <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
+        <title>Cilantro | Login Page</title>
+        <th:block th:if="${_csrf != null}">
+            <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+            <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
+        </th:block>
+
+        <meta http-equiv="Content-Security-Policy"
+              th:if="${@environment.getProperty('spring.profiles.active').equals('prod')}"
+              content=""/>
+
+        <meta http-equiv="Content-Security-Policy"
+              th:unless="${@environment.getProperty('spring.profiles.active').equals('prod')}"
+              content=" default-src https://cilantro.tcbbank.co.tz:8443 https://cilantrouat.tcbbank.co.tz:8443 http://cilantrouat.tcbbank.co.tz:8443 http://localhost:8080 http://localhost:8082 http://localhost:8030;  child-src 'none'; object-src 'none'"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <meta content="Cilantro is a fully featured Reconciliation System" name="description" />
         <meta content="Amecore Technologies Company Limites" name="author" />

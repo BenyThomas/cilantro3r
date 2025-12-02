@@ -9,10 +9,22 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.csrf.LazyCsrfTokenRepository;
+
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -20,9 +32,8 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 public class KeycloakSecurityConfig {
 
     @Bean
-    public SecurityFilterChain keycloakSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain keycloakSecurityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
         http
-                .securityMatcher("/**")
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/assets/**",
@@ -34,28 +45,25 @@ public class KeycloakSecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                // Browser login via Keycloak
                 .oauth2Login(oauth -> oauth
-                        .loginPage("/oauth2/authorization/keycloak")
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userAuthoritiesMapper(authorities -> authorities)
-                        )
+                        .defaultSuccessUrl("/dashboard", true)
                 )
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/oauth2/authorization/keycloak"))
-                )
-                // JWT for API requests (e.g. if you call Cilantro APIs from other services)
                 .oauth2ResourceServer(resource -> resource
-                        .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                        )
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
-                // For browser login, keep sessions enabled
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable);
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(csrfTokenRepository())
+                        .ignoringRequestMatchers("/api/**")
+                ).logout(logout -> logout
+                        .logoutUrl("/logout")                // your <a href="/logout">
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler(oidcLogoutSuccessHandler(clientRegistrationRepository))
+                );
 
         return http.build();
     }
@@ -67,4 +75,48 @@ public class KeycloakSecurityConfig {
         return converter;
     }
 
+    @Bean
+    public CsrfTokenRepository csrfTokenRepository() {
+        return new LazyCsrfTokenRepository(new HttpSessionCsrfTokenRepository());
+    }
+
+    /**
+     * CORS configuration – adjust allowed origins to your environments.
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        // Frontend / callers that are allowed to call Cilantro
+        config.setAllowedOrigins(List.of(
+                "http://localhost:8030",
+                "http://localhost:8080",
+                "https://cilantrouat.tcbbank.co.tz:8443",
+                "https://cilantro.tcbbank.co.tz:8443"
+        ));
+
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "X-Requested-With",
+                "X-XSRF-TOKEN"
+        ));
+        config.setAllowCredentials(true); // needed if you use cookies / sessions
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+    @Bean
+    public LogoutSuccessHandler oidcLogoutSuccessHandler(
+            ClientRegistrationRepository clientRegistrationRepository   // 👈 injected here too
+    ) {
+        OidcClientInitiatedLogoutSuccessHandler handler =
+                new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
+
+        // After Keycloak logout, redirect back here:
+        handler.setPostLogoutRedirectUri("{baseUrl}/login?logout");
+        return handler;
+    }
 }

@@ -30,7 +30,9 @@ import jakarta.validation.Valid;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -59,18 +61,24 @@ public class User {
     ObjectMapper jacksonMapper;
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(User.class);
+    @RequestMapping(value = "/")
+    public String root(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            return "redirect:/dashboard";
+        }
+        return "redirect:/oauth2/authorization/keycloak";
+    }
 
-    @RequestMapping(value = {"/login", "/"})
-    //@ResponseBody
-    public String login(Model model, HttpServletResponse response) throws ParseException {
-     //   response.setHeader("Content-Security-Policy", "style-src 'self'; script-src 'self'; form-action 'self'");
-        return "login";
+    @RequestMapping(value = "/login")
+    public String login(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            return "redirect:/dashboard";
+        }
+        return "redirect:/oauth2/authorization/keycloak";
     }
 
     @RequestMapping(value = "/addUser")
     public String addUser(HttpSession session, Model model) {
-//        AuditTrails.setComments("Add user to the system");
-//        AuditTrails.setFunctionName("/addUser");
         UserForm userForm = new UserForm();
         model.addAttribute("roles", user_m.getRoles());
         model.addAttribute("users", user_m.getAllUsers());
@@ -143,10 +151,18 @@ public class User {
     }
 
     @RequestMapping(value = "/dashboard")
-    public String dashboard(Model model) {
+    public String dashboard(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
+
+        if (oidcUser != null) {
+            String username = oidcUser.getPreferredUsername();
+             String fullName = oidcUser.getFullName();
+             String email = oidcUser.getEmail();
+
+            httpSession.setAttribute("username", username);
+            httpSession.setAttribute("fullName", fullName);
+            httpSession.setAttribute("email", email);
+        }
         model.addAttribute("session", httpSession.getAttribute("modules"));
-//        AuditTrails.setComments("You have loggedin successfully welcome to the dashboard");
-//        AuditTrails.setFunctionName("/dashboard");
         return "pages/dashboard";
     }
 
@@ -160,8 +176,6 @@ public class User {
     @RequestMapping(value = "/dashboard2")
     public String dashboard2(Model model) {
         model.addAttribute("session", httpSession.getAttribute("modules"));
-//        AuditTrails.setComments("You have logged in successfully welcome to the dashboard");
-//        AuditTrails.setFunctionName("/dashboard2");
         return "pages/dashboard";
     }
 
@@ -393,28 +407,28 @@ public class User {
         //  AuditTrails.setFunctionName("/getNotInThirdPartyTxnsAjax");
         return user_m.getUserListsAjax(customeQuery.get("branchCode"), draw, start, rowPerPage, searchValue, columnIndex, columnName, columnSortOrder);
     }
-
-    @RequestMapping(value = {"/logout"}, method = RequestMethod.GET)
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
-
-        HttpSession session = request.getSession(false);
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            new SecurityContextLogoutHandler().logout(request, response, auth);
-        }
-        session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-
-        for (Cookie cookie : request.getCookies()) {
-            cookie.setMaxAge(0);
-        }
-
-        AuditTrails.setComments("You have successfully Logged out");
-        AuditTrails.setFunctionName("/logout");
-        return "redirect:/login?logout";
-    }
+//
+//    @RequestMapping(value = {"/logout"}, method = RequestMethod.GET)
+//    public String logout(HttpServletRequest request, HttpServletResponse response) {
+//
+//        HttpSession session = request.getSession(false);
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        if (auth != null) {
+//            new SecurityContextLogoutHandler().logout(request, response, auth);
+//        }
+//        session = request.getSession(false);
+//        if (session != null) {
+//            session.invalidate();
+//        }
+//
+//        for (Cookie cookie : request.getCookies()) {
+//            cookie.setMaxAge(0);
+//        }
+//
+//        AuditTrails.setComments("You have successfully Logged out");
+//        AuditTrails.setFunctionName("/logout");
+//        return "redirect:/login?logout";
+//    }
 
     @RequestMapping(value = "/selectOpRole")
     public String selectOpRole(Model model) {
