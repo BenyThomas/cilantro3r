@@ -13,8 +13,7 @@
     <groupId>com.cilantro</groupId>
     <artifactId>cilantro</artifactId>
     <version>1.0.0-Release</version>
-    <!--<packaging>war</packaging>-->
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>cilantro</name>
     <description>Cilantro System Portal</description>
     <properties>
@@ -421,7 +420,7 @@
 
     </dependencies>
     <build>
-        <finalName>ROOT</finalName>
+        <finalName>cilantro</finalName>
         <resources>
             <resource>
                 <targetPath>META-INF</targetPath>
