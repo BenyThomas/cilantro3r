@@ -12,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -35,11 +36,13 @@ public class KeycloakSecurityConfig {
                 )
                 // Browser login via Keycloak
                 .oauth2Login(oauth -> oauth
-                        // if you want a custom login page, you can add:
-                        // .loginPage("/oauth2/authorization/cilantro")
+                        .loginPage("/oauth2/authorization/keycloak")
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userAuthoritiesMapper(authorities -> authorities)
                         )
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/oauth2/authorization/keycloak"))
                 )
                 // JWT for API requests (e.g. if you call Cilantro APIs from other services)
                 .oauth2ResourceServer(resource -> resource
