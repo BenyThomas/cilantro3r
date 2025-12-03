@@ -1,15 +1,32 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
-    <head> <meta charset="utf-8"/> <th:block layout:fragment="pageTitle"> <title layout:title-pattern="$LAYOUT_TITLE | $CONTENT_TITLE">Cilantro</title></th:block> <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1"> <meta content="Cilantro is a fully featured Reconciliation System" name="description"/> <meta content="Amecore Technologies Company Limites" name="author"/> <meta http-equiv="X-UA-Compatible" content="IE=edge"/> <meta id="_csrf" name="_csrf"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   th:content="${_csrf != null ? _csrf.token : ''}"/>
-
-        <meta id="_csrf_header" name="_csrf_header"
-              th:content="${_csrf != null ? _csrf.headerName : ''}"/>
-        <base href="/"> <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}"> <link rel="stylesheet" th:href="@{/assets/plugins/morris/morris.css}"> <th:block layout:fragment="pageStyle"></th:block> <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="utf-8"/>
+    <th:block layout:fragment="pageTitle">
+        <title layout:title-pattern="$LAYOUT_TITLE | $CONTENT_TITLE">Cilantro</title>
+    </th:block>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <meta content="Cilantro is a fully featured Reconciliation System" name="description"/>
+    <meta content="Amecore Technologies Company Limites" name="author"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta id="_csrf" name="_csrf"
+          th:content="${_csrf != null ? _csrf.token : ''}"/>
+    <meta id="_csrf_header" name="_csrf_header"
+          th:content="${_csrf != null ? _csrf.headerName : ''}"/>
+    <base href="/">
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/assets/plugins/morris/morris.css}">
+    <th:block layout:fragment="pageStyle"></th:block>
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet">
     <!--        <link th:href="@{/assets/css/metisMenu.min.css}" rel="stylesheet"> -->
     <link th:href="@{/assets/css/icons.css}" rel="stylesheet">
-    <link th:href="@{/assets/css/style.css}" rel="stylesheet"></head><body>
-        <div id="loading1" style="display: none;
+    <link th:href="@{/assets/css/style.css}" rel="stylesheet">
+</head>
+<body>
+<div id="loading1" style="display: none;
     background-color: #ffffffc4;
     width: 100%;
     position: fixed;
@@ -27,105 +44,257 @@ left: 50%;
     position: absolute;" role="status">
         <img th:src="@{/assets/images/gif4.gif}" alt=""/>
         <span class="sr-only">Loading...</span>
-      </div>
     </div>
-    <div id="page-wrapper">
-        <div class="topbar"> <div class="topbar-left"> <div class=""> <a class="logo"> <span style="color: #ffffff !important"> Cilantro </span> <span style="color: #ffffff !important" class="logo-sm hidden"> CRS </span> </a> </div></div><div class="navbar navbar-default" role="navigation"> <div class="container"> <div class=""> <div class="pull-left"> <button type="button" class="button-menu-mobile visible-xs visible-sm"> <i class="fa fa-bars"></i> </button> <span class="clearfix"></span> </div><ul class="nav navbar-nav navbar-left top-navbar-items-right pull-left"> <ul class="breadcrumb list-inline" style="background-color: #124e0d ! important;color: white ! important;"> <li><button id="role_button" type="button" onclick="selectOpRole()" class="btn btn-primary"><img src="/assets/images/role.png" style="width:26px;" title="Change operational Role"> </button></li><li>USERNAME: <strong th:text="${session.username}"></strong></li><li>CILANTRO ROLE: <strong th:text="${session.cilantroRole}"></strong></li><li>RUBIKON SELECTED ROLE FOR POSTING: <strong th:text="${session.operationRole}"></strong></li><li>CURRENT BRANCH: <strong th:text="${session.branchCode}"></strong></li></ul> </ul> <ul class="nav navbar-nav navbar-right top-navbar-items-right pull-right"> <li style=" margin-top: 10% ! important;"><a href="/logout"><i class="ti-power-off m-r-10"></i> Logout</a></li></ul> </div></div></div></div><div class="page-contentbar">
-            <aside class="sidebar-navigation"> <div class="scrollbar-wrapper">
-                    <div> <button type="button" class="button-menu-mobile btn-mobile-view visible-xs visible-sm"> <i class="mdi mdi-close"></i> </button>
-                        <ul class="metisMenu nav" id="side-menu">
-                            <li class="menu-title" style="padding: 13px 20px;">Navigation</li>
-                            <li th:if="${module.getPermissions}" th:each="module: ${session.modules}">
-                                <a th:href="${module.url}" aria-expanded="true"> <i th:class="${module.icon}" ></i><span th:text="${module.name}"> Dashboard </span> </a>
-                                <ul class="nav-second-level nav" aria-expanded="false" >
-                                    <li th:each="subModule: ${module.getPermissions}">
-                                        <a th:href="${subModule.url}" th:text="${subModule.name}"><span class="fa arrow"></span></a>
-                                    </li></ul>
-                            </li>
-                            <li>
-                                <a  aria-expanded="true" href="#"> <i class="ti-id-badge" ></i><span> Mai Tools </span> </a>
-                                <ul class="nav-second-level nav" aria-expanded="false" >
-                                    <li  sec:authorize="hasAuthority('/fireLukuGwTransactions')">
-                                        <a href="/fireLukuGwTransactions" >LUKU transactions<span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/fireLukuGwTransactions')">
-                                        <a href="/fireBulkTransactions" >BULK transactions<span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/fireLukuGwTransactions')">
-                                        <a href="/fireSuspiciousTransactions" >Suspicious transactions<span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/fireSwiftSTPReport')">
-                                        <a href="/fireSwiftSTPReport" >SWIFT INCOMING REPORT<span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/fireSwiftSTPReport')">
-                                        <a href="/fireSwiftOutReport" >SWIFT OUTGOING REPORT<span class="fa arrow"></span></a>
-                                    </li>
-                                    <li>
-                                        <a href="/fireSwiftRetunedReport" >SWIFT UN-APPLIED REPORT<span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/fireCardIssue')">
-                                        <a href="/fireCardIssue" >Card Issue<span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/fireCardIssue')">
-                                        <a href="/fireInstantCardIssue" >Instant Cards<span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/searchVisaCard')">
-                                        <a href="/fireGetCardDetails" >Search Visa Card<span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/fireLukuGwTransactions')">
-                                        <a href="/fireMnoBalance" >MNO Balance<span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/fireLukuGwTransactions')">
-                                        <a href="/fireMkobaSolution" >MKOBA Resolution <span class="fa arrow"></span></a>
-                                    </li>
-                                    <li>
-                                        <a href="/fireVisaCardReport" >Visa Card Report <span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/fireMuseStatement')">
-                                        <a href="/fireMuseStatements" >Muse Statements <span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/searchPartnerAccount')">
-                                    <a href="/fireGetPartnerAccount" >Get Partner Account <span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/searchVisaCard')">
-                                    <a href="/fireCusTomerService" >Customer Service <span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/fireMultipleWalletTransactions')">
-                                        <a href="/fireMultipleWalletTransactions" >Multiple Wallet Transactions<span class="fa arrow"></span></a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/fireUploadReconFiles')">
-                                        <a href="/fireUploadReconFiles" >Upload Recon Files<span class="fa arrow"></span></a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li  sec:authorize="hasAuthority('/fireLukuGwTransactions')">
-                                <a href="/firePortalAdminModule" ><span class="ti-settings"></span> Portal Admin</a>
-                            </li>
-                            <li>
-                                <a  aria-expanded="true" href="#"> <i class="ti-layers" ></i><span> Posting GePG </span><span class="fa arrow"></span> </a>
-                                <ul class="nav-third-level nav">
-                                    <li  sec:authorize="hasAuthority('/fireLukuGwTransactions')">
-                                        <a href="/fireGePGTransactions" ><span class="ti-check-box"></span> GePG Transactions</a>
-                                    </li>
-                                    <li  sec:authorize="hasAuthority('/fireLukuGwTransactions')">
-                                        <a href="/fireReprocessTransaction" ><span class="ti-hummer"></span> Reprocess Transaction</a>
-                                    </li>
-                                </ul>
-                            </li>
-
-                        </ul>
+</div>
+<div id="page-wrapper">
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="">
+                <a class="logo">
+                    <span style="color: #ffffff !important"> Cilantro </span>
+                    <span style="color: #ffffff !important" class="logo-sm hidden"> CRS </span>
+                </a>
+            </div>
+        </div>
+        <div class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="">
+                    <div class="pull-left">
+                        <button type="button" class="button-menu-mobile visible-xs visible-sm">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <span class="clearfix"></span>
                     </div>
+                    <ul class="nav navbar-nav navbar-left top-navbar-items-right pull-left">
+                        <ul class="breadcrumb list-inline" style="background-color: #124e0d ! important;color: white ! important;">
+                            <li>
+                                <button id="role_button" type="button" onclick="selectOpRole()" class="btn btn-primary">
+                                    <img src="/assets/images/role.png" style="width:26px;" title="Change operational Role">
+                                </button>
+                            </li>
+                            <li>USERNAME: <strong th:text="${session.username}"></strong></li>
+                            <li>CILANTRO ROLE: <strong th:text="${session.cilantroRole}"></strong></li>
+                            <li>RUBIKON SELECTED ROLE FOR POSTING: <strong th:text="${session.operationRole}"></strong></li>
+                            <li>CURRENT BRANCH: <strong th:text="${session.branchCode}"></strong></li>
+                        </ul>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right top-navbar-items-right pull-right">
+                        <li style="margin-top: 10% !important;">
+                            <form th:action="@{/logout}" method="post" style="display: inline;">
+                                <input type="hidden"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}" />
+                                <button type="submit"
+                                        style="background: none; border: none; padding: 0; color: #ffffff !important; cursor: pointer;">
+                                    <i class="ti-power-off m-r-10"></i> Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
                 </div>
-            </aside>
-            <div id="myModal" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> <div class="modal-dialog">
-                    <div id="areaValue"> </div></div></div>
-            <div id="page-right-content"> <div class="container" layout:fragment="contents"> </div><div class="footer"> <div class="pull-right hidden-xs"> Developed By <strong class="text-custom"> Business Solution </strong>. </div><div> <strong>Cilantro~System</strong> - Copyright &copy; <b th:text="${#dates.year(#dates.createNow())}"></b> </div></div></div></div></div><script th:src="@{/assets/js/jquery-2.1.4.min.js}"></script> <script th:src="@{/assets/js/bootstrap.min.js}"></script> <script th:src="@{/assets/js/metisMenu.min.js}"></script> <script th:src="@{/assets/js/jquery.slimscroll.min.js}"></script> <script th:src="@{/assets/scripts/roles.js}"></script> <script>$(document).ready(function () {
-                    var token = $("meta[name='_csrf']").attr("content");
-                    var header = $("meta[name='_csrf_header']").attr("content");
-                    $.ajaxSetup({headers: {'X-CSRF-TOKEN': token}});
-                });
-    </script>
-<th:block layout:fragment="pageScript"></th:block>
-<script th:src="@{/assets/js/jquery.app.js}">
+            </div>
+        </div>
+    </div>
+
+    <div class="page-contentbar">
+        <aside class="sidebar-navigation">
+            <div class="scrollbar-wrapper">
+                <div>
+                    <button type="button" class="button-menu-mobile btn-mobile-view visible-xs visible-sm">
+                        <i class="mdi mdi-close"></i>
+                    </button>
+                    <ul class="metisMenu nav" id="side-menu">
+                        <li class="menu-title" style="padding: 13px 20px;">Navigation</li>
+
+                        <li th:if="${module.getPermissions}" th:each="module: ${session.modules}">
+                            <a th:href="${module.url}" aria-expanded="true">
+                                <i th:class="${module.icon}" ></i>
+                                <span th:text="${module.name}"> Dashboard </span>
+                            </a>
+                            <ul class="nav-second-level nav" aria-expanded="false" >
+                                <li th:each="subModule: ${module.getPermissions}">
+                                    <a th:href="${subModule.url}" th:text="${subModule.name}">
+                                        <span class="fa arrow"></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <a  aria-expanded="true" href="#">
+                                <i class="ti-id-badge" ></i><span> Mai Tools </span>
+                            </a>
+                            <ul class="nav-second-level nav" aria-expanded="false" >
+
+                                <!-- Use Keycloak scopes here -->
+                                <li sec:authorize="hasAuthority('ROLE_FIRE_LUKU_GW_TRANSACTIONS')">
+                                    <a href="/fireLukuGwTransactions" >
+                                        LUKU transactions<span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li sec:authorize="hasAuthority('ROLE_FIRE_BULK_TRANSACTIONS')">
+                                    <a href="/fireBulkTransactions" >
+                                        BULK transactions<span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li sec:authorize="hasAuthority('ROLE_FIRE_SUSPICIOUS_TRANSACTIONS')">
+                                    <a href="/fireSuspiciousTransactions" >
+                                        Suspicious transactions<span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <!-- still old-style until you define scopes in Keycloak for them -->
+                                <li sec:authorize="hasAuthority('ROLE_FIRE_SWIFT_STP_REPORT')">
+                                    <a href="/fireSwiftSTPReport" >
+                                        SWIFT INCOMING REPORT<span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li sec:authorize="hasAuthority('ROLE_FIRE_SWIFT_STP_REPORT')">
+                                    <a href="/fireSwiftOutReport" >
+                                        SWIFT OUTGOING REPORT<span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="/fireSwiftRetunedReport" >
+                                        SWIFT UN-APPLIED REPORT<span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li  sec:authorize="hasAuthority('ROLE_FIRE_CARD_ISSUE')">
+                                    <a href="/fireCardIssue" >
+                                        Card Issue<span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li  sec:authorize="hasAuthority('ROLE_FIRE_CARD_ISSUE')">
+                                    <a href="/fireInstantCardIssue" >
+                                        Instant Cards<span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li  sec:authorize="hasAuthority('ROLE_FIRE_CARD_ISSUE')">
+                                    <a href="/fireGetCardDetails" >
+                                        Search Visa Card<span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li  sec:authorize="hasAuthority('ROLE_FIRE_LUKU_GW_TRANSACTIONS')">
+                                    <a href="/fireMnoBalance" >
+                                        MNO Balance<span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li  sec:authorize="hasAuthority('ROLE_FIRE_LUKU_GW_TRANSACTIONS')">
+                                    <a href="/fireMkobaSolution" >
+                                        MKOBA Resolution <span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="/fireVisaCardReport" >
+                                        Visa Card Report <span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li  sec:authorize="hasAuthority('ROLE_FIRE_MUSE_STATEMENT')">
+                                    <a href="/fireMuseStatements" >
+                                        Muse Statements <span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li  sec:authorize="hasAuthority('ROLE_SEARCH_PARTNER_ACCOUNT')">
+                                    <a href="/fireGetPartnerAccount" >
+                                        Get Partner Account <span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li  sec:authorize="hasAuthority('ROLE_SEARCH_VISA_CARD')">
+                                    <a href="/fireCusTomerService" >
+                                        Customer Service <span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li  sec:authorize="hasAuthority('ROLE_SEARCH_MULTIPLE_WALLET_TRANSACTIONS')">
+                                    <a href="/fireMultipleWalletTransactions" >
+                                        Multiple Wallet Transactions<span class="fa arrow"></span>
+                                    </a>
+                                </li>
+
+                                <li  sec:authorize="hasAuthority('ROLE_FIRE_UPLOAD_RECON_FILES')">
+                                    <a href="/fireUploadReconFiles" >
+                                        Upload Recon Files<span class="fa arrow"></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li  sec:authorize="hasAuthority('ROLE_FIRE_PORTAL_ADMIN_MODULE')">
+                            <a href="/firePortalAdminModule" >
+                                <span class="ti-settings"></span> Portal Admin
+                            </a>
+                        </li>
+
+                        <li>
+                            <a  aria-expanded="true" href="#">
+                                <i class="ti-layers" ></i><span> Posting GePG </span><span class="fa arrow"></span>
+                            </a>
+                            <ul class="nav-third-level nav">
+                                <li  sec:authorize="hasAuthority('ROLE_FIRE_GEPG_TRANSACTIONS')">
+                                    <a href="/fireGePGTransactions" >
+                                        <span class="ti-check-box"></span> GePG Transactions
+                                    </a>
+                                </li>
+                                <li  sec:authorize="hasAuthority('ROLE_FIRE_REPROCESS_TRANSACTIONS')">
+                                    <a href="/fireReprocessTransaction" >
+                                        <span class="ti-hummer"></span> Reprocess Transaction
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <div id="myModal" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div id="areaValue"> </div>
+            </div>
+        </div>
+
+        <div id="page-right-content">
+            <div class="container" layout:fragment="contents"> </div>
+            <div class="footer">
+                <div class="pull-right hidden-xs">
+                    Developed By <strong class="text-custom"> Business Solution </strong>.
+                </div>
+                <div>
+                    <strong>Cilantro~System</strong> - Copyright &copy;
+                    <b th:text="${#dates.year(#dates.createNow())}"></b>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/assets/js/jquery-2.1.4.min.js}"></script>
+<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+<script th:src="@{/assets/js/metisMenu.min.js}"></script>
+<script th:src="@{/assets/js/jquery.slimscroll.min.js}"></script>
+<script th:src="@{/assets/scripts/roles.js}"></script>
+<script>
+    $(document).ready(function () {
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $.ajaxSetup({headers: {'X-CSRF-TOKEN': token}});
+    });
 </script>
-</body></html>
+<th:block layout:fragment="pageScript"></th:block>
+<script th:src="@{/assets/js/jquery.app.js}"></script>
+</body>
+</html>

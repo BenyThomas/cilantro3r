@@ -11,6 +11,7 @@ import com.entities.ReconTypeMappingForm;
 import com.entities.ReportsJsonResponse2;
 import com.entities.RoleForm;
 import com.entities.UserForm;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.helper.DateUtil;
 import com.repository.SftpRepo;
@@ -32,6 +33,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -59,22 +63,29 @@ public class User {
     User_M user_m;
     @Autowired
     ObjectMapper jacksonMapper;
+    @Autowired
+    OAuth2AuthorizedClientService authorizedClientService;
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(User.class);
-    @RequestMapping(value = "/")
-    public String root(Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated()) {
-            return "redirect:/dashboard";
-        }
-        return "redirect:/oauth2/authorization/keycloak";
-    }
+//    @RequestMapping(value = "/")
+//    public String root(Authentication authentication) {
+//        if (authentication != null && authentication.isAuthenticated()) {
+//            return "redirect:/dashboard";
+//        }
+//        return "redirect:/oauth2/authorization/keycloak";
+//    }
+//
+//    @RequestMapping(value = "/login")
+//    public String login(Authentication authentication) {
+//        if (authentication != null && authentication.isAuthenticated()) {
+//            return "redirect:/dashboard";
+//        }
+//        return "redirect:/oauth2/authorization/keycloak";
+//    }
 
-    @RequestMapping(value = "/login")
-    public String login(Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated()) {
-            return "redirect:/dashboard";
-        }
-        return "redirect:/oauth2/authorization/keycloak";
+    @RequestMapping("/")
+    public String root() {
+        return "redirect:/dashboard";
     }
 
     @RequestMapping(value = "/addUser")
@@ -108,8 +119,6 @@ public class User {
 
     @RequestMapping(value = "/permissionDenied")
     public String permissionDenied(HttpSession session) {
-//        AuditTrails.setComments("Permission Denied to view this Page");
-//        AuditTrails.setFunctionName("/permissionDenied");
         return "pages/permissionDenied";
     }
 
@@ -151,20 +160,53 @@ public class User {
     }
 
     @RequestMapping(value = "/dashboard")
-    public String dashboard(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
+    public String dashboard(Model model,
+                            @AuthenticationPrincipal OidcUser oidcUser,
+                            Authentication authentication) throws JsonProcessingException {
 
         if (oidcUser != null) {
             String username = oidcUser.getPreferredUsername();
-             String fullName = oidcUser.getFullName();
-             String email = oidcUser.getEmail();
+            String fullName = oidcUser.getFullName();
+            String email = oidcUser.getEmail();
 
+            // keep your existing session usage
             httpSession.setAttribute("username", username);
             httpSession.setAttribute("fullName", fullName);
             httpSession.setAttribute("email", email);
+
+            // 1) All claims as JSON
+            Map<String, Object> claims = oidcUser.getClaims();
+            String claimsJson = jacksonMapper
+                    .writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(claims);
+
+            // 2) Raw ID token
+            String idTokenValue = oidcUser.getIdToken().getTokenValue();
+
+            // 3) Access token via OAuth2AuthorizedClientService
+            String accessTokenValue = null;
+            if (authentication instanceof OAuth2AuthenticationToken oauth2Auth) {
+                OAuth2AuthorizedClient client =
+                        authorizedClientService.loadAuthorizedClient(
+                                oauth2Auth.getAuthorizedClientRegistrationId(),
+                                oauth2Auth.getName());
+
+                if (client != null && client.getAccessToken() != null) {
+                    accessTokenValue = client.getAccessToken().getTokenValue();
+                }
+            }
+
+            // Expose to Thymeleaf
+            model.addAttribute("oidcClaimsJson", claimsJson);
+            model.addAttribute("idTokenValue", idTokenValue);
+            model.addAttribute("accessTokenValue", accessTokenValue);
+            model.addAttribute("authorities", oidcUser.getAuthorities());
         }
+
         model.addAttribute("session", httpSession.getAttribute("modules"));
         return "pages/dashboard";
     }
+
 
     @RequestMapping(value = {"/downloadUsersReportMatrix"}, method = {RequestMethod.GET})
     @ResponseBody

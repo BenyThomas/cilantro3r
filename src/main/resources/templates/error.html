@@ -46,23 +46,15 @@
             }</style>
     </head>
     <body>
-        <div class="error-404" th:with="httpStatus=${T(org.springframework.http.HttpStatus).valueOf(#response.status)}">
-            <div class="error-code m-b-10 m-t-20" ><span th:text="|${httpStatus}|"></span> <i class="fa fa-warning"></i></div>
-            <h2 class="font-bold" th:text="|${httpStatus.reasonPhrase}|">Oops 404! That page can’t be found.</h2>
-            <div class="error-desc" th:unless="${#arrays.contains(@environment.getActiveProfiles(), 'prod')}">
-                <span th:text="${errorMessage}"></span>
-                <div>
-                    <br/>
-                    <a  href="/dashboard" th:href="@{/dashboard}" class="btn btn-primary"><span class="glyphicon glyphicon-home"></span> Go back to Homepage</a>
-                </div>
-            </div>
-            <div class="error-desc" th:if="${#arrays.contains(@environment.getActiveProfiles(), 'melleji')}">
-                <span th:text="${errorMessage}"></span>
-                <div>
-                    <br/>
-                    <a  href="/dashboard" th:href="@{/dashboard}" class="btn btn-primary"><span class="glyphicon glyphicon-home"></span> Go back to Homepage</a>
-                </div>
-            </div>
-        </div>
+    <div th:with="httpStatus=${T(org.springframework.http.HttpStatus).valueOf(status)}">
+        <h1 th:text="${httpStatus.value()} + ' ' + ${httpStatus.reasonPhrase}">Error</h1>
+
+        <p th:text="${message}">Something went wrong</p>
+
+        <p>
+            Path:
+            <span th:text="${path}">/unknown</span>
+        </p>
+    </div>
     </body>
 </html>

@@ -1,30 +1,56 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{fragments/main_layout}">
-    <head>
-        <title layout:title-pattern="Cilantro ~ Dashboard">Cilantro ~ Dashboard</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    </head>
-    <body>
-        <div class="container" layout:fragment="contents">
-            <div class="row">
-                <div class="col-sm-12">
-                    <div style="" class="text-center">
-                        <h3>Hi, <strong th:text="${session.username}"></strong></h3>
-                        <div th:if="${session.error}" class="alert alert-danger">    
-                            <span th:text="${session.error}"></span>
-                        </div>
-                        <a class="btn btn-primary" href="/dashboard"> Dashboard <i class="fa fa-arrow-circle-right"></i></a>
-                    </div>
+<head>
+    <title layout:title-pattern="Cilantro ~ Dashboard">Cilantro ~ Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="container" layout:fragment="contents">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="text-center">
+                <h3>Hi, <strong th:text="${session.username}"></strong></h3>
+                <div th:if="${session.error}" class="alert alert-danger">
+                    <span th:text="${session.error}"></span>
                 </div>
+                <a class="btn btn-primary" href="/dashboard">
+                    Dashboard <i class="fa fa-arrow-circle-right"></i>
+                </a>
             </div>
         </div>
-    </body>
+    </div>
+
+    <!-- ===== DEV: Keycloak token details dump ===== -->
+    <div class="row" style="margin-top: 30px;">
+        <div class="col-sm-12">
+            <h4>Keycloak / OIDC Details (DEV ONLY)</h4>
+
+            <h5>Authorities (what Spring sees)</h5>
+            <ul>
+                <li th:each="auth : ${authorities}"
+                    th:text="${auth.authority}">
+                    ROLE_EXAMPLE
+                </li>
+            </ul>
+
+            <h5>ID Token (raw)</h5>
+            <pre style="white-space: pre-wrap; word-wrap: break-word;"
+                 th:text="${idTokenValue}">No ID token</pre>
+
+            <h5>Access Token (raw)</h5>
+            <pre style="white-space: pre-wrap; word-wrap: break-word;"
+                 th:text="${accessTokenValue}">No access token</pre>
+
+            <h5>OIDC Claims (decoded)</h5>
+            <pre style="white-space: pre-wrap; word-wrap: break-word;"
+                 th:text="${oidcClaimsJson}">No claims</pre>
+        </div>
+    </div>
+    <!-- ===== END DEV SECTION ===== -->
+
+</div>
+</body>
 </html>

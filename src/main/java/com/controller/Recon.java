@@ -1042,7 +1042,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireBulkTransactions")
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_BULK_TRANSACTIONS')")
     public String fireBulkTransactions(Model model, HttpSession session) {
         model.addAttribute("startDate", DateUtil.now("yyyy-MM-dd"));
         model.addAttribute("endDate", DateUtil.now("yyyy-MM-dd"));
@@ -1076,7 +1076,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireLukuGwTransactions")
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_LUKU_GW_TRANSACTIONS')")
     public String fireReconExceptionReport(Model model, HttpSession session) {
         model.addAttribute("startDate", DateUtil.now("yyyy-MM-dd"));
         model.addAttribute("endDate", DateUtil.now("yyyy-MM-dd"));
@@ -1088,7 +1088,7 @@ public class Recon {
     GET INWARD EFT BATCHES AJAX /getInwardEFTAjax
      */
     @RequestMapping(value = "/fireLukuGwTransactionsAjax", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('SCOPE_cilantro_fireLukuGwTransactions')")
     @ResponseBody
     public String fireLukuGwTransactionsAjax(@RequestParam Map<String, String> customeQuery, HttpServletRequest request, HttpSession session) {
         String draw = customeQuery.get("draw");
@@ -1109,7 +1109,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireLukuSendSMS", method = RequestMethod.POST)
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('SCOPE_cilantro_fireLukuGwTransactions')")
     @ResponseBody
     public String fireLukuSendSMS(Model model, HttpSession session, @RequestParam Map<String, String> customeQuery) {
         String txnid = customeQuery.get("txnid");
@@ -1122,7 +1122,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireSuspiciousTransactions")
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_SUSPICIOUS_TRANSACTIONS')")
     public String fireSuspiciousTransactions(Model model, HttpSession session) {
         model.addAttribute("startDate", DateUtil.now("yyyy-MM-dd"));
         model.addAttribute("endDate", DateUtil.now("yyyy-MM-dd"));
@@ -1156,7 +1156,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireSwiftOutReport")
-    @PreAuthorize("hasAuthority('/fireSwiftSTPReport')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_SWIFT_STP_REPORT')")
     public String fireSwiftOutReport(Model model, HttpSession session) {
         model.addAttribute("startDate", DateUtil.now("yyyy-MM-dd"));
         model.addAttribute("endDate", DateUtil.now("yyyy-MM-dd"));
@@ -1190,7 +1190,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireSwiftSTPReport")
-    @PreAuthorize("hasAuthority('/fireSwiftSTPReport')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_SWIFT_STP_REPORT')")
     public String fireSwiftSTPReport(Model model, HttpSession session) {
         model.addAttribute("startDate", DateUtil.now("yyyy-MM-dd"));
         model.addAttribute("endDate", DateUtil.now("yyyy-MM-dd"));
@@ -1199,7 +1199,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireSwiftSTPReportAjax", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @PreAuthorize("hasAuthority('/fireSwiftSTPReport')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_SWIFT_STP_REPORT')")
     @ResponseBody
     public String fireSwiftSTPReportAjax(@RequestParam Map<String, String> customeQuery, HttpServletRequest request, HttpSession session) {
         String draw = customeQuery.get("draw");
@@ -1219,7 +1219,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireSwiftRetunedReport")
-    @PreAuthorize("hasAuthority('/fireSwiftSTPReport')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_SWIFT_STP_REPORT')")
     public String fireSwiftRetunedReport(Model model, HttpSession session) {
         model.addAttribute("startDate", DateUtil.now("yyyy-MM-dd"));
         model.addAttribute("endDate", DateUtil.now("yyyy-MM-dd"));
@@ -1228,7 +1228,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireSwiftRetunedReportAjax", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @PreAuthorize("hasAuthority('/fireSwiftSTPReport')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_SWIFT_STP_REPORT')")
     @ResponseBody
     public String fireSwiftRetunedReportAjax(@RequestParam Map<String, String> customeQuery, HttpServletRequest request, HttpSession session) {
         String draw = customeQuery.get("draw");
@@ -1259,7 +1259,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireCardIssue")
-    @PreAuthorize("hasAuthority('/fireCardIssue')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_CARD_ISSUE')")
     public String fireCardIssue(Model model, HttpSession session) {
         model.addAttribute("startDate", DateUtil.now("yyyy-MM-dd"));
         model.addAttribute("endDate", DateUtil.now("yyyy-MM-dd"));
@@ -1268,7 +1268,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireInstantCardIssue")
-    @PreAuthorize("hasAuthority('/fireCardIssue')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_CARD_ISSUE')")
     public String fireInstantCardIssue(Model model, HttpSession session) {
         model.addAttribute("startDate", DateUtil.now("yyyy-MM-dd"));
         model.addAttribute("endDate", DateUtil.now("yyyy-MM-dd"));
@@ -1277,7 +1277,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireCardIssueAjax", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @PreAuthorize("hasAuthority('/fireCardIssue')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_CARD_ISSUE')")
     @ResponseBody
     public VisaCardJsonResponse fireCardIssueAjax(@RequestParam Map<String, String> customeQuery, HttpServletRequest request, HttpSession session) {
         VisaCardJsonResponse response = new VisaCardJsonResponse();
@@ -1299,7 +1299,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireMnoBalance")
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_LUKU_GW_TRANSACTIONS')")
     public String fireMnoBalance(Model model, HttpSession session) {
         model.addAttribute("startDate", DateUtil.yesterdayDefault());
         model.addAttribute("endDate", DateUtil.yesterdayDefault());
@@ -1323,7 +1323,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireMnoBalanceAjax", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_LUKU_GW_TRANSACTIONS')")
     @ResponseBody
     public String fireMnoBalanceAjax(@RequestParam Map<String, String> customeQuery, HttpServletRequest request, HttpSession session) {
         String txnType = customeQuery.get("txnType");
@@ -1344,7 +1344,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireMnoBalanceMNOAjax", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_LUKU_GW_TRANSACTIONS')")
     @ResponseBody
     public String fireMnoBalanceMNOAjax(@RequestParam Map<String, String> customeQuery, HttpServletRequest request, HttpSession session) {
         String txnType = customeQuery.get("txnType");
@@ -1365,7 +1365,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireMkobaSolution")
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_LUKU_GW_TRANSACTIONS')")
     public String fireMkobaSolution(Model model, HttpSession session) {
         model.addAttribute("startDate", DateUtil.now("yyyy-MM-dd"));
         model.addAttribute("endDate", DateUtil.now("yyyy-MM-dd"));
@@ -1374,7 +1374,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireMkobaSolutionAjax", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_LUKU_GW_TRANSACTIONS')")
     @ResponseBody
     public String fireMkobaSolutionAjax(@RequestParam Map<String, String> customeQuery, HttpServletRequest request, HttpSession session) {
         String draw = customeQuery.get("draw");
@@ -1396,7 +1396,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireMkobaSolutionBalanceAjax", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_LUKU_GW_TRANSACTIONS')")
     @ResponseBody
     public String fireMkobaSolutionBalanceAjax(@RequestParam Map<String, String> customeQuery, HttpServletRequest request, HttpSession session) {
         String account = customeQuery.get("account");
@@ -1413,7 +1413,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireCusTomerService")
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('ROLE_SEARCH_VISA_CARD')")
     public String fireCusTomerService(Model model, HttpSession session) {
         model.addAttribute("startDate", DateUtil.now("yyyy-MM-dd"));
         model.addAttribute("endDate", DateUtil.now("yyyy-MM-dd"));
@@ -1422,7 +1422,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireCusTomerServiceAjax", method = RequestMethod.POST)
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_LUKU_GW_TRANSACTIONS')")
     @ResponseBody
     public String fireCusTomerServiceAjax(@RequestParam Map<String, String> customeQuery, HttpServletRequest request, HttpServletResponse resp, HttpSession session) {
         String account = customeQuery.get("account");
@@ -1438,7 +1438,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireCusTomerServicePrint/{accountx}/{startDate}/{endDate}/{ttypex}", method = RequestMethod.GET)
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_LUKU_GW_TRANSACTIONS')")
     @ResponseBody
     public String fireCusTomerServicePrint(@PathVariable("accountx") String accountx,@PathVariable("startDate") String startDate,@PathVariable("endDate")  String endDate,@PathVariable("ttypex")  String ttypex,@RequestParam Map<String, String> customeQuery, HttpServletRequest request, HttpServletResponse resp, HttpSession session) {
         String account = accountx;
@@ -1473,7 +1473,7 @@ public class Recon {
     }
 
     @RequestMapping(value = "/fireCusTomerServiceCalculate", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @PreAuthorize("hasAuthority('/fireLukuGwTransactions')")
+    @PreAuthorize("hasAuthority('ROLE_FIRE_LUKU_GW_TRANSACTIONS')")
     @ResponseBody
     public String fireCusTomerServiceCalculate(@RequestParam Map<String, String> customeQuery, HttpServletRequest request, HttpServletResponse resp, HttpSession session) {
         String account = customeQuery.get("account");
